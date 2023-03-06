@@ -7,6 +7,10 @@ import edu.tum.romance.whatsthis.util.WordCount
 object WordVec {
     var dictionary: List<String> = listOf()
 
+    fun clear() {
+        dictionary = listOf()
+    }
+
     operator fun plus(newDictionary: List<WordCount>): WordVec {
         for(word in newDictionary) {
             if(!dictionary.contains(word.first)) {
@@ -16,19 +20,21 @@ object WordVec {
         return this
     }
 
-    fun clear() {
-        dictionary = listOf()
+    fun createAndAddVec(text: List<WordCount>): IntVec {
+        dictionary + text
+        val vec = createVec(text)
+        return vec
     }
 
     fun createVec(text: List<WordCount>): IntVec {
         val vecList = ArrayList<Int>(dictionary.size)
-        val wordVec = text.map{ it.first }
+        val wordVec = text.map { it.first }
 
-        for((index, word) in dictionary.withIndex()) {
+        for ((index, word) in dictionary.withIndex()) {
             val i = wordVec.indexOf(word)
-            if(i != -1){
+            if (i != -1) {
                 vecList.add(index, text[i].second)
-            }else{
+            } else {
                 vecList.add(index, 0)
             }
         }

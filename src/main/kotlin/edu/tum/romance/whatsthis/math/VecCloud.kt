@@ -5,6 +5,8 @@ package edu.tum.romance.whatsthis.math
 class VecCloud(c: List<IntVec>){
     var cloud: List<IntVec> = c
 
+    constructor() : this(listOf())
+
     fun closestDistance(to: IntVec, f: Distance = EuclideanDistance): Double {
         var min = Double.MAX_VALUE
         for(i in cloud.indices) {
