@@ -3,15 +3,16 @@ package edu.tum.romance.whatsthis.ui.panels
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.component.HintTextField
 import java.awt.Dimension
+import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
 
 object ClassyPanel: JPanel() {
     // TODO: Change to VecClouds
-    val classes = mutableListOf("(None)")
+    val classes = mutableListOf("(No Filter)" to mutableListOf<Int>())
     // TODO: Change to ...?
     @Suppress("unused")
-    private val samples = mutableListOf<Pair<String, String>>()
+    val samples = mutableListOf("None" to "")
 
     private const val maxY = ClassificationFrame.height
     private const val maxX = ClassificationFrame.width
@@ -104,6 +105,7 @@ object ClassyPanel: JPanel() {
         layout.putConstraint(SpringLayout.SOUTH, SampleList, -5, SpringLayout.SOUTH, this)
 
         ClassList.update()
+        SampleList.update()
     }
 
     override fun setEnabled(enabled: Boolean) {
@@ -155,10 +157,10 @@ private object ClassInput: HintTextField("Class Name") {
     fun submit() {
         if(text.isNotBlank()) {
             if(editing != -1) {
-                ClassyPanel.classes[editing] = text
+                ClassyPanel.classes[editing] = text to ClassyPanel.classes[editing].second
                 editing = -1
             } else {
-                ClassyPanel.classes.add(text)
+                ClassyPanel.classes.add(text to mutableListOf())
             }
             ClassList.update()
             text = ""
@@ -175,15 +177,48 @@ private object AddClassButton: JButton("⏎") {
 private object SampleNameInput: HintTextField("Sample Name") {
     init {
         font = ClassificationFrame.fonts[0]
+        addActionListener { submit() }
+    }
+
+    fun submit() {
+        if(text.isNotBlank() && Editor.text.isNotBlank()) {
+            var index = SampleList.list.selectedIndex
+            if(index == -1) {
+                index = ClassyPanel.samples.indexOfFirst { it.first == text }
+            }
+
+            if(index != -1) {
+                ClassyPanel.samples[index] = text to Editor.text
+                SampleList.update()
+            } else {
+                ClassyPanel.samples.add(text to Editor.text)
+                index = ClassyPanel.samples.size - 1
+            }
+
+            text = ""
+            Editor.text = ""
+
+            if(ClassInput.editing != -1) {
+                ClassyPanel.classes[ClassInput.editing].second.add(index)
+            } else {
+                ClassyPanel.classes[0].second.add(index)
+            }
+
+            SampleList.update()
+        }
     }
 }
 
-private object AddSampleButton: JButton("⏎")
+private object AddSampleButton: JButton("⏎") {
+    init {
+        addActionListener { SampleNameInput.submit() }
+    }
+}
 
 private object ClassifyButton: JButton("✓")
 
 private object ClassList: JScrollPane() {
-    val list = JList(ClassyPanel.classes.toTypedArray())
+    val list = JList(ClassyPanel.classes.map { it.first }.toTypedArray())
     init {
         list.model = DefaultListModel()
         viewport.view = list
@@ -191,13 +226,14 @@ private object ClassList: JScrollPane() {
 
         list.addListSelectionListener {
             if(!it.valueIsAdjusting) {
-                if(list.selectedValue != null && list.selectedValue != "(None)") {
-                    ClassInput.text = list.selectedValue as String
+                if(list.selectedValue != null && list.selectedValue != "(No Filter)") {
+                    ClassInput.text = list.selectedValue
                     ClassInput.editing = list.selectedIndex
                 } else if(ClassInput.editing != -1) {
                     ClassInput.text = ""
                     ClassInput.editing = -1
                 }
+                SampleList.update()
             }
         }
     }
@@ -205,12 +241,70 @@ private object ClassList: JScrollPane() {
     fun update() {
         list.model = DefaultListModel()
         for (i in ClassyPanel.classes) {
-            (list.model as DefaultListModel).addElement(i)
+            (list.model as DefaultListModel).addElement(i.first)
         }
     }
 }
 
-private object SampleList: JScrollPane()
+private object SampleList: JScrollPane() {
+    val list = JList(ClassyPanel.samples.map { it.first }.toTypedArray())
+    init {
+        list.model = DefaultListModel()
+        viewport.view = list
+        list.font = ClassificationFrame.fonts[0]
+
+        // On 'delete'-press, delete the selected index
+        list.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete")
+        list.actionMap.put("delete", object: AbstractAction() {
+            override fun actionPerformed(e: ActionEvent) {
+                if(list.selectedIndex > 0) {
+                    val idx = ClassyPanel.samples.indexOfFirst { item ->
+                        item.first == list.selectedValue
+                    }
+                    ClassyPanel.samples.removeAt(idx)
+                    for (i in ClassyPanel.classes) {
+                        i.second.remove(idx)
+                    }
+                    SampleNameInput.text = ""
+                    Editor.text = ""
+                    update()
+                }
+            }
+        })
+
+        list.addListSelectionListener {
+            if(!it.valueIsAdjusting) {
+                if(list.selectedValue != null) {
+                    if(list.selectedValue == "(None)") {
+                        SampleNameInput.text = ""
+                        Editor.text = ""
+                        list.clearSelection()
+                        return@addListSelectionListener
+                    }
+
+                    val idx = ClassyPanel.samples.indexOfFirst { item ->
+                        item.first == list.selectedValue
+                    }
+                    SampleNameInput.text = ClassyPanel.samples[idx].first
+                    Editor.text = ClassyPanel.samples[idx].second
+                }
+            }
+        }
+    }
+
+    fun update() {
+        list.model = DefaultListModel()
+        for ((index, item) in ClassyPanel.samples.withIndex()) {
+            if(ClassList.list.selectedIndex > 0) {
+                if(ClassyPanel.classes[ClassList.list.selectedIndex].second.contains(index) || index == 0) {
+                    (list.model as DefaultListModel).addElement(item.first)
+                }
+            } else {
+                (list.model as DefaultListModel).addElement(item.first)
+            }
+        }
+    }
+}
 //#endregion
 
 //#region Menu Bar
