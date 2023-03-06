@@ -15,6 +15,10 @@ object WordVec {
         return this
     }
 
+    fun clear() {
+        dictionary = listOf()
+    }
+
     fun createVec(text: List<WordCount>): IntVec {
         val vecList = ArrayList<Int>(dictionary.size)
         val wordVec = text.map{ it.first }
