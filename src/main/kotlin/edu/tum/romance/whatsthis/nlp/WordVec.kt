@@ -1,5 +1,6 @@
-package edu.tum.romance.whatsthis.math
+package edu.tum.romance.whatsthis.nlp
 
+import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.util.WordCount
 
 @Suppress("unused")

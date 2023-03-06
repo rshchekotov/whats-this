@@ -1,4 +1,4 @@
-package edu.tum.romance.whatsthis.math
+package edu.tum.romance.whatsthis.nlp
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
