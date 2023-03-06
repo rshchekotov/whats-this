@@ -15,4 +15,12 @@ class VecCloud(c: List<IntVec>){
         }
         return min
     }
+
+    fun add(v: IntVec) {
+        cloud += v
+    }
+
+    fun clear() {
+        cloud = listOf()
+    }
 }
