@@ -1,8 +1,8 @@
 package edu.tum.romance.whatsthis.ui.panels
 
-import edu.tum.romance.whatsthis.io.LocalSource
+import edu.tum.romance.whatsthis.io.FileSource
 import edu.tum.romance.whatsthis.io.StringSource
-import edu.tum.romance.whatsthis.io.WebSource
+import edu.tum.romance.whatsthis.io.WebPageSource
 import edu.tum.romance.whatsthis.nlp.WordVec
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.component.HintTextField
@@ -94,7 +94,7 @@ private object SourceSelector: JComboBox<String>() {
             override fun run() {
                 if(text.isNotBlank()) {
                     try {
-                        val content = WebSource.load(URL(text))
+                        val content = WebPageSource.load(URL(text))
                         Editor.content = content
                         text = ""
                     } catch(e: Exception) {
@@ -112,7 +112,7 @@ private object SourceSelector: JComboBox<String>() {
                     val file = fileChooser.selectedFile
                     if (file != null) {
                         try {
-                            val content = LocalSource.load(file)
+                            val content = FileSource.load(file)
                             Editor.content = content
                             SampleNameInput.text = file.nameWithoutExtension
                         } catch (e: Exception) {

@@ -8,7 +8,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class WebSourceTest {
+internal class WebPageSourceTest {
     @BeforeTest
     fun setup() {
         WordVec.clear()
@@ -18,7 +18,7 @@ internal class WebSourceTest {
     fun testWikiCar() {
         val url = URL("https://en.wikipedia.org/wiki/Car")
         assumeConnectivity(url)
-        val vec = assertDoesNotThrow("Web Source should not fail.") { WebSource.textToVec(url) }
+        val vec = assertDoesNotThrow("Web Source should not fail.") { WebPageSource.textToVec(url) }
         assertEquals(vec.size, WordVec.dictionary.size, "Vector size does not match dictionary size")
     }
 
@@ -27,8 +27,8 @@ internal class WebSourceTest {
         val alpha = URL("https://en.wikipedia.org/wiki/Alpha")
         val beta = URL("https://en.wikipedia.org/wiki/Beta")
         assumeConnectivity(alpha)
-        val alphaVec = assertDoesNotThrow("Web Source (for Alpha) should not fail.") { WebSource.textToVec(alpha) }
-        val betaVec = assertDoesNotThrow("Web Source (for Beta) should not fail.") { WebSource.textToVec(beta) }
+        val alphaVec = assertDoesNotThrow("Web Source (for Alpha) should not fail.") { WebPageSource.textToVec(alpha) }
+        val betaVec = assertDoesNotThrow("Web Source (for Beta) should not fail.") { WebPageSource.textToVec(beta) }
         alphaVec.update()
 
         assertEquals(alphaVec.size, WordVec.dictionary.size, "Vector size does not match dictionary size")
@@ -39,7 +39,7 @@ internal class WebSourceTest {
     fun testPlain() {
         val fuzz = URL("https://raw.githubusercontent.com/Bo0oM/fuzz.txt/master/fuzz.txt")
         assumeConnectivity(fuzz)
-        val vec = assertDoesNotThrow("Web Source should not fail.") { WebSource.textToVec(fuzz) }
+        val vec = assertDoesNotThrow("Web Source should not fail.") { WebPageSource.textToVec(fuzz) }
         assertEquals(vec.size, WordVec.dictionary.size, "Vector size does not match dictionary size")
     }
 }

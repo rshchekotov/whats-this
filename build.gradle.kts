@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation("org.jsoup:jsoup:1.15.3")
+    implementation("org.apache.pdfbox:pdfbox:3.0.0-alpha2")
 
     testImplementation(kotlin("test"))
 }
