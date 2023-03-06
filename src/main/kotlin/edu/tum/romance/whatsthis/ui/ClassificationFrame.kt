@@ -31,7 +31,7 @@ object ClassificationFrame: JFrame() {
         remove(content)
         content = view
         add(content)
-        content.isEnabled = true
         this.pack()
+        content.isEnabled = true
     }
 }
