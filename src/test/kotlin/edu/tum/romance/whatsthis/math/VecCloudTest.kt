@@ -18,9 +18,9 @@ class VecCloudTest {
     fun add(){
         val vecCloud = VecCloud(listOf())
         assertEquals(0, vecCloud.cloud.size, "VecCloud should be empty")
-        vecCloud.add(IntVec(listOf(1, 2, 3)))
+        vecCloud + IntVec(listOf(1, 2, 3))
         assertEquals(1, vecCloud.cloud.size, "VecCloud should contain 1 vector")
-        vecCloud.add(IntVec(listOf(1, 2, 9)))
+        vecCloud + IntVec(listOf(1, 2, 9))
         assertEquals(2, vecCloud.cloud.size, "VecCloud should contain 2 vectors")
     }
 

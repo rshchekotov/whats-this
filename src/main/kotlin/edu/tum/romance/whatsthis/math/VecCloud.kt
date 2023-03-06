@@ -16,8 +16,9 @@ class VecCloud(c: List<IntVec>){
         return min
     }
 
-    fun add(v: IntVec) {
+    operator fun plus(v: IntVec): VecCloud {
         cloud += v
+        return this
     }
 
     fun clear() {
