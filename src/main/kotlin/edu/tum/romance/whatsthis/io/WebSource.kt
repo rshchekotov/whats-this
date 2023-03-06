@@ -5,24 +5,17 @@ import org.jsoup.Jsoup
 import java.net.URL
 
 @Suppress("unused")
-object WebSource : TextToVec<URL> {
+object WebSource : DataSource<URL> {
     override fun textToVec(resource: URL): IntVec {
-        /*
-        * Check if server is reachable and if the resource
-        * is available and has the Mimetype of an HTML.
-        */
-        val connection = resource.openConnection()
-        connection.connect()
-
-        return when (connection.contentType.split(";")[0]) {
-            "text/html" -> parseHTML(resource.readText())
-            "text/plain" -> StringSource.textToVec(resource.readText())
-            else -> error("Unsupported Mimetype")
-        }
+        return StringSource.textToVec(load(resource))
     }
 
-    private fun parseHTML(html: String): IntVec {
-        val doc = Jsoup.parse(html)
-        return StringSource.textToVec(doc.body().text())
+    override fun load(resource: URL): String {
+        val connection = resource.openConnection()
+        return when (connection.contentType.split(";")[0]) {
+            "text/html" -> Jsoup.parse(resource.readText()).body().text()
+            "text/plain" -> resource.readText()
+            else -> error("Unsupported Mimetype")
+        }
     }
 }
