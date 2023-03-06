@@ -14,7 +14,7 @@ object WebSource : TextToVec<URL> {
         val connection = resource.openConnection()
         connection.connect()
 
-        return when (connection.contentType) {
+        return when (connection.contentType.split(";")[0]) {
             "text/html" -> parseHTML(resource.readText())
             "text/plain" -> StringSource.textToVec(resource.readText())
             else -> error("Unsupported Mimetype")
