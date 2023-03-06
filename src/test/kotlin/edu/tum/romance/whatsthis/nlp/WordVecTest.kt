@@ -64,14 +64,14 @@ internal class WordVecTest {
         assertEquals(2, vec.data[1], "WordVec should contain 2 'b'")
         assertEquals(3, vec.data[2], "WordVec should contain 3 'c'")
 
-        WordVec.update(vec)
+        vec.update()
         assertEquals(3, vec.data.size, "WordVec should contain 3 words")
         assertEquals(1, vec.data[0], "WordVec should contain 1 'a'")
         assertEquals(2, vec.data[1], "WordVec should contain 2 'b'")
         assertEquals(3, vec.data[2], "WordVec should contain 3 'c'")
 
         WordVec + listOf("a" to 1, "b" to 2, "d" to 1)
-        WordVec.update(vec)
+        vec.update()
         assertEquals(4, vec.data.size, "WordVec should contain 4 words")
         assertEquals(1, vec.data[0], "WordVec should contain 1 'a'")
         assertEquals(2, vec.data[1], "WordVec should contain 2 'b'")

@@ -35,13 +35,4 @@ object WordVec {
 
         return IntVec(vecList)
     }
-
-    fun update(vec: IntVec){
-        val vecList = ArrayList<Int>(dictionary.size)
-        vecList.addAll(vec.data)
-        for(i in vecList.size until dictionary.size) {
-            vecList.add(0)
-        }
-        vec.data = vecList
-    }
 }
