@@ -1,33 +1,36 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.math.Distance
+import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.IntVec
-import edu.tum.romance.whatsthis.math.VecCloud
 
 @Suppress("unused")
 object Monitor {
     private val dataCache = mutableMapOf<String, TextData<*>>()
-    private val clouds: MutableMap<String, VecCloud> = mutableMapOf()
+    private val clouds: MutableMap<String, MutableList<String>> = mutableMapOf()
     private val dictVec = WordVec()
 
-    fun add(text: TextData<*>, cloud: String): Monitor{
-        dictVec.createAndAddVec(text)
-        this + Pair(text, cloud)
-        updateClouds()
-        return this
-    }
-
-    fun remove(text: TextData<*>, cloud: String): Monitor{
-        clouds[cloud]?.minus(text)
-        updateClouds()
-        return this
-    }
-
-    fun addAll(list: List<Pair<TextData<*>, String>>): Monitor{
-        list.forEach { (textData, cloudName) ->
-            dictVec.createAndAddVec(textData)
-            this + Pair(textData, cloudName)
+    //#region CRUD Ops
+    fun add(name: String, data: TextData<*>, cloud: String? = null) {
+        addToCache(name, data)
+        if(cloud != null && cloud in clouds) {
+            associate(name, cloud)
         }
+    }
+
+    private fun associate(dataRef: String, cloud: String): Monitor{
+        if (clouds.containsKey(cloud)) {
+            clouds[cloud]!! += dataRef
+        } else {
+            clouds[cloud] = mutableListOf(dataRef)
+        }
+        updateClouds()
+        return this
+    }
+
+    fun remove(text: String, cloud: String): Monitor {
+        clouds[cloud]?.minus(text)
         updateClouds()
         return this
     }
@@ -36,40 +39,43 @@ object Monitor {
         clouds.clear()
         dictVec.clear()
     }
+    //#endregion
 
-    private operator fun plus(pair: Pair<TextData<*>, String>):Monitor{
-        if(!clouds.containsKey(pair.second)) {
-            clouds[pair.second] = VecCloud()
-        }
-        clouds[pair.second]!! + pair.first
-        return this
-    }
-
-    private fun findClosestCloud(data: TextData<*>): String {
+    //#region Math Stuff
+    private fun findClosestCloud(data: TextData<*>, distance: Distance = EuclideanDistance): String {
         dictVec.createVec(data)
-        return clouds.minByOrNull { it.value.closestDistance(data) }?.key ?: "default"
+        return clouds.minByOrNull { cloud ->
+            if(cloud.value.isEmpty()) return@minByOrNull Double.MAX_VALUE
+            (cloud.value.map { dataCache[it] }.minByOrNull { distance(it?.vector!!, data.vector!!) }?.vector?.let {
+                distance(it, data.vector!!)
+            } ?: Double.MAX_VALUE)
+        }?.key ?: "default"
     }
+    //#endregion
 
+    //#region Update Ops
     private fun updateClouds() = clouds.forEach { (_, cloud) ->
-        cloud.cloud.forEach { it.vector?.let { v -> updateIntVec(v) } }
+        cloud.mapNotNull { dataCache[it]?.vector }.forEach { updateIntVec(it) }
     }
 
     private fun updateIntVec(vec: IntVec) {
         val vecList = ArrayList<Int>(dictVec.dictionary.size)
+
         vecList.addAll(vec.data)
         for(i in vecList.size until dictVec.dictionary.size) {
             vecList.add(0)
         }
         vec.data = vecList
     }
+    //#endregion
 
-    /* Cloud Ops */
+    //#region Cloud Ops
     fun cloudKeys() = clouds.keys
-    operator fun get(cloud: String): VecCloud? {
+    operator fun get(cloud: String): List<String>? {
         return clouds[cloud]
     }
-    fun cloud(cloud: String) {
-        clouds[cloud] = VecCloud()
+    fun createCloud(cloud: String) {
+        clouds[cloud] = mutableListOf()
     }
     fun renameCloud(oldName: String, newName: String) {
         if(clouds.containsKey(oldName)) {
@@ -80,11 +86,15 @@ object Monitor {
     operator fun contains(cloud: String): Boolean {
         return clouds.containsKey(cloud)
     }
+    //#endregion
 
-    /* Cache Ops */
+    //#region Cache Ops
     fun cacheKeys() = dataCache.keys
     fun loadFromCache(key: String) = dataCache[key]
-    fun addToCache(key: String, data: TextData<*>) = dataCache.put(key, data)
+    private fun addToCache(key: String, data: TextData<*>) {
+        dictVec.createAndAddVec(data)
+        dataCache[key] = data
+    }
     fun renameInCache(old: String, new: String) {
         if(dataCache.containsKey(old)) {
             dataCache[new] = dataCache[old]!!
@@ -94,4 +104,5 @@ object Monitor {
     fun removeFromCache(sampleName: String) {
         dataCache.remove(sampleName)
     }
+    //#endregion
 }

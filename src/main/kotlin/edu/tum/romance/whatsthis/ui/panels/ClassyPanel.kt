@@ -195,7 +195,7 @@ private object ClassInput: HintTextField("Class Name") {
                 visualError("Class '$text' already exists!")
                 return
             }
-            Monitor.cloud(text)
+            Monitor.createCloud(text)
             ClassList.update()
             text = ""
         } else {
@@ -249,7 +249,7 @@ private object SampleNameInput: HintTextField("Sample Name") {
         val sample = TextData(Editor.content)
         val className = ClassList.list.selection()
         if(className != null) {
-            Monitor.add(sample, className)
+            Monitor.add(text, sample, className)
         } else {
             val label = JLabel("No class selected. Create variable sample?")
             label.font = ClassificationFrame.fonts[0]
@@ -258,8 +258,9 @@ private object SampleNameInput: HintTextField("Sample Name") {
                 "ClassConfirmation", JOptionPane.YES_NO_OPTION
             )
             if(classlessAdd != JOptionPane.YES_OPTION) return
+            Monitor.add(text, sample)
         }
-        Monitor.addToCache(text, sample)
+
         text = ""
         Editor.content = ""
         SampleList.update()
@@ -333,7 +334,7 @@ private object SampleList: JScrollPane() {
 
     init {
         viewport.view = list
-        list.selectionModel.addListSelectionListener() {
+        list.selectionModel.addListSelectionListener {
             if(!it.valueIsAdjusting) {
                 val selection = list.selection()
                 if(selection != null) {
@@ -351,7 +352,7 @@ private object SampleList: JScrollPane() {
         val classFilter = ClassList.list.selection()
         if(classFilter != null && (classFilter in Monitor)) {
             items = items.filter {
-                Monitor[classFilter]!!.cloud.contains(Monitor.loadFromCache(it))
+                Monitor[classFilter]!!.contains(it)
             }.toMutableList()
         }
         list.update()
