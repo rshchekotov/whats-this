@@ -1,13 +1,14 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.math.VecCloud
 
 @Suppress("unused")
 object Monitor {
     private val dataCache = mutableMapOf<String, TextData<*>>()
     private val clouds: MutableMap<String, VecCloud> = mutableMapOf()
-    val dictVec = WordVec()
+    private val dictVec = WordVec()
 
     fun add(text: TextData<*>, cloud: String): Monitor{
         dictVec.createAndAddVec(text)
@@ -50,7 +51,16 @@ object Monitor {
     }
 
     private fun updateClouds() = clouds.forEach { (_, cloud) ->
-        cloud.cloud.forEach { it.vector?.update() }
+        cloud.cloud.forEach { it.vector?.let { v -> updateIntVec(v) } }
+    }
+
+    private fun updateIntVec(vec: IntVec) {
+        val vecList = ArrayList<Int>(dictVec.dictionary.size)
+        vecList.addAll(vec.data)
+        for(i in vecList.size until dictVec.dictionary.size) {
+            vecList.add(0)
+        }
+        vec.data = vecList
     }
 
     /* Cloud Ops */
