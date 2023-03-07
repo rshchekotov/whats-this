@@ -154,7 +154,7 @@ private object SourceSelector: JComboBox<String>() {
             val layout = ClassyPanel.layout as SpringLayout
             layout.putConstraint(SpringLayout.NORTH, ClassyPanel.sourceInputElement, 5, SpringLayout.SOUTH, Editor)
             layout.putConstraint(SpringLayout.WEST, ClassyPanel.sourceInputElement, 5, SpringLayout.WEST, ClassyPanel)
-            layout.putConstraint(SpringLayout.EAST, ClassyPanel.sourceInputElement, -5, SpringLayout.WEST, SourceButton)
+            layout.putConstraint(SpringLayout.EAST, ClassyPanel.sourceInputElement, 0, SpringLayout.EAST, SampleNameInput)
             layout.putConstraint(SpringLayout.SOUTH, ClassyPanel.sourceInputElement, 0, SpringLayout.SOUTH, SourceSelector)
             ClassyPanel.revalidate()
             ClassyPanel.repaint()
@@ -497,7 +497,7 @@ object ClassyPanel: JPanel() {
         SampleNameInput.preferredSize = computeSize(2..2, 2..2)
         layout.putConstraint(SpringLayout.NORTH, SampleNameInput, 5, SpringLayout.SOUTH, SourceSelector)
         layout.putConstraint(SpringLayout.WEST, SampleNameInput, 5, SpringLayout.EAST, AddClassButton)
-        layout.putConstraint(SpringLayout.EAST, SampleNameInput, 0, SpringLayout.EAST, sourceInputElement)
+        layout.putConstraint(SpringLayout.EAST, SampleNameInput, -5, SpringLayout.WEST, SourceButton)
 
         add(AddSampleButton)
         AddSampleButton.preferredSize = computeSize(3..3, 2..2)
