@@ -29,6 +29,10 @@ private object Editor: JScrollPane(
     val textArea = viewport.view as JTextArea
     val table = JTable()
 
+    val scrollerWidth = verticalScrollBar.preferredSize.width
+    val preferredWidth
+        get() = Editor.preferredSize.width - scrollerWidth
+
     var content: String
         get() = textArea.text
         set(value) {
@@ -46,6 +50,16 @@ private object Editor: JScrollPane(
         table.autoResizeMode = JTable.AUTO_RESIZE_OFF
         table.font = ClassificationFrame.fonts[0]
         table.rowHeight = 20
+        table.model = DefaultTableModel(arrayOf<Array<String>>(), arrayOf("Word", "Vector"))
+
+        val wordColumn = table.getColumn("Word")
+        val vectorColumn = table.getColumn("Vector")
+        wordColumn.preferredWidth = 2 * preferredWidth / 3
+        vectorColumn.preferredWidth = preferredWidth / 3
+
+        val sorter = TableRowSorter(table.model)
+        sorter.sortsOnUpdates = true
+        table.rowSorter = sorter
     }
 
     fun update() {
@@ -53,21 +67,20 @@ private object Editor: JScrollPane(
             if(ViewMenu.mode == ViewMenu.VEC) {
                 val data = TextData(content)
 
-                data.tokens.map { arrayOf(it.first, it.second) }.toTypedArray().let {
-                    table.model = DefaultTableModel(it, arrayOf("Word", "Vector"))
-                }
+                (table.model as DefaultTableModel).setDataVector(
+                    data.tokens.map { arrayOf(it.first, it.second) }.toTypedArray(),
+                    arrayOf("Word", "Vector"))
 
-                val scrollerWidth = verticalScrollBar.preferredSize.width
                 val wordColumn = table.getColumn("Word")
                 val vectorColumn = table.getColumn("Vector")
-                val preferredWidth = Editor.preferredSize.width - scrollerWidth
                 wordColumn.preferredWidth = 2 * preferredWidth / 3
                 vectorColumn.preferredWidth = preferredWidth / 3
 
-                val sorter = TableRowSorter(table.model)
+                val sorter = table.rowSorter as TableRowSorter
                 sorter.setComparator(wordColumn.modelIndex, Comparator.comparing(String::lowercase))
                 sorter.setComparator(vectorColumn.modelIndex, Comparator.comparingInt(Int::toInt))
-                table.rowSorter = sorter
+                sorter.toggleSortOrder(vectorColumn.modelIndex)
+                sorter.toggleSortOrder(vectorColumn.modelIndex)
 
                 viewport.view = table
             } else {
