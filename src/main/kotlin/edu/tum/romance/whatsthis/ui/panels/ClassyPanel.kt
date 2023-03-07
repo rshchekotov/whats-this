@@ -1,7 +1,9 @@
 package edu.tum.romance.whatsthis.ui.panels
 
 import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.nlp.Monitor
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
+import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
 import edu.tum.romance.whatsthis.ui.component.HintTextField
 import java.awt.Dimension
 import java.awt.event.ActionEvent
@@ -164,7 +166,6 @@ private object SourceSelector: JComboBox<String>() {
 }
 
 private object ClassInput: HintTextField("Class Name") {
-    var editing = -1
     init {
         addActionListener { submit() }
         font = ClassificationFrame.fonts[0]
@@ -172,14 +173,15 @@ private object ClassInput: HintTextField("Class Name") {
 
     fun submit() {
         if(text.isNotBlank()) {
-            if(editing != -1) {
-                ClassyPanel.classes[editing] = text to ClassyPanel.classes[editing].second
-                editing = -1
-            } else {
-                ClassyPanel.classes.add(text to mutableListOf())
+            if(text in Monitor) {
+                visualError("Class '$text' already exists!")
+                return
             }
+            Monitor.cloud(text)
             ClassList.update()
             text = ""
+        } else {
+            visualError("Class name cannot be blank!")
         }
     }
 }
@@ -204,31 +206,43 @@ private object SampleNameInput: HintTextField("Sample Name") {
     }
 
     fun submit() {
-        if(text.isNotBlank() && !Editor.isBlank()) {
-            var index = SampleList.list.selectedIndex
-            if(index == -1) {
-                index = ClassyPanel.samples.indexOfFirst { it.first == text }
-            }
-
-            if(index != -1) {
-                ClassyPanel.samples[index] = text to Editor.content
-                SampleList.update()
-            } else {
-                ClassyPanel.samples.add(text to Editor.content)
-                index = ClassyPanel.samples.size - 1
-            }
-
-            text = ""
-            Editor.content = ""
-
-            if(ClassInput.editing != -1) {
-                ClassyPanel.classes[ClassInput.editing].second.add(index)
-            } else {
-                ClassyPanel.classes[0].second.add(index)
-            }
-
-            SampleList.update()
+        if(text.isBlank()) {
+            visualError("Sample name cannot be blank!")
+            return
         }
+
+        if(Editor.isBlank()) {
+            visualError("Sample text cannot be blank!")
+            return
+        }
+
+        if(text in Monitor.cacheKeys()) {
+            val label = JLabel("Sample '$text' already exists. Overwrite?")
+            label.font = ClassificationFrame.fonts[0]
+            val override = JOptionPane.showConfirmDialog(
+                ClassificationFrame, label,
+                "SampleConfirmation", JOptionPane.YES_NO_OPTION
+            )
+            if(override != JOptionPane.YES_OPTION) {
+                return
+            }
+        }
+
+        val sample = TextData(Editor.content)
+        val className = ClassList.list.selectedValue
+        if(className != null) {
+            Monitor.add(sample, className)
+        } else {
+            val label = JLabel("No class selected. Create variable sample?")
+            label.font = ClassificationFrame.fonts[0]
+            val classlessAdd = JOptionPane.showConfirmDialog(
+                ClassificationFrame, label,
+                "ClassConfirmation", JOptionPane.YES_NO_OPTION
+            )
+            if(classlessAdd != JOptionPane.YES_OPTION) return
+        }
+        Monitor.addToCache(text, sample)
+        SampleList.update()
     }
 }
 
@@ -258,7 +272,7 @@ private object ClassifyButton: JButton("✓") {
 }
 
 private object ClassList: JScrollPane() {
-    val list = JList(ClassyPanel.classes.map { it.first }.toTypedArray())
+    val list = JList(Monitor.cloudKeys().sorted().toTypedArray())
     init {
         list.model = DefaultListModel()
         viewport.view = list
@@ -266,13 +280,6 @@ private object ClassList: JScrollPane() {
 
         list.addListSelectionListener {
             if(!it.valueIsAdjusting) {
-                if(list.selectedValue != null && list.selectedValue != "(No Filter)") {
-                    ClassInput.text = list.selectedValue
-                    ClassInput.editing = list.selectedIndex
-                } else if(ClassInput.editing != -1) {
-                    ClassInput.text = ""
-                    ClassInput.editing = -1
-                }
                 SampleList.update()
             }
         }
@@ -280,14 +287,14 @@ private object ClassList: JScrollPane() {
 
     fun update() {
         list.model = DefaultListModel()
-        for (i in ClassyPanel.classes) {
-            (list.model as DefaultListModel).addElement(i.first)
+        for (i in Monitor.cloudKeys().sorted()) {
+            (list.model as DefaultListModel).addElement(i)
         }
     }
 }
 
 private object SampleList: JScrollPane() {
-    val list = JList(ClassyPanel.samples.map { it.first }.toTypedArray())
+    val list = JList(Monitor.cacheKeys().sorted().toTypedArray())
     init {
         list.model = DefaultListModel()
         viewport.view = list
@@ -297,17 +304,19 @@ private object SampleList: JScrollPane() {
         list.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete")
         list.actionMap.put("delete", object: AbstractAction() {
             override fun actionPerformed(e: ActionEvent) {
-                if(list.selectedIndex > 0) {
-                    val idx = ClassyPanel.samples.indexOfFirst { item ->
-                        item.first == list.selectedValue
+                val sampleName = list.selectedValue
+                if(sampleName != null) {
+                    val sample = Monitor.loadFromCache(sampleName)
+                    if(sample == null) {
+                        visualError("Sample '$sampleName' does not exist!")
+                        return
                     }
-                    ClassyPanel.samples.removeAt(idx)
-                    for (i in ClassyPanel.classes) {
-                        i.second.remove(idx)
+
+                    val cloud = ClassList.list.selectedValue
+                    if(cloud != null && (cloud in Monitor)) {
+                        Monitor.remove(sample, cloud)
                     }
-                    SampleNameInput.text = ""
-                    Editor.content = ""
-                    update()
+                    Monitor.removeFromCache(sampleName)
                 }
             }
         })
@@ -315,18 +324,10 @@ private object SampleList: JScrollPane() {
         list.addListSelectionListener {
             if(!it.valueIsAdjusting) {
                 if(list.selectedValue != null) {
-                    if(list.selectedValue == "(None)") {
-                        SampleNameInput.text = ""
-                        Editor.content = ""
-                        list.clearSelection()
-                        return@addListSelectionListener
+                    val sample = Monitor.loadFromCache(list.selectedValue)
+                    if(sample != null) {
+                        Editor.content = sample.text
                     }
-
-                    val idx = ClassyPanel.samples.indexOfFirst { item ->
-                        item.first == list.selectedValue
-                    }
-                    SampleNameInput.text = ClassyPanel.samples[idx].first
-                    Editor.content = ClassyPanel.samples[idx].second
                 }
             }
         }
@@ -334,15 +335,15 @@ private object SampleList: JScrollPane() {
 
     fun update() {
         list.model = DefaultListModel()
-        for ((index, item) in ClassyPanel.samples.withIndex()) {
-            if(ClassList.list.selectedIndex > 0) {
-                if(ClassyPanel.classes[ClassList.list.selectedIndex].second.contains(index) || index == 0) {
-                    (list.model as DefaultListModel).addElement(item.first)
-                }
-            } else {
-                (list.model as DefaultListModel).addElement(item.first)
+        val model = list.model as DefaultListModel
+        var samples = Monitor.cacheKeys().sorted()
+        val classFilter = ClassList.list.selectedValue
+        if(classFilter != null && (classFilter in Monitor)) {
+            samples = samples.filter {
+                Monitor[classFilter]!!.cloud.contains(Monitor.loadFromCache(it))
             }
         }
+        samples.forEach { model.addElement(it) }
     }
 }
 //#endregion
@@ -420,12 +421,6 @@ private object ViewMenu: JMenu("View") {
 //#endregion
 
 object ClassyPanel: JPanel() {
-    // TODO: Change to VecClouds
-    val classes = mutableListOf("(No Filter)" to mutableListOf<Int>())
-    // TODO: Change to ...?
-    @Suppress("unused")
-    val samples = mutableListOf("None" to "")
-
     private const val maxY = ClassificationFrame.height
     private const val maxX = ClassificationFrame.width
 

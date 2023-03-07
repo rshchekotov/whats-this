@@ -43,4 +43,11 @@ object ClassificationFrame: JFrame() {
         JOptionPane.showMessageDialog(this, label,
             "Not implemented", JOptionPane.INFORMATION_MESSAGE)
     }
+
+    fun visualError(message: String) {
+        val label = JLabel(message)
+        label.font = fonts[0]
+        JOptionPane.showMessageDialog(this, label,
+            "Error", JOptionPane.ERROR_MESSAGE)
+    }
 }

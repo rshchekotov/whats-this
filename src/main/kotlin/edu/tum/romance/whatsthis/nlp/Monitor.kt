@@ -5,6 +5,7 @@ import edu.tum.romance.whatsthis.math.VecCloud
 
 @Suppress("unused")
 object Monitor {
+    private val dataCache = mutableMapOf<String, TextData<*>>()
     private val clouds: MutableMap<String, VecCloud> = mutableMapOf()
     val dictVec = WordVec()
 
@@ -30,10 +31,6 @@ object Monitor {
         return this
     }
 
-    operator fun get(cloud: String): VecCloud? {
-        return clouds[cloud]
-    }
-
     fun clear() {
         clouds.clear()
         dictVec.clear()
@@ -54,5 +51,25 @@ object Monitor {
 
     private fun updateClouds() = clouds.forEach { (_, cloud) ->
         cloud.cloud.forEach { it.vector?.update() }
+    }
+
+    /* Cloud Ops */
+    fun cloudKeys() = clouds.keys
+    operator fun get(cloud: String): VecCloud? {
+        return clouds[cloud]
+    }
+    fun cloud(cloud: String) {
+        clouds[cloud] = VecCloud()
+    }
+    operator fun contains(cloud: String): Boolean {
+        return clouds.containsKey(cloud)
+    }
+
+    /* Cache Ops */
+    fun cacheKeys() = dataCache.keys
+    fun loadFromCache(key: String) = dataCache[key]
+    fun addToCache(key: String, data: TextData<*>) = dataCache.put(key, data)
+    fun removeFromCache(sampleName: String) {
+        dataCache.remove(sampleName)
     }
 }
