@@ -61,6 +61,12 @@ object Monitor {
     fun cloud(cloud: String) {
         clouds[cloud] = VecCloud()
     }
+    fun renameCloud(oldName: String, newName: String) {
+        if(clouds.containsKey(oldName)) {
+            clouds[newName] = clouds[oldName]!!
+            clouds.remove(oldName)
+        }
+    }
     operator fun contains(cloud: String): Boolean {
         return clouds.containsKey(cloud)
     }

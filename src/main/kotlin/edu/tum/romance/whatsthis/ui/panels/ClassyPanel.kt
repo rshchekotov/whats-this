@@ -6,15 +6,19 @@ import edu.tum.romance.whatsthis.nlp.Monitor
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
 import edu.tum.romance.whatsthis.ui.component.HintTextField
+import java.awt.Component
 import java.awt.Dimension
+import java.awt.Font
 import java.awt.event.ActionEvent
 import java.awt.event.ItemEvent
 import java.awt.event.KeyEvent
 import java.net.URL
-import java.util.*
 import javax.swing.*
+import javax.swing.table.AbstractTableModel
 import javax.swing.table.DefaultTableModel
+import javax.swing.table.TableCellEditor
 import javax.swing.table.TableRowSorter
+
 //#endregion
 
 //#region Core Components
@@ -231,7 +235,7 @@ private object SampleNameInput: HintTextField("Sample Name") {
         }
 
         val sample = TextData(Editor.content)
-        val className = ClassList.list.selectedValue
+        val className = ClassList.selection
         if(className != null) {
             Monitor.add(sample, className)
         } else {
@@ -276,24 +280,59 @@ private object ClassifyButton: JButton("✓") {
 }
 
 private object ClassList: JScrollPane() {
-    val list = JList(Monitor.cloudKeys().sorted().toTypedArray())
-    init {
-        list.model = DefaultListModel()
-        viewport.view = list
-        list.font = ClassificationFrame.fonts[0]
-
-        list.addListSelectionListener {
-            if(!it.valueIsAdjusting) {
-                SampleList.update()
+    var items = Monitor.cloudKeys().sorted().toMutableList()
+    val itemModel: AbstractTableModel = object : AbstractTableModel(), Runnable {
+        override fun getRowCount(): Int = items.size
+        override fun getColumnCount(): Int = 1
+        override fun getValueAt(rowIndex: Int, columnIndex: Int): Any = items[rowIndex]
+        override fun getColumnName(column: Int): String = "Classes"
+        override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean = true
+        override fun setValueAt(value: Any, rowIndex: Int, columnIndex: Int) {
+            if (value is String) {
+                if (rowIndex in items.indices) {
+                    val cloudName = items[rowIndex]
+                    if (cloudName in Monitor) {
+                        Monitor.renameCloud(cloudName, value)
+                        items[rowIndex] = value
+                        items.sort()
+                        fireTableDataChanged()
+                    }
+                } else {
+                    Monitor.cloud(value)
+                    items.add(value)
+                    items.sort()
+                    fireTableDataChanged()
+                }
             }
         }
+        override fun run() {
+            fireTableDataChanged()
+        }
+    }
+    val list: JTable = object: JTable(itemModel) {
+        override fun getFont(): Font {
+            return ClassificationFrame.fonts[0]
+        }
+
+        override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
+            val prepared = super.prepareEditor(editor, row, column)
+            prepared.font = ClassificationFrame.fonts[0]
+            return prepared
+        }
+    }
+    val selection: String?
+        get() = when (list.selectedRow) {
+            -1 -> null
+            else -> list.getValueAt(list.selectedRow, 0) as String
+        }
+
+    init {
+        viewport.view = list
     }
 
     fun update() {
-        list.model = DefaultListModel()
-        for (i in Monitor.cloudKeys().sorted()) {
-            (list.model as DefaultListModel).addElement(i)
-        }
+        items = Monitor.cloudKeys().sorted().toMutableList()
+        (itemModel as Runnable).run()
     }
 }
 
@@ -316,7 +355,7 @@ private object SampleList: JScrollPane() {
                         return
                     }
 
-                    val cloud = ClassList.list.selectedValue
+                    val cloud = ClassList.selection
                     if(cloud != null && (cloud in Monitor)) {
                         Monitor.remove(sample, cloud)
                     }
@@ -341,7 +380,7 @@ private object SampleList: JScrollPane() {
         list.model = DefaultListModel()
         val model = list.model as DefaultListModel
         var samples = Monitor.cacheKeys().sorted()
-        val classFilter = ClassList.list.selectedValue
+        val classFilter = ClassList.selection
         if(classFilter != null && (classFilter in Monitor)) {
             samples = samples.filter {
                 Monitor[classFilter]!!.cloud.contains(Monitor.loadFromCache(it))
