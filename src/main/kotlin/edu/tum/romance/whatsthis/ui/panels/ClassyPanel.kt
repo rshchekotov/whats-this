@@ -79,7 +79,14 @@ private object Editor: JScrollPane(
 
 private object SourceButton: JButton("⏎") {
     init {
+        toolTipText = "Load data from source"
         addActionListener { (SourceSelector.card as Runnable).run() }
+    }
+
+    override fun createToolTip(): JToolTip {
+        val toolTip = super.createToolTip()
+        toolTip.font = ClassificationFrame.fonts[0]
+        return toolTip
     }
 }
 
@@ -136,6 +143,7 @@ private object SourceSelector: JComboBox<String>() {
 
     init {
         font = ClassificationFrame.fonts[0]
+        toolTipText = "Select a source to load data from"
         options.forEach(::addItem)
 
         addActionListener {
@@ -151,6 +159,12 @@ private object SourceSelector: JComboBox<String>() {
             ClassyPanel.revalidate()
             ClassyPanel.repaint()
         }
+    }
+
+    override fun createToolTip(): JToolTip {
+        val toolTip = super.createToolTip()
+        toolTip.font = ClassificationFrame.fonts[0]
+        return toolTip
     }
 }
 
@@ -177,7 +191,14 @@ private object ClassInput: HintTextField("Class Name") {
 
 private object AddClassButton: JButton("⏎") {
     init {
+        toolTipText = "Add or edit a class"
         addActionListener { ClassInput.submit() }
+    }
+
+    override fun createToolTip(): JToolTip {
+        val toolTip = super.createToolTip()
+        toolTip.font = ClassificationFrame.fonts[0]
+        return toolTip
     }
 }
 
@@ -219,10 +240,27 @@ private object SampleNameInput: HintTextField("Sample Name") {
 private object AddSampleButton: JButton("⏎") {
     init {
         addActionListener { SampleNameInput.submit() }
+        toolTipText = "Add or edit the sample text and add it to the selected class"
+    }
+    override fun createToolTip(): JToolTip {
+        val toolTip = super.createToolTip()
+        toolTip.font = ClassificationFrame.fonts[0]
+        return toolTip
     }
 }
 
-private object ClassifyButton: JButton("✓")
+private object ClassifyButton: JButton("✓") {
+    init {
+        toolTipText = "Classify the sample text"
+        addActionListener { ClassificationFrame.unimplemented() }
+    }
+
+    override fun createToolTip(): JToolTip {
+        val toolTip = super.createToolTip()
+        toolTip.font = ClassificationFrame.fonts[0]
+        return toolTip
+    }
+}
 
 private object ClassList: JScrollPane() {
     val list = JList(ClassyPanel.classes.map { it.first }.toTypedArray())
@@ -330,11 +368,13 @@ private object FileMenu: JMenu("File") {
         val saveItem = JMenuItem("Save")
         saveItem.font = ClassificationFrame.fonts[0]
         saveItem.mnemonic = KeyEvent.VK_S
+        saveItem.addActionListener { ClassificationFrame.unimplemented() }
         add(saveItem)
 
         val loadItem = JMenuItem("Load")
         loadItem.font = ClassificationFrame.fonts[0]
         loadItem.mnemonic = KeyEvent.VK_L
+        loadItem.addActionListener { ClassificationFrame.unimplemented() }
         add(loadItem)
     }
 }

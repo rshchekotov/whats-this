@@ -3,6 +3,8 @@ package edu.tum.romance.whatsthis.ui
 import edu.tum.romance.whatsthis.ui.panels.MainMenu
 import java.awt.Dimension
 import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JOptionPane
 import javax.swing.JPanel
 
 object ClassificationFrame: JFrame() {
@@ -33,5 +35,12 @@ object ClassificationFrame: JFrame() {
         add(content)
         this.pack()
         content.isEnabled = true
+    }
+
+    fun unimplemented() {
+        val label = JLabel("Not implemented yet!")
+        label.font = fonts[1]
+        JOptionPane.showMessageDialog(this, label,
+            "Not implemented", JOptionPane.INFORMATION_MESSAGE)
     }
 }

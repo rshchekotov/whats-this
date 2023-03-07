@@ -49,7 +49,7 @@ private object LoadButton: JButton("Load") {
     init {
         font = ClassificationFrame.fonts[1]
         addActionListener {
-
+            ClassificationFrame.unimplemented()
         }
     }
 }
