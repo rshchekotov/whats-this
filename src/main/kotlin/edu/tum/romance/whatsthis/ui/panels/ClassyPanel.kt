@@ -1,9 +1,6 @@
 package edu.tum.romance.whatsthis.ui.panels
 
-import edu.tum.romance.whatsthis.io.FileSource
-import edu.tum.romance.whatsthis.io.StringSource
-import edu.tum.romance.whatsthis.io.WebPageSource
-import edu.tum.romance.whatsthis.nlp.WordVec
+import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.component.HintTextField
 import java.awt.Dimension
@@ -47,11 +44,9 @@ private object Editor: JScrollPane(
     fun update() {
         if(content.isNotBlank()) {
             if(ViewMenu.mode == ViewMenu.VEC) {
-                val wordVector = StringSource.textToVec(content)
+                val data = TextData(content)
 
-                wordVector.data.mapIndexed { index, value ->
-                    arrayOf(WordVec.dictionary[index], value)
-                }.filter { (it[1] as Int) > 0 }.toTypedArray().let {
+                data.vector.map { arrayOf(it.first, it.second) }.toTypedArray().let {
                     table.model = DefaultTableModel(it, arrayOf("Word", "Vector"))
                 }
 
@@ -101,8 +96,8 @@ private object SourceSelector: JComboBox<String>() {
             override fun run() {
                 if(text.isNotBlank()) {
                     try {
-                        val content = WebPageSource.load(URL(text))
-                        Editor.content = content
+                        val content = TextData(URL(text))
+                        Editor.content = content.text
                         text = ""
                     } catch(e: Exception) {
                         // TODO: Improve error handling
@@ -119,8 +114,8 @@ private object SourceSelector: JComboBox<String>() {
                     val file = fileChooser.selectedFile
                     if (file != null) {
                         try {
-                            val content = FileSource.load(file)
-                            Editor.content = content
+                            val content = TextData(file)
+                            Editor.content = content.text
                             SampleNameInput.text = file.nameWithoutExtension
                         } catch (e: Exception) {
                             Editor.content = "Error: ${e.message}"
