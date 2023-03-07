@@ -17,9 +17,14 @@ abstract class TextData<T> {
     val tokens: List<WordCount>
         get() = vector()
 
+    private val cache = mutableMapOf<String, List<WordCount>>()
+
     private fun vector(): List<WordCount> {
         var string = text
         if (string.isBlank()) return emptyList()
+
+        val hash = string.hashCode().toString()
+        if (hash in cache) return cache[hash]!!
 
         var mathIndex = mathRegex.find(string)?.range?.first ?: -1
         while (mathIndex != -1) {
@@ -74,7 +79,9 @@ abstract class TextData<T> {
         }
 
         // Group tokens by their value and count their occurrences
-        return tokens.groupingBy { it }.eachCount().toList()
+        val result = tokens.groupingBy { it }.eachCount().toList()
+        cache[hash] = result
+        return result
     }
 
     companion object {
