@@ -3,7 +3,6 @@ package edu.tum.romance.whatsthis.nlp
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.math.VecCloud
-import edu.tum.romance.whatsthis.util.WordCount
 
 @Suppress("unused")
 object Monitor {
@@ -41,8 +40,12 @@ object Monitor {
         return this
     }*/
 
-    fun findClosestCloud(vec: List<WordCount>): String {
-        return findClosestCloud(dictVec.createVec(vec))
+    fun distanceToCloud(v: TextData<*>, cloud: String): Double {
+        return clouds[cloud]!!.closestDistance(dictVec.createVec(v.vector))
+    }
+
+    fun findClosestCloud(v: TextData<*>): String {
+        return findClosestCloud(dictVec.createVec(v.vector))
     }
 
     fun get(cloud: String): VecCloud? {

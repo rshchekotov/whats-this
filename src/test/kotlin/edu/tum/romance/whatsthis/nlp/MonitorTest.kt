@@ -132,10 +132,10 @@ class MonitorTest {
         Monitor.add(TextData("axx axx axx axx axx axx axx axx axx cxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx fxx fxx fxx fxx fxx fxx fxx fxx fxx fxx"),"dog")
         Monitor.add(TextData("axx axx axx axx axx axx axx axx axx axx axx bxx dxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx"),"dog")
 
-        assertEquals("cat", Monitor.findClosestCloud(listOf("axx" to 1, "bxx" to 2, "cxx" to 3, "dxx" to 4, "exx" to 5)), "Should find axx cat there")
-        assertEquals("dog", Monitor.findClosestCloud(listOf("axx" to 10, "bxx" to 1, "cxx" to 1, "dxx" to 2, "exx" to 16)), "Should find axx dog there")
+        assertEquals("cat", Monitor.findClosestCloud(TextData("axx bxx bxx cxx cxx cxx dxx dxx dxx dxx exx exx exx exx exx")), "Should find axx cat there")
+        assertEquals("dog", Monitor.findClosestCloud(TextData("axx axx axx axx axx axx axx axx axx axx axx bxx dxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx")), "Should find axx dog there")
 
-        assertEquals("cat", Monitor.findClosestCloud(listOf("axx" to 4, "bxx" to 2, "cxx" to 4, "dxx" to 5, "exx" to 3)), "Should find a cat there")
-        assertEquals("dog", Monitor.findClosestCloud(listOf("axx" to 10, "bxx" to 1, "cxx" to 1, "dxx" to 2, "exx" to 16, "fxx" to 5)), "Should find axx dog there")
+        assertEquals("cat", Monitor.findClosestCloud(TextData("axx axx axx axx bxx bxx cxx cxx cxx cxx dxx dxx dxx dxx dxx exx exx exx")), "Should find axx cat there")
+        assertEquals("dog", Monitor.findClosestCloud(TextData("axx axx axx axx axx axx axx axx axx axx bxx dxx cxx dxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx")), "Should find axx dog there")
     }
 }
