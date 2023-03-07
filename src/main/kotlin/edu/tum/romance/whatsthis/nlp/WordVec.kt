@@ -21,9 +21,12 @@ object WordVec {
     }
 
     fun createAndAddVec(text: List<WordCount>): IntVec {
-        dictionary + text
-        val vec = createVec(text)
-        return vec
+        for(word in text) {
+            if(!dictionary.contains(word.first)) {
+                dictionary += word.first
+            }
+        }
+        return createVec(text)
     }
 
     fun createVec(text: List<WordCount>): IntVec {

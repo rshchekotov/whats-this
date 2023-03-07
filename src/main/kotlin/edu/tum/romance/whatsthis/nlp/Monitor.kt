@@ -23,7 +23,8 @@ object Monitor {
         return this
     }
 
-    fun addNoCloud(v: List<WordCount>): Monitor{
+    /**Hidden for now, since user should not be able to add without specifying a cloud**/
+    /*fun addNoCloud(v: List<WordCount>): Monitor{
         val vec = dictVec.createAndAddVec(v)
         this + Pair(vec, findClosestCloud(vec))
         updateClouds()
@@ -37,10 +38,19 @@ object Monitor {
         }
         updateClouds()
         return this
-    }
+    }*/
 
     fun findClosestCloud(vec: List<WordCount>): String {
         return findClosestCloud(dictVec.createVec(vec))
+    }
+
+    fun get(cloud: String): VecCloud? {
+        return clouds[cloud]
+    }
+
+    fun clear() {
+        clouds.clear()
+        dictVec.clear()
     }
 
     private operator fun plus(pair: Pair<IntVec, String>):Monitor{
