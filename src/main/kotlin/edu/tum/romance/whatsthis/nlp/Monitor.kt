@@ -7,7 +7,7 @@ import edu.tum.romance.whatsthis.util.WordCount
 @Suppress("unused")
 object Monitor {
     private val clouds: MutableMap<String, VecCloud> = mutableMapOf()
-    private val dictVec = WordVec
+    val dictVec = WordVec()
 
     fun add(association: Pair<List<WordCount>, String>): Monitor{
         this + Pair(dictVec.createAndAddVec(association.first), association.second)

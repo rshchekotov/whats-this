@@ -4,7 +4,7 @@ import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.util.WordCount
 
 @Suppress("unused")
-object WordVec {
+class WordVec {
     var dictionary: List<String> = listOf()
 
     fun clear() {

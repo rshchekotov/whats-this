@@ -12,15 +12,15 @@ class MonitorTest {
 
     @Test
     fun clear() {
-        WordVec.dictionary = listOf("a", "b", "c")
-        assertEquals(3, WordVec.dictionary.size, "WordVec dictionary should not be empty")
-        WordVec.clear()
-        assertEquals(0, WordVec.dictionary.size, "WordVec dictionary should be empty")
+        Monitor.dictVec.dictionary = listOf("a", "b", "c")
+        assertEquals(3, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should not be empty")
+        Monitor.dictVec.clear()
+        assertEquals(0, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should be empty")
     }
 
     @Test
     fun add(){
-        WordVec.dictionary = listOf("a", "b", "c","d","e")
+        Monitor.dictVec.dictionary = listOf("a", "b", "c","d","e")
         Monitor.add(Pair(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5),"cat"))
         Monitor.add(Pair(listOf("a" to 5, "b" to 3, "c" to 6, "d" to 7, "e" to 1),"cat"))
         Monitor.add(Pair(listOf("a" to 3, "b" to 5, "c" to 5, "d" to 6, "e" to 4),"cat"))
@@ -50,7 +50,7 @@ class MonitorTest {
 
         assertEquals(2, (Monitor.get("dog"))?.cloud?.size ?: 0, "Monitor should contain 2 words")
 
-        assertEquals(6, WordVec.dictionary.size, "WordVec dictionary should contain 5 words")
+        assertEquals(6, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should contain 5 words")
 
         assertEquals(9, (Monitor.get("dog"))?.cloud?.get(0)?.data?.get(0)?: 0, "Monitor should contain 9 'a'")
         assertEquals(0, (Monitor.get("dog"))?.cloud?.get(0)?.data?.get(1)?: 0, "Monitor should contain 0 'b'")
@@ -90,14 +90,14 @@ class MonitorTest {
 
     @Test
     fun addAll(){
-        WordVec.dictionary = listOf("a", "b")
-        assertEquals(2, WordVec.dictionary.size, "WordVec dictionary should contain 2 words")
+        Monitor.dictVec.dictionary = listOf("a", "b")
+        assertEquals(2, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should contain 2 words")
 
         Monitor.addAll(listOf(Pair(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5),"cat"),
                 Pair(listOf("a" to 5, "b" to 3, "c" to 6, "d" to 7, "e" to 1),"cat"),
                 Pair(listOf("a" to 3, "b" to 5, "c" to 5, "d" to 6, "e" to 4),"cat"),))
 
-        assertEquals(5, WordVec.dictionary.size, "WordVec dictionary should contain 5 words")
+        assertEquals(5, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should contain 5 words")
 
         assertEquals(3, (Monitor.get("cat"))?.cloud?.size ?: 0, "Monitor should contain 3 words")
 
@@ -122,7 +122,7 @@ class MonitorTest {
 
     @Test
     fun findClosestCloud(){
-        WordVec.dictionary = listOf("a", "b", "c","d","e")
+        Monitor.dictVec.dictionary = listOf("a", "b", "c","d","e")
 
         Monitor.add(Pair(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5),"cat"))
         Monitor.add(Pair(listOf("a" to 5, "b" to 3, "c" to 6, "d" to 7, "e" to 1),"cat"))
