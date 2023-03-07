@@ -46,7 +46,7 @@ private object Editor: JScrollPane(
             if(ViewMenu.mode == ViewMenu.VEC) {
                 val data = TextData(content)
 
-                data.vector.map { arrayOf(it.first, it.second) }.toTypedArray().let {
+                data.tokens.map { arrayOf(it.first, it.second) }.toTypedArray().let {
                     table.model = DefaultTableModel(it, arrayOf("Word", "Vector"))
                 }
 

@@ -2,6 +2,7 @@
 
 package edu.tum.romance.whatsthis.io
 
+import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.util.*
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
@@ -12,7 +13,8 @@ abstract class TextData<T> {
     abstract val source: T
     abstract var text: String
     var coefficient: Double = 1.0
-    val vector: List<WordCount>
+    var vector: IntVec? = null
+    val tokens: List<WordCount>
         get() = vector()
 
     private fun vector(): List<WordCount> {

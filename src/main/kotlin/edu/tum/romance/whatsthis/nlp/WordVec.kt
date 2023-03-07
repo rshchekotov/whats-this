@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
+import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.util.WordCount
 
@@ -20,28 +21,28 @@ class WordVec {
         return this
     }
 
-    fun createAndAddVec(text: List<WordCount>): IntVec {
-        for(word in text) {
-            if(!dictionary.contains(word.first)) {
-                dictionary += word.first
+    fun createAndAddVec(data: TextData<*>) {
+        for((word, _) in data.tokens) {
+            if(!dictionary.contains(word)) {
+                dictionary += word
             }
         }
-        return createVec(text)
+        createVec(data)
     }
 
-    fun createVec(text: List<WordCount>): IntVec {
+    fun createVec(data: TextData<*>) {
         val vecList = ArrayList<Int>(dictionary.size)
-        val wordVec = text.map { it.first }
+        val wordVec = data.tokens.map { it.first }
 
         for ((index, word) in dictionary.withIndex()) {
             val i = wordVec.indexOf(word)
             if (i != -1) {
-                vecList.add(index, text[i].second)
+                vecList.add(index, data.tokens[i].second)
             } else {
                 vecList.add(index, 0)
             }
         }
 
-        return IntVec(vecList)
+        data.vector = IntVec(vecList)
     }
 }

@@ -1,7 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.math.VecCloud
 
 @Suppress("unused")
@@ -10,45 +9,28 @@ object Monitor {
     val dictVec = WordVec()
 
     fun add(text: TextData<*>, cloud: String): Monitor{
-        this + Pair(dictVec.createAndAddVec(text.vector), cloud)
+        dictVec.createAndAddVec(text)
+        this + Pair(text, cloud)
+        updateClouds()
+        return this
+    }
+
+    fun remove(text: TextData<*>, cloud: String): Monitor{
+        clouds[cloud]?.minus(text)
         updateClouds()
         return this
     }
 
     fun addAll(list: List<Pair<TextData<*>, String>>): Monitor{
-        for((textData, cloudName) in list) {
-            this + Pair(dictVec.createAndAddVec(textData.vector), cloudName)
+        list.forEach { (textData, cloudName) ->
+            dictVec.createAndAddVec(textData)
+            this + Pair(textData, cloudName)
         }
         updateClouds()
         return this
     }
 
-    /**Hidden for now, since user should not be able to add without specifying a cloud**/
-    /*fun addNoCloud(v: List<WordCount>): Monitor{
-        val vec = dictVec.createAndAddVec(v)
-        this + Pair(vec, findClosestCloud(vec))
-        updateClouds()
-        return this
-    }
-
-    fun addAllNoCloud(vecs: List<List<WordCount>>): Monitor{
-        for(v in vecs) {
-            val vec = dictVec.createAndAddVec(v)
-            this + Pair(vec, findClosestCloud(vec))
-        }
-        updateClouds()
-        return this
-    }*/
-
-    fun distanceToCloud(v: TextData<*>, cloud: String): Double {
-        return clouds[cloud]!!.closestDistance(dictVec.createVec(v.vector))
-    }
-
-    fun findClosestCloud(v: TextData<*>): String {
-        return findClosestCloud(dictVec.createVec(v.vector))
-    }
-
-    fun get(cloud: String): VecCloud? {
+    operator fun get(cloud: String): VecCloud? {
         return clouds[cloud]
     }
 
@@ -57,7 +39,7 @@ object Monitor {
         dictVec.clear()
     }
 
-    private operator fun plus(pair: Pair<IntVec, String>):Monitor{
+    private operator fun plus(pair: Pair<TextData<*>, String>):Monitor{
         if(!clouds.containsKey(pair.second)) {
             clouds[pair.second] = VecCloud()
         }
@@ -65,23 +47,12 @@ object Monitor {
         return this
     }
 
-    private fun findClosestCloud(vec: IntVec): String {
-        var closestCloud = "default"
-        var closestDistance = Double.MAX_VALUE
-        for((cloudName, cloud) in clouds) {
-            val distance = cloud.closestDistance(vec)
-            if(distance < closestDistance) {
-                closestDistance = distance
-                closestCloud = cloudName
-            }
-        }
-        return closestCloud
+    private fun findClosestCloud(data: TextData<*>): String {
+        dictVec.createVec(data)
+        return clouds.minByOrNull { it.value.closestDistance(data) }?.key ?: "default"
     }
 
-    private fun updateClouds() {
-        for((_, cloud) in clouds) {
-            cloud.cloud.forEach { it.update() }
-        }
+    private fun updateClouds() = clouds.forEach { (_, cloud) ->
+        cloud.cloud.forEach { it.vector?.update() }
     }
-
 }

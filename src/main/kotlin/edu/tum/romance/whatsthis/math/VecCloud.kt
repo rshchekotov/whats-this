@@ -2,15 +2,18 @@
 
 package edu.tum.romance.whatsthis.math
 
-class VecCloud(c: List<IntVec>){
-    var cloud: List<IntVec> = c
+import edu.tum.romance.whatsthis.io.TextData
+
+class VecCloud(c: List<TextData<*>>){
+    var cloud: List<TextData<*>> = c
 
     constructor() : this(listOf())
 
-    fun closestDistance(to: IntVec, f: Distance = EuclideanDistance): Double {
+    fun closestDistance(to: TextData<*>, f: Distance = EuclideanDistance): Double {
         var min = Double.MAX_VALUE
         for(i in cloud.indices) {
-            val dist = f.distance(cloud[i], to)
+            if(cloud[i].vector == null || to.vector == null) continue
+            val dist = f.distance(cloud[i].vector!!, to.vector!!)
             if(dist < min) {
                 min = dist
             }
@@ -18,8 +21,13 @@ class VecCloud(c: List<IntVec>){
         return min
     }
 
-    operator fun plus(v: IntVec): VecCloud {
+    operator fun plus(v: TextData<*>): VecCloud {
         cloud += v
+        return this
+    }
+
+    operator fun minus(v: TextData<*>): VecCloud {
+        cloud -= v
         return this
     }
 
