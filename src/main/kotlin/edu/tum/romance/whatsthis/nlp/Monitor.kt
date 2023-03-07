@@ -75,6 +75,12 @@ object Monitor {
     fun cacheKeys() = dataCache.keys
     fun loadFromCache(key: String) = dataCache[key]
     fun addToCache(key: String, data: TextData<*>) = dataCache.put(key, data)
+    fun renameInCache(old: String, new: String) {
+        if(dataCache.containsKey(old)) {
+            dataCache[new] = dataCache[old]!!
+            dataCache.remove(old)
+        }
+    }
     fun removeFromCache(sampleName: String) {
         dataCache.remove(sampleName)
     }

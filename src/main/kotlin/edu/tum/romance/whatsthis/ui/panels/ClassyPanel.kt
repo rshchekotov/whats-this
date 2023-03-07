@@ -9,7 +9,6 @@ import edu.tum.romance.whatsthis.ui.component.HintTextField
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Font
-import java.awt.event.ActionEvent
 import java.awt.event.ItemEvent
 import java.awt.event.KeyEvent
 import java.net.URL
@@ -235,7 +234,7 @@ private object SampleNameInput: HintTextField("Sample Name") {
         }
 
         val sample = TextData(Editor.content)
-        val className = ClassList.selection
+        val className = ClassList.list.selection()
         if(className != null) {
             Monitor.add(sample, className)
         } else {
@@ -281,93 +280,51 @@ private object ClassifyButton: JButton("✓") {
 
 private object ClassList: JScrollPane() {
     var items = Monitor.cloudKeys().sorted().toMutableList()
-    val itemModel: AbstractTableModel = object : AbstractTableModel(), Runnable {
-        override fun getRowCount(): Int = items.size
-        override fun getColumnCount(): Int = 1
-        override fun getValueAt(rowIndex: Int, columnIndex: Int): Any = items[rowIndex]
-        override fun getColumnName(column: Int): String = "Classes"
-        override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean = true
-        override fun setValueAt(value: Any, rowIndex: Int, columnIndex: Int) {
-            if (value is String) {
-                if (rowIndex in items.indices) {
-                    val cloudName = items[rowIndex]
-                    if (cloudName in Monitor) {
-                        Monitor.renameCloud(cloudName, value)
-                        items[rowIndex] = value
-                        items.sort()
-                        fireTableDataChanged()
-                    }
-                } else {
-                    Monitor.cloud(value)
-                    items.add(value)
-                    items.sort()
-                    fireTableDataChanged()
-                }
-            }
-        }
-        override fun run() {
-            fireTableDataChanged()
-        }
-    }
-    val list: JTable = object: JTable(itemModel) {
-        override fun getFont(): Font {
-            return ClassificationFrame.fonts[0]
-        }
-
-        override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
-            val prepared = super.prepareEditor(editor, row, column)
-            prepared.font = ClassificationFrame.fonts[0]
-            return prepared
-        }
-    }
-    val selection: String?
-        get() = when (list.selectedRow) {
-            -1 -> null
-            else -> list.getValueAt(list.selectedRow, 0) as String
-        }
+    val list: VectorTable = VectorTable(VectorModel(
+        "Classes",
+        { idx, value -> items[idx] = value; items.sort() },
+        { idx -> items[idx] },
+        { old, new -> Monitor.renameCloud(old, new) },
+        { name -> name in Monitor },
+        { items.size }
+    ))
 
     init {
         viewport.view = list
+        list.selectionModel.addListSelectionListener {
+            if(!it.valueIsAdjusting) {
+                val selection = list.selection()
+                if(selection != null) {
+                    SampleList.update()
+                }
+            }
+        }
     }
 
     fun update() {
         items = Monitor.cloudKeys().sorted().toMutableList()
-        (itemModel as Runnable).run()
+        list.update()
     }
 }
 
 private object SampleList: JScrollPane() {
-    val list = JList(Monitor.cacheKeys().sorted().toTypedArray())
+    var items = Monitor.cloudKeys().sorted().toMutableList()
+    val list: VectorTable = VectorTable(VectorModel(
+        "Samples",
+        { idx, value -> items[idx] = value; items.sort() },
+        { idx -> items[idx] },
+        { old, new -> Monitor.renameInCache(old, new) },
+        { name -> name in Monitor.cacheKeys() },
+        { items.size }
+    ))
+
     init {
-        list.model = DefaultListModel()
         viewport.view = list
-        list.font = ClassificationFrame.fonts[0]
-
-        // On 'delete'-press, delete the selected index
-        list.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete")
-        list.actionMap.put("delete", object: AbstractAction() {
-            override fun actionPerformed(e: ActionEvent) {
-                val sampleName = list.selectedValue
-                if(sampleName != null) {
-                    val sample = Monitor.loadFromCache(sampleName)
-                    if(sample == null) {
-                        visualError("Sample '$sampleName' does not exist!")
-                        return
-                    }
-
-                    val cloud = ClassList.selection
-                    if(cloud != null && (cloud in Monitor)) {
-                        Monitor.remove(sample, cloud)
-                    }
-                    Monitor.removeFromCache(sampleName)
-                }
-            }
-        })
-
-        list.addListSelectionListener {
+        list.selectionModel.addListSelectionListener() {
             if(!it.valueIsAdjusting) {
-                if(list.selectedValue != null) {
-                    val sample = Monitor.loadFromCache(list.selectedValue)
+                val selection = list.selection()
+                if(selection != null) {
+                    val sample = Monitor.loadFromCache(selection)
                     if(sample != null) {
                         Editor.content = sample.text
                     }
@@ -377,16 +334,68 @@ private object SampleList: JScrollPane() {
     }
 
     fun update() {
-        list.model = DefaultListModel()
-        val model = list.model as DefaultListModel
-        var samples = Monitor.cacheKeys().sorted()
-        val classFilter = ClassList.selection
+        items = Monitor.cacheKeys().sorted().toMutableList()
+        val classFilter = ClassList.list.selection()
         if(classFilter != null && (classFilter in Monitor)) {
-            samples = samples.filter {
+            items = items.filter {
                 Monitor[classFilter]!!.cloud.contains(Monitor.loadFromCache(it))
+            }.toMutableList()
+        }
+        list.update()
+    }
+}
+//#endregion
+
+//#region Reusable Components
+class VectorModel(
+    private val header: String,
+    val setter: (Int, String) -> Unit,
+    val getter: (Int) -> String,
+    val rename: (String, String) -> Unit,
+    val exists: (String) -> Boolean,
+    val size: () -> Int
+) : AbstractTableModel() {
+    override fun getRowCount(): Int = size()
+    override fun getColumnCount(): Int = 1
+    override fun getValueAt(rowIndex: Int, columnIndex: Int): Any = getter(rowIndex)
+    override fun getColumnName(column: Int): String = header
+    override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean = true
+    override fun setValueAt(value: Any, rowIndex: Int, columnIndex: Int) {
+        if (value is String) {
+            if (rowIndex < rowCount) {
+                val old = getter(rowIndex)
+                if (exists(old)) {
+                    rename(old, value)
+                    setter(rowIndex, value)
+                    fireTableDataChanged()
+                }
+            } else {
+                visualError("Cannot rename data at index $rowIndex")
             }
         }
-        samples.forEach { model.addElement(it) }
+    }
+    fun update() = fireTableDataChanged()
+}
+
+class VectorTable(model: VectorModel): JTable(model) {
+    fun update() {
+        (model as VectorModel).update()
+    }
+
+    fun selection(): String? {
+        return when (selectedRow) {
+            -1 -> null
+            else -> getValueAt(selectedRow, 0) as String
+        }
+    }
+
+    override fun getFont(): Font {
+        return ClassificationFrame.fonts[0]
+    }
+    override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
+        val prepared = super.prepareEditor(editor, row, column)
+        prepared.font = ClassificationFrame.fonts[0]
+        return prepared
     }
 }
 //#endregion
