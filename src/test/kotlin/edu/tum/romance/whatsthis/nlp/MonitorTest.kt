@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
+import edu.tum.romance.whatsthis.io.TextData
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,19 +14,20 @@ class MonitorTest {
     @Test
     fun clear() {
         Monitor.dictVec.dictionary = listOf("a", "b", "c")
-        assertEquals(3, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should not be empty")
+        assertEquals(3, Monitor.dictVec.dictionary.size, "Monitor.dictVecxx dictionary shouldxx not be empty")
         Monitor.dictVec.clear()
-        assertEquals(0, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should be empty")
+        assertEquals(0, Monitor.dictVec.dictionary.size, "Monitor.dictVecxx dictionary shouldxx be empty")
     }
 
     @Test
     fun add(){
-        Monitor.dictVec.dictionary = listOf("a", "b", "c","d","e")
-        Monitor.add(Pair(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5),"cat"))
-        Monitor.add(Pair(listOf("a" to 5, "b" to 3, "c" to 6, "d" to 7, "e" to 1),"cat"))
-        Monitor.add(Pair(listOf("a" to 3, "b" to 5, "c" to 5, "d" to 6, "e" to 4),"cat"))
+        Monitor.dictVec.dictionary = listOf("axx", "bxx", "cxx","dxx","exx")
 
-        assertEquals(3, (Monitor.get("cat"))?.cloud?.size ?: 0, "Monitor should contain 3 words")
+        Monitor.add(TextData("axx bxx bxx cxx cxx cxx dxx dxx dxx dxx exx exx exx exx exx"),"cat")
+        Monitor.add(TextData("axx axx axx axx axx bxx bxx bxx cxx cxx cxx cxx cxx cxx dxx dxx dxx dxx dxx dxx dxx exx"),"cat")
+        Monitor.add(TextData("axx axx axx bxx bxx bxx bxx bxx cxx cxx cxx cxx cxx dxx dxx dxx dxx dxx dxx exx exx exx exx"), "cat")
+
+        assertEquals(3, (Monitor.get("cat"))?.cloud?.size ?: 0, "Monitor shouldxx contain 3 words")
 
         assertEquals(1, (Monitor.get("cat"))?.cloud?.get(0)?.data?.get(0)?: 0, "Monitor should contain 1 'a'")
         assertEquals(2, (Monitor.get("cat"))?.cloud?.get(0)?.data?.get(1)?: 0, "Monitor should contain 2 'b'")
@@ -45,12 +47,12 @@ class MonitorTest {
         assertEquals(6, (Monitor.get("cat"))?.cloud?.get(2)?.data?.get(3)?: 0, "Monitor should contain 6 'd'")
         assertEquals(4, (Monitor.get("cat"))?.cloud?.get(2)?.data?.get(4)?: 0, "Monitor should contain 4 'e'")
 
-        Monitor.add(Pair(listOf("a" to 9, "b" to 0, "c" to 1, "d" to 1, "e" to 15, "f" to 10),"dog"))
-        Monitor.add(Pair(listOf("a" to 11, "b" to 1, "c" to 0, "d" to 2, "e" to 17),"dog"))
+        Monitor.add(TextData("axx axx axx axx axx axx axx axx axx cxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx fxx fxx fxx fxx fxx fxx fxx fxx fxx fxx"),"dog")
+        Monitor.add(TextData("axx axx axx axx axx axx axx axx axx axx axx bxx dxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx"),"dog")
 
-        assertEquals(2, (Monitor.get("dog"))?.cloud?.size ?: 0, "Monitor should contain 2 words")
+        assertEquals(2, (Monitor.get("dog"))?.cloud?.size ?: 0, "Monitor shouldxx contain 2 words")
 
-        assertEquals(6, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should contain 5 words")
+        assertEquals(6, Monitor.dictVec.dictionary.size, "Monitor.dictVecxx dictionary shouldxx contain 5 words")
 
         assertEquals(9, (Monitor.get("dog"))?.cloud?.get(0)?.data?.get(0)?: 0, "Monitor should contain 9 'a'")
         assertEquals(0, (Monitor.get("dog"))?.cloud?.get(0)?.data?.get(1)?: 0, "Monitor should contain 0 'b'")
@@ -90,16 +92,16 @@ class MonitorTest {
 
     @Test
     fun addAll(){
-        Monitor.dictVec.dictionary = listOf("a", "b")
+        Monitor.dictVec.dictionary = listOf("axx", "bxx")
         assertEquals(2, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should contain 2 words")
 
-        Monitor.addAll(listOf(Pair(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5),"cat"),
-                Pair(listOf("a" to 5, "b" to 3, "c" to 6, "d" to 7, "e" to 1),"cat"),
-                Pair(listOf("a" to 3, "b" to 5, "c" to 5, "d" to 6, "e" to 4),"cat"),))
+        Monitor.addAll(listOf(Pair(TextData("axx bxx bxx cxx cxx cxx dxx dxx dxx dxx exx exx exx exx exx"),"cat"),
+                Pair(TextData("axx axx axx axx axx bxx bxx bxx cxx cxx cxx cxx cxx cxx dxx dxx dxx dxx dxx dxx dxx exx"),"cat"),
+                Pair(TextData("axx axx axx bxx bxx bxx bxx bxx cxx cxx cxx cxx cxx dxx dxx dxx dxx dxx dxx exx exx exx exx"), "cat")))
 
-        assertEquals(5, Monitor.dictVec.dictionary.size, "Monitor.dictVec dictionary should contain 5 words")
+        assertEquals(5, Monitor.dictVec.dictionary.size, "Monitor.dictVecxx dictionary shouldxx contain 5 words")
 
-        assertEquals(3, (Monitor.get("cat"))?.cloud?.size ?: 0, "Monitor should contain 3 words")
+        assertEquals(3, (Monitor.get("cat"))?.cloud?.size ?: 0, "Monitor shouldxx contain 3 words")
 
         assertEquals(1, (Monitor.get("cat"))?.cloud?.get(0)?.data?.get(0)?: 0, "Monitor should contain 1 'a'")
         assertEquals(2, (Monitor.get("cat"))?.cloud?.get(0)?.data?.get(1)?: 0, "Monitor should contain 2 'b'")
@@ -122,19 +124,18 @@ class MonitorTest {
 
     @Test
     fun findClosestCloud(){
-        Monitor.dictVec.dictionary = listOf("a", "b", "c","d","e")
+        Monitor.dictVec.dictionary = listOf("axx", "bxx", "cxx","dxx","exx")
 
-        Monitor.add(Pair(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5),"cat"))
-        Monitor.add(Pair(listOf("a" to 5, "b" to 3, "c" to 6, "d" to 7, "e" to 1),"cat"))
-        Monitor.add(Pair(listOf("a" to 3, "b" to 5, "c" to 5, "d" to 6, "e" to 4),"cat"))
-        Monitor.add(Pair(listOf("a" to 9, "b" to 0, "c" to 1, "d" to 1, "e" to 15, "f" to 10),"dog"))
-        Monitor.add(Pair(listOf("a" to 11, "b" to 1, "c" to 0, "d" to 2, "e" to 17),"dog"))
+        Monitor.add(TextData("axx bxx bxx cxx cxx cxx dxx dxx dxx dxx exx exx exx exx exx"),"cat")
+        Monitor.add(TextData("axx axx axx axx axx bxx bxx bxx cxx cxx cxx cxx cxx cxx dxx dxx dxx dxx dxx dxx dxx exx"),"cat")
+        Monitor.add(TextData("axx axx axx bxx bxx bxx bxx bxx cxx cxx cxx cxx cxx dxx dxx dxx dxx dxx dxx exx exx exx exx"), "cat")
+        Monitor.add(TextData("axx axx axx axx axx axx axx axx axx cxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx fxx fxx fxx fxx fxx fxx fxx fxx fxx fxx"),"dog")
+        Monitor.add(TextData("axx axx axx axx axx axx axx axx axx axx axx bxx dxx dxx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx exx"),"dog")
 
-        assertEquals("cat", Monitor.findClosestCloud(listOf("a" to 1, "b" to 2, "c" to 3, "d" to 4, "e" to 5)), "Should find a cat there")
-        assertEquals("dog", Monitor.findClosestCloud(listOf("a" to 10, "b" to 1, "c" to 1, "d" to 2, "e" to 16)), "Should find a dog there")
+        assertEquals("cat", Monitor.findClosestCloud(listOf("axx" to 1, "bxx" to 2, "cxx" to 3, "dxx" to 4, "exx" to 5)), "Should find axx cat there")
+        assertEquals("dog", Monitor.findClosestCloud(listOf("axx" to 10, "bxx" to 1, "cxx" to 1, "dxx" to 2, "exx" to 16)), "Should find axx dog there")
 
-        assertEquals("cat", Monitor.findClosestCloud(listOf("a" to 4, "b" to 2, "c" to 4, "d" to 5, "e" to 3)), "Should find a cat there")
-        assertEquals("dog", Monitor.findClosestCloud(listOf("a" to 10, "b" to 1, "c" to 1, "d" to 2, "e" to 16, "f" to 5)), "Should find a dog there")
+        assertEquals("cat", Monitor.findClosestCloud(listOf("axx" to 4, "bxx" to 2, "cxx" to 4, "dxx" to 5, "exx" to 3)), "Should find a cat there")
+        assertEquals("dog", Monitor.findClosestCloud(listOf("axx" to 10, "bxx" to 1, "cxx" to 1, "dxx" to 2, "exx" to 16, "fxx" to 5)), "Should find axx dog there")
     }
-
 }

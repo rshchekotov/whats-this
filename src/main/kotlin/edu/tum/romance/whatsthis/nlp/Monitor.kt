@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
+import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.IntVec
 import edu.tum.romance.whatsthis.math.VecCloud
 import edu.tum.romance.whatsthis.util.WordCount
@@ -9,15 +10,15 @@ object Monitor {
     private val clouds: MutableMap<String, VecCloud> = mutableMapOf()
     val dictVec = WordVec()
 
-    fun add(association: Pair<List<WordCount>, String>): Monitor{
-        this + Pair(dictVec.createAndAddVec(association.first), association.second)
+    fun add(text: TextData<*>, cloud: String): Monitor{
+        this + Pair(dictVec.createAndAddVec(text.vector), cloud)
         updateClouds()
         return this
     }
 
-    fun addAll(list: List<Pair<List<WordCount>, String>>): Monitor{
-        for((vec, cloudName) in list) {
-            this + Pair(dictVec.createAndAddVec(vec), cloudName)
+    fun addAll(list: List<Pair<TextData<*>, String>>): Monitor{
+        for((textData, cloudName) in list) {
+            this + Pair(dictVec.createAndAddVec(textData.vector), cloudName)
         }
         updateClouds()
         return this
