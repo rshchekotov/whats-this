@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.ui.panels
 
+//#region Imports
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.nlp.Monitor
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
@@ -14,6 +15,7 @@ import java.util.*
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableRowSorter
+//#endregion
 
 //#region Core Components
 private object Editor: JScrollPane(
@@ -100,10 +102,10 @@ private object SourceSelector: JComboBox<String>() {
                     try {
                         val content = TextData(URL(text))
                         Editor.content = content.text
+                        SampleNameInput.text = content.titleSuggestion
                         text = ""
                     } catch(e: Exception) {
-                        // TODO: Improve error handling
-                        Editor.content = "Error: ${e.message}"
+                        visualError("Error: ${e.message}")
                     }
                 }
             }
@@ -118,9 +120,9 @@ private object SourceSelector: JComboBox<String>() {
                         try {
                             val content = TextData(file)
                             Editor.content = content.text
-                            SampleNameInput.text = file.nameWithoutExtension
+                            SampleNameInput.text = content.titleSuggestion
                         } catch (e: Exception) {
-                            Editor.content = "Error: ${e.message}"
+                            visualError("Error: ${e.message}")
                         }
                     }
                 }
@@ -242,6 +244,8 @@ private object SampleNameInput: HintTextField("Sample Name") {
             if(classlessAdd != JOptionPane.YES_OPTION) return
         }
         Monitor.addToCache(text, sample)
+        text = ""
+        Editor.content = ""
         SampleList.update()
     }
 }
@@ -420,6 +424,7 @@ private object ViewMenu: JMenu("View") {
 }
 //#endregion
 
+//#region Layout Management
 object ClassyPanel: JPanel() {
     private const val maxY = ClassificationFrame.height
     private const val maxX = ClassificationFrame.width
@@ -534,3 +539,4 @@ object ClassyPanel: JPanel() {
         return Dimension(xSize, ySize)
     }
 }
+//endregion

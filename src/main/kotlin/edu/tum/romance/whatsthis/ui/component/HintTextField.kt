@@ -31,6 +31,11 @@ open class HintTextField(private val hint: String): JTextField(hint), FocusListe
         return if(showingHint) "" else super.getText()
     }
 
+    override fun setText(t: String) {
+        this.showingHint = t.isEmpty() && !this.hasFocus()
+        super.setText(t)
+    }
+
     override fun paint(g: Graphics) {
         if(showingHint) {
             g.color = this.disabledTextColor

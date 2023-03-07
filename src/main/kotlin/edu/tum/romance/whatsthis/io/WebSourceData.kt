@@ -14,14 +14,30 @@ import java.net.URL
  * - application/pdf
  */
 class WebSourceData(override val source: URL) : TextData<URL>() {
-    override var text: String = text()
+    override lateinit var text: String
+    override lateinit var titleSuggestion: String
 
-    private fun text(): String {
+    init {
+        val (text, title) = text()
+        this.text = text
+        this.titleSuggestion = title
+    }
+
+
+    private fun text(): Pair<String, String> {
         val connection = source.openConnection()
         return when (connection.contentType.split(";")[0]) {
-            "text/html" -> Jsoup.parse(source.readText()).body().text()
-            "text/plain" -> source.readText()
-            "application/pdf" -> getPDF(Loader.loadPDF(source.openStream()))
+            "text/html" -> {
+                val parsed = Jsoup.parse(source.readText())
+                Pair(parsed.body().text(), parsed.title())
+            }
+            "text/plain" -> {
+                source.readText() to source.path.split("/").last()
+            }
+            "application/pdf" -> {
+                val pdf = Loader.loadPDF(source.openStream())
+                getPDF(pdf) to (pdf.documentInformation.title ?: source.path.split("/").last())
+            }
             else -> error("Unsupported Mimetype")
         }
     }

@@ -6,6 +6,7 @@ import java.io.File
 
 class FileSource(override val source: File): TextData<File>() {
     override var text: String = text()
+    override var titleSuggestion: String = source.nameWithoutExtension
 
     private fun text(): String {
         return when (source.extension) {

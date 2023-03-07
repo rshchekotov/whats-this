@@ -12,6 +12,8 @@ import java.net.URL
 abstract class TextData<T> {
     abstract val source: T
     abstract var text: String
+    abstract var titleSuggestion: String
+
     var coefficient: Double = 1.0
     var vector: IntVec? = null
     val tokens: List<WordCount>
