@@ -60,8 +60,7 @@ abstract class TextData<T> {
         var string = text
         if (string.isBlank()) return emptyList()
 
-        // Replace all 'math'-Strings with ""
-        var mathIndex = string.indexOf("{\\displaystyle")
+        var mathIndex = mathRegex.find(string)?.range?.first ?: -1
         while(mathIndex != -1) {
             val start = mathIndex
             var char = string[mathIndex + 15]
@@ -75,25 +74,34 @@ abstract class TextData<T> {
             }
             val end = mathIndex + 15
             string = string.replaceRange(start, end, " \u0000math\u0000 ")
-            mathIndex = string.indexOf("{\\displaystyle", mathIndex)
+            mathIndex = mathRegex.find(string, start)?.range?.first ?: -1
         }
 
-        var tokens = string.split(Regex("\\s+"))
+        var tokens = string.split(tokenSplitRegex)
 
         // Transform all tokens to lowercase
-        tokens = tokens.map {
+        tokens = tokens.filter(String::isNotBlank).map {
             var token = it.lowercase()
             // Special cases
-            if (token.matches(mailRegex)) return@map "EMAIL"
-            if (token.matches(urlRegex)) return@map "URL"
-            if (token == "\u0000math\u0000") return@map "MATH"
-
-            if (!token[0].isUpperCase()) {
-                // Remove punctuation
-                token = token.replace(Regex("[.,!?:;\"'\\[\\](){}#@$%^&*+=<>`~]"), "")
+            when {
+                token.matches(mailRegex) -> return@map "EMAIL"
+                token.matches(urlRegex) -> return@map "URL"
+                token.matches(isbnRegex) -> return@map "ISBN"
+                token.matches(dateRegex) -> return@map "DATE"
+                token == "\u0000math\u0000" -> return@map "MATH"
+                !token[0].isUpperCase() -> {
+                    // Remove punctuation
+                    token = token.replace(specialCharRegex, "")
+                }
             }
+
+            if(token.isNotBlank() && token.length <= characterSizeFilter) return@map "CHAR"
+
+            if (token.matches(yearRegex)) return@map "YEAR"
+            if (token.matches(numberRegex)) return@map "NUMBER"
+
             token
-        }.filter { it.isNotBlank() }
+        }.filter(String::isNotBlank)
 
         if (ngram > 1u) {
             // Create ngrams
@@ -111,8 +119,18 @@ abstract class TextData<T> {
     companion object {
         const val ngram: UInt = 1u
 
-        val mailRegex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}")
-        val urlRegex = Regex("https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}")
+        var characterSizeFilter = 1
+
+        val tokenSplitRegex = Regex("[\\s/]+")
+
+        val specialCharRegex = Regex("[.,!?:;\"'\\[\\](){}#@$%^&*+=<>`~]")
+        val yearRegex = Regex("1\\d{3}|2[0-2]\\d{2}")
+        val numberRegex = Regex("\\d+")
+        val mathRegex = Regex("\\{\\s*\\\\displaystyle")
+        val isbnRegex = Regex("([\\dX]{13}|[\\d\\-X]{17}|[\\dX]{10}|[\\d\\-X]{13})").with(specialCharRegex.any())
+        val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2}").with(specialCharRegex.any())
+        val mailRegex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}").with(specialCharRegex.any())
+        val urlRegex = Regex("https?://(www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)").with(specialCharRegex.any())
 
         operator fun invoke(file: File): TextData<File> {
             return FileSource(file)
@@ -133,3 +151,6 @@ abstract class TextData<T> {
         }
     }
 }
+
+fun Regex.with(other: Regex) = Regex(this.pattern + other.pattern)
+fun Regex.any() = Regex("(?:${this.pattern})*")
