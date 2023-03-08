@@ -327,7 +327,6 @@ private object ClassList: JScrollPane() {
                 val transfer = support.transferable
                 val data = transfer.getTransferData(DataFlavor.stringFlavor) as String
                 val dropIndex = list.dropLocation.row
-                println("Dropped $data at $dropIndex")
                 if(dropIndex in items.indices) {
                     val className = items[dropIndex]
                     Monitor.assign(data, className)
