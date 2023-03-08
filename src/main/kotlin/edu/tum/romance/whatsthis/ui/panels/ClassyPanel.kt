@@ -9,6 +9,9 @@ import edu.tum.romance.whatsthis.ui.component.HintTextField
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Font
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.Transferable
 import java.awt.event.ItemEvent
 import java.awt.event.KeyEvent
 import java.net.URL
@@ -313,6 +316,29 @@ private object ClassList: JScrollPane() {
                 }
             }
         }
+
+        list.transferHandler = object: TransferHandler() {
+            override fun canImport(support: TransferSupport): Boolean {
+                return support.isDataFlavorSupported(DataFlavor.stringFlavor)
+            }
+
+            override fun importData(support: TransferSupport): Boolean {
+                if(!canImport(support)) return false
+                val transfer = support.transferable
+                val data = transfer.getTransferData(DataFlavor.stringFlavor) as String
+                val dropIndex = list.dropLocation.row
+                println("Dropped $data at $dropIndex")
+                if(dropIndex in items.indices) {
+                    val className = items[dropIndex]
+                    Monitor.assign(data, className)
+                    SampleList.update()
+                    return true
+                }
+                return false
+            }
+        }
+
+        list.dragEnabled = true
     }
 
     fun update() {
@@ -345,6 +371,18 @@ private object SampleList: JScrollPane() {
                 }
             }
         }
+
+        list.transferHandler = object: TransferHandler() {
+            override fun getSourceActions(c: JComponent?): Int {
+                return MOVE
+            }
+
+            override fun createTransferable(c: JComponent): Transferable {
+                return StringSelection(list.selection().toString())
+            }
+        }
+
+        list.dragEnabled = true
     }
 
     fun update() {

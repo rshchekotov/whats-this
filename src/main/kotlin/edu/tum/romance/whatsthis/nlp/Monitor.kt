@@ -15,16 +15,29 @@ object Monitor {
     fun add(name: String, data: TextData<*>, cloud: String? = null) {
         addToCache(name, data)
         if(cloud != null && cloud in clouds) {
-            associate(name, cloud)
+            assign(name, cloud)
         }
     }
 
-    private fun associate(dataRef: String, cloud: String): Monitor{
+    fun assign(dataRef: String, cloud: String): Monitor{
+        clouds.forEach {
+            if(dataRef in it.value) {
+                it.value -= dataRef
+            }
+        }
+
         if (clouds.containsKey(cloud)) {
             clouds[cloud]!! += dataRef
         } else {
             clouds[cloud] = mutableListOf(dataRef)
         }
+
+        updateClouds()
+        return this
+    }
+
+    fun revoke(dataRef: String, cloud: String): Monitor {
+        clouds[cloud]?.remove(dataRef)
         updateClouds()
         return this
     }
@@ -92,6 +105,7 @@ object Monitor {
     fun cacheKeys() = dataCache.keys
     fun loadFromCache(key: String) = dataCache[key]
     private fun addToCache(key: String, data: TextData<*>) {
+        if(dataCache.containsKey(key)) return
         dictVec.createAndAddVec(data)
         dataCache[key] = data
     }
