@@ -3,7 +3,7 @@ package edu.tum.romance.whatsthis.util
 val tokenSplitRegex = Regex("[\\s/]+")
 val specialCharRegex = Regex("[.,!?:;\"'\\[\\](){}#@$%^&*+=<>`~]")
 val yearRegex = Regex("1\\d{3}|2[0-2]\\d{2}")
-val numberRegex = Regex("\\d+")
+val numberRegex = Regex("-?\\d+(?:\\.\\d+)?")
 @Suppress("SpellCheckingInspection")
 val mathRegex = Regex("\\{\\s*\\\\displaystyle")
 val isbnRegex = Regex("([\\dX]{13}|[\\d\\-X]{17}|[\\dX]{10}|[\\d\\-X]{13})").with(specialCharRegex.any())

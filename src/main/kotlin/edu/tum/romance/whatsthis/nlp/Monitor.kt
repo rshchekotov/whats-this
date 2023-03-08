@@ -3,18 +3,25 @@ package edu.tum.romance.whatsthis.nlp
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.Distance
 import edu.tum.romance.whatsthis.math.EuclideanDistance
-import edu.tum.romance.whatsthis.math.IntVec
+import edu.tum.romance.whatsthis.math.Vector
 
 @Suppress("unused")
 object Monitor {
     private val dataCache = mutableMapOf<String, TextData<*>>()
     private val clouds: MutableMap<String, MutableList<String>> = mutableMapOf()
     private val dictVec = WordVec()
+    private val emptyVector
+        get() = Vector(dictVec.dictionary.size)
+    val vocabulary
+        get() = dictVec.dictionary.toSet()
 
     //#region CRUD Ops
     fun add(name: String, data: TextData<*>, cloud: String? = null) {
         addToCache(name, data)
-        if(cloud != null && cloud in clouds) {
+        if(cloud != null) {
+            if(cloud !in clouds) {
+                clouds[cloud] = mutableListOf()
+            }
             assign(name, cloud)
         }
     }
@@ -50,11 +57,13 @@ object Monitor {
 
     fun clear() {
         clouds.clear()
+        dataCache.clear()
         dictVec.clear()
     }
     //#endregion
 
     //#region Math Stuff
+
     private fun findClosestCloud(data: TextData<*>, distance: Distance = EuclideanDistance): String {
         dictVec.createVec(data)
         return clouds.minByOrNull { cloud ->
@@ -64,6 +73,35 @@ object Monitor {
             } ?: Double.MAX_VALUE)
         }?.key ?: "default"
     }
+
+    fun summary(cloud: String): Vector {
+        if(cloud in Monitor && Monitor[cloud]!!.isNotEmpty()) {
+            val vec = emptyVector
+            clouds[cloud]!!.forEach { vec += dataCache[it]!!.vector!! }
+            vec.unit(EuclideanDistance)
+            return vec
+        }
+        return emptyVector
+    }
+
+    fun significance(cloud: String): Vector {
+        if(cloud in Monitor && Monitor[cloud]!!.isNotEmpty()) {
+            val classVector = summary(cloud)
+
+            val result = emptyVector
+            for ((name, _) in clouds) {
+                result += summary(name)
+            }
+
+            for(i in 0 until classVector.size) {
+                if(result[i] == 0.0) continue
+                result[i] = classVector[i] / result[i]
+            }
+            result.unit(EuclideanDistance)
+            return result
+        }
+        return emptyVector
+    }
     //#endregion
 
     //#region Update Ops
@@ -71,12 +109,12 @@ object Monitor {
         cloud.mapNotNull { dataCache[it]?.vector }.forEach { updateIntVec(it) }
     }
 
-    private fun updateIntVec(vec: IntVec) {
-        val vecList = ArrayList<Int>(dictVec.dictionary.size)
+    private fun updateIntVec(vec: Vector) {
+        val vecList = ArrayList<Double>(dictVec.dictionary.size)
 
         vecList.addAll(vec.data)
         for(i in vecList.size until dictVec.dictionary.size) {
-            vecList.add(0)
+            vecList.add(0.0)
         }
         vec.data = vecList
     }

@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.math.IntVec
+import edu.tum.romance.whatsthis.math.Vector
 import edu.tum.romance.whatsthis.util.WordCount
 
 @Suppress("unused")
@@ -31,18 +31,18 @@ class WordVec {
     }
 
     fun createVec(data: TextData<*>) {
-        val vecList = ArrayList<Int>(dictionary.size)
+        val vecList = Array(dictionary.size) { 0 }
         val wordVec = data.tokens.map { it.first }
 
         for ((index, word) in dictionary.withIndex()) {
             val i = wordVec.indexOf(word)
             if (i != -1) {
-                vecList.add(index, data.tokens[i].second)
+                vecList[index] = data.tokens[i].second
             } else {
-                vecList.add(index, 0)
+                vecList[index] = 0
             }
         }
 
-        data.vector = IntVec(vecList)
+        data.vector = Vector(vecList)
     }
 }

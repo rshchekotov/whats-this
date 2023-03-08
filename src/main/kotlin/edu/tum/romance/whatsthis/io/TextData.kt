@@ -2,7 +2,7 @@
 
 package edu.tum.romance.whatsthis.io
 
-import edu.tum.romance.whatsthis.math.IntVec
+import edu.tum.romance.whatsthis.math.Vector
 import edu.tum.romance.whatsthis.util.*
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
@@ -15,11 +15,9 @@ abstract class TextData<T> {
     abstract var titleSuggestion: String
 
     var coefficient: Double = 1.0
-    var vector: IntVec? = null
+    var vector: Vector? = null
     val tokens: List<WordCount>
         get() = vector()
-
-    private val cache = mutableMapOf<String, List<WordCount>>()
 
     private fun vector(): List<WordCount> {
         var string = text
@@ -31,16 +29,15 @@ abstract class TextData<T> {
         var mathIndex = mathRegex.find(string)?.range?.first ?: -1
         while (mathIndex != -1) {
             val start = mathIndex
-            var char = string[mathIndex + 15]
+            var end = mathIndex + 15
             var depth = 1
             while (depth > 0) {
-                when (char) {
+                when (string[end]) {
                     '{' -> depth++
                     '}' -> depth--
                 }
-                char = string[++mathIndex + 15]
+                end++
             }
-            val end = mathIndex + 15
             string = string.replaceRange(start, end, " \u0000math\u0000 ")
             mathIndex = mathRegex.find(string, start)?.range?.first ?: -1
         }
@@ -90,6 +87,7 @@ abstract class TextData<T> {
         const val ngram: UInt = 1u
 
         var characterSizeFilter = 1
+        private val cache = mutableMapOf<String, List<WordCount>>()
 
         operator fun invoke(file: File): TextData<File> {
             return FileSource(file)

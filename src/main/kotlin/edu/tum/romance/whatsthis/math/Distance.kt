@@ -5,14 +5,23 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface Distance {
-    operator fun invoke(a: IntVec, b: IntVec): Double
+    operator fun invoke(a: Vector, b: Vector): Double
+    operator fun invoke(a: Vector): Double
 }
 
 object EuclideanDistance: Distance {
-    override fun invoke(a: IntVec, b: IntVec): Double {
+    override fun invoke(a: Vector, b: Vector): Double {
         var sum = 0.0
         for(i in a.data.indices) {
-            sum += (a.data[i] - b.data[i]).toDouble().pow(2.0)
+            sum += (a.data[i] - b.data[i]).pow(2.0)
+        }
+        return sqrt(sum)
+    }
+
+    override fun invoke(a: Vector): Double {
+        var sum = 0.0
+        for(i in a.data.indices) {
+            sum += a.data[i].pow(2.0)
         }
         return sqrt(sum)
     }
@@ -20,10 +29,18 @@ object EuclideanDistance: Distance {
 
 @Suppress("unused")
 object ManhattanDistance: Distance {
-    override fun invoke(a: IntVec, b: IntVec): Double {
+    override fun invoke(a: Vector, b: Vector): Double {
         var sum = 0.0
         for(i in a.data.indices) {
             sum += abs(a.data[i] - b.data[i])
+        }
+        return sum
+    }
+
+    override fun invoke(a: Vector): Double {
+        var sum = 0.0
+        for(i in a.data.indices) {
+            sum += abs(a.data[i])
         }
         return sum
     }

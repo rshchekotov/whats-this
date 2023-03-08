@@ -54,4 +54,23 @@ internal class TextDataTest {
         assertEquals("it", data.tokens[5].first, "Vector should contain 'it'")
         assertEquals(1, data.tokens[5].second, "Vector should contain 'it' once")
     }
+
+    /**
+     * This test is showing that the cleaning algorithm is not perfect
+     * and there are many places where it can be improved.
+     *
+     * IF there is a test here that fails, then it's most likely a GOOD
+     * thing, because it means that the cleaning algorithm is working
+     * different from the expected/known bug.
+     */
+    @Test
+    fun testInvalid() {
+        val text = "'Cubic Spline'-Wikipedia"
+        val data = TextData(text)
+        assertEquals(2, data.tokens.size, "Vector should have two elements")
+        assertEquals("cubic", data.tokens[0].first, "Vector should contain 'cubic'")
+        assertEquals(1, data.tokens[0].second, "Vector should contain 'cubic' once")
+        assertEquals("spline-wikipedia", data.tokens[1].first, "Vector should contain 'spline-wikipedia'")
+        assertEquals(1, data.tokens[1].second, "Vector should contain 'spline-wikipedia' once")
+    }
 }
