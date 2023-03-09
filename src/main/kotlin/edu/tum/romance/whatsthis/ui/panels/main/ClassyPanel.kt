@@ -27,7 +27,7 @@ object ClassyPanel: JPanel() {
         3.25  // ClassList
     )
 
-    var sourceInputElement: JComponent
+    private var sourceInput: JComponent
 
     private val horizontalDimensions = horizontalWeights.map { (it * (maxX - 10.0) / horizontalWeights.sum()).toInt() }
     private val verticalDimensions = verticalWeights.map { (it * (maxY - 10.0) / verticalWeights.sum()).toInt() }
@@ -53,13 +53,13 @@ object ClassyPanel: JPanel() {
         layout.putConstraint(SpringLayout.NORTH, SourceButton, 5, SpringLayout.SOUTH, MainViewComponent)
         layout.putConstraint(SpringLayout.EAST, SourceButton, -5, SpringLayout.WEST, SourceSelector)
 
-        sourceInputElement = SourceSelector.card as JComponent
-        add(sourceInputElement)
-        sourceInputElement.preferredSize = computeSize(0..2, 1..1)
-        layout.putConstraint(SpringLayout.NORTH, sourceInputElement, 5, SpringLayout.SOUTH, MainViewComponent)
-        layout.putConstraint(SpringLayout.WEST, sourceInputElement, 5, SpringLayout.WEST, this)
-        layout.putConstraint(SpringLayout.EAST, sourceInputElement, -5, SpringLayout.WEST, SourceButton)
-        layout.putConstraint(SpringLayout.SOUTH, sourceInputElement, 0, SpringLayout.SOUTH, SourceSelector)
+        sourceInput = SourceSelector.card as JComponent
+        add(sourceInput)
+        sourceInput.preferredSize = computeSize(0..2, 1..1)
+        layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, MainViewComponent)
+        layout.putConstraint(SpringLayout.WEST, sourceInput, 5, SpringLayout.WEST, this)
+        layout.putConstraint(SpringLayout.EAST, sourceInput, -5, SpringLayout.WEST, SourceButton)
+        layout.putConstraint(SpringLayout.SOUTH, sourceInput, 0, SpringLayout.SOUTH, SourceSelector)
 
         add(ClassInput)
         ClassInput.preferredSize = computeSize(0..0, 2..2)
@@ -107,6 +107,27 @@ object ClassyPanel: JPanel() {
         SampleList.update()
     }
 
+    /**
+     * Switch between different source input components,
+     * i.e.: URL input, file input, etc.
+     */
+    fun updateSourceInput() {
+        remove(sourceInput)
+        sourceInput = SourceSelector.card as JComponent
+        add(sourceInput)
+        sourceInput.preferredSize = computeSize(0..2, 1..1)
+        val layout = this.layout as SpringLayout
+        layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, MainViewComponent)
+        layout.putConstraint(SpringLayout.WEST, sourceInput, 5, SpringLayout.WEST, this)
+        layout.putConstraint(SpringLayout.EAST, sourceInput, 0, SpringLayout.EAST, SampleNameInput)
+        layout.putConstraint(SpringLayout.SOUTH, sourceInput, 0, SpringLayout.SOUTH, SourceSelector)
+        revalidate()
+        repaint()
+    }
+
+    /**
+     * Operations that should happen on panel-switch.
+     */
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
         if(enabled) {
@@ -116,7 +137,10 @@ object ClassyPanel: JPanel() {
         }
     }
 
-    fun computeSize(x: IntRange, y: IntRange): Dimension {
+    /**
+     * Computing Layout Sizes based on a weighted dimension table.
+     */
+    private fun computeSize(x: IntRange, y: IntRange): Dimension {
         val xSize = horizontalDimensions.slice(x).sum()
         val ySize = verticalDimensions.slice(y).sum()
         return Dimension(xSize, ySize)

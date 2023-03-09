@@ -8,7 +8,7 @@ import java.net.URL
 import javax.swing.*
 
 object SourceSelector: JComboBox<String>() {
-    private val cards = mapOf(
+    private val inputMethods = mapOf(
         "URL" to object : HintTextField("URL"), Runnable {
             init {
                 addActionListener { run() }
@@ -55,33 +55,15 @@ object SourceSelector: JComboBox<String>() {
         }
     )
     val card
-        get() = cards[selectedItem]
-    private val options = cards.keys.toList()
+        get() = inputMethods[selectedItem]
+    private val options = inputMethods.keys.toList()
 
     init {
         font = ClassificationFrame.fonts[0]
         toolTipText = "Select a source to load data from"
         options.forEach(::addItem)
 
-        addActionListener {
-            ClassyPanel.remove(ClassyPanel.sourceInputElement)
-            ClassyPanel.sourceInputElement = card as JComponent
-            ClassyPanel.add(ClassyPanel.sourceInputElement)
-            ClassyPanel.sourceInputElement.preferredSize = ClassyPanel.computeSize(0..2, 1..1)
-            val layout = ClassyPanel.layout as SpringLayout
-            layout.putConstraint(SpringLayout.NORTH, ClassyPanel.sourceInputElement, 5, SpringLayout.SOUTH, MainViewComponent)
-            layout.putConstraint(SpringLayout.WEST, ClassyPanel.sourceInputElement, 5, SpringLayout.WEST, ClassyPanel)
-            layout.putConstraint(
-                SpringLayout.EAST,
-                ClassyPanel.sourceInputElement, 0, SpringLayout.EAST, SampleNameInput
-            )
-            layout.putConstraint(
-                SpringLayout.SOUTH,
-                ClassyPanel.sourceInputElement, 0, SpringLayout.SOUTH, SourceSelector
-            )
-            ClassyPanel.revalidate()
-            ClassyPanel.repaint()
-        }
+        addActionListener { ClassyPanel.updateSourceInput() }
     }
 
     override fun createToolTip(): JToolTip {
