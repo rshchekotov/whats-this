@@ -1,12 +1,9 @@
-package edu.tum.romance.whatsthis.ui.panels
+package edu.tum.romance.whatsthis.ui.panels.menu
 
-import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.Box
-import javax.swing.JButton
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 
@@ -27,29 +24,5 @@ object MainMenu: JPanel() {
         add(LoadButton, constraints)
 
         border = EmptyBorder(margin, margin, margin, margin)
-    }
-}
-
-private object MainLabel: JLabel("What's This?") {
-    init {
-        font = ClassificationFrame.fonts[2]
-    }
-}
-
-private object CreateButton: JButton("Create") {
-    init {
-        font = ClassificationFrame.fonts[1]
-        addActionListener {
-            ClassificationFrame.swapView(ClassyPanel)
-        }
-    }
-}
-
-private object LoadButton: JButton("Load") {
-    init {
-        font = ClassificationFrame.fonts[1]
-        addActionListener {
-            ClassificationFrame.unimplemented()
-        }
     }
 }

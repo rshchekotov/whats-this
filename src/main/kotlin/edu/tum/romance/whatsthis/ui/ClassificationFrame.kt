@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.ui
 
 import com.formdev.flatlaf.FlatLightLaf
-import edu.tum.romance.whatsthis.ui.panels.MainMenu
+import edu.tum.romance.whatsthis.ui.panels.menu.MainMenu
 import java.awt.Dimension
 import javax.swing.JFrame
 import javax.swing.JLabel
