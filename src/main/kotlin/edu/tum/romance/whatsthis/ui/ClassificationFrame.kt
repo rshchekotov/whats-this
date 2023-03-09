@@ -1,11 +1,13 @@
 package edu.tum.romance.whatsthis.ui
 
+import com.formdev.flatlaf.FlatLightLaf
 import edu.tum.romance.whatsthis.ui.panels.MainMenu
 import java.awt.Dimension
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 import javax.swing.JPanel
+import javax.swing.UIManager
 
 object ClassificationFrame: JFrame() {
     const val width = 800
@@ -19,6 +21,12 @@ object ClassificationFrame: JFrame() {
     private var content: JPanel = MainMenu
 
     fun open() {
+        try {
+            UIManager.setLookAndFeel(FlatLightLaf())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         this.title = "What's This?"
         this.size = Dimension(width, height)
         this.defaultCloseOperation = EXIT_ON_CLOSE
