@@ -9,7 +9,9 @@ import edu.tum.romance.whatsthis.math.Vector
 object Monitor {
     private val dataCache = mutableMapOf<String, TextData<*>>()
     private val clouds: MutableMap<String, MutableList<String>> = mutableMapOf()
+    private val unclassified = mutableListOf<String>()
     private val dictVec = WordVec()
+
     private val emptyVector
         get() = Vector(dictVec.dictionary.size)
     val vocabulary
@@ -23,6 +25,8 @@ object Monitor {
                 clouds[cloud] = mutableListOf()
             }
             assign(name, cloud)
+        } else {
+            unclassified += name
         }
     }
 
@@ -31,6 +35,10 @@ object Monitor {
             if(dataRef in it.value) {
                 it.value -= dataRef
             }
+        }
+
+        if(dataRef in unclassified) {
+            unclassified -= dataRef
         }
 
         if (clouds.containsKey(cloud)) {
@@ -45,12 +53,7 @@ object Monitor {
 
     fun revoke(dataRef: String, cloud: String): Monitor {
         clouds[cloud]?.remove(dataRef)
-        updateClouds()
-        return this
-    }
-
-    fun remove(text: String, cloud: String): Monitor {
-        clouds[cloud]?.minus(text)
+        unclassified += dataRef
         updateClouds()
         return this
     }
@@ -65,7 +68,6 @@ object Monitor {
     //#endregion
 
     //#region Math Stuff
-
     private fun findClosestCloud(data: TextData<*>, distance: Distance = EuclideanDistance): String {
         dictVec.createVec(data)
         return clouds.minByOrNull { cloud ->
@@ -136,6 +138,7 @@ object Monitor {
             clouds.remove(oldName)
         }
     }
+    fun isClassified(dataRef: String) = dataRef !in unclassified
     operator fun contains(cloud: String): Boolean {
         return clouds.containsKey(cloud)
     }
