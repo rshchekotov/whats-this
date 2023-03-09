@@ -6,9 +6,7 @@ import edu.tum.romance.whatsthis.nlp.Monitor
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
 import edu.tum.romance.whatsthis.ui.component.HintTextField
-import java.awt.Component
-import java.awt.Dimension
-import java.awt.Font
+import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
@@ -449,6 +447,76 @@ class VectorTable(model: VectorModel): JTable(model) {
         return prepared
     }
 }
+
+class ModelImportTask(
+    private val model: Map<String, List<Pair<String, () -> TextData<*>>>>,
+    private val dialog: JDialog
+):
+    SwingWorker<Unit, Unit>() {
+    private val maxProgress = model.values.sumOf { it.size }
+    override fun doInBackground() {
+        var items = 0
+        progress = 0
+        Monitor.clear()
+        ClassList.update()
+        SampleList.update()
+        ClassificationFrame.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
+        Toolkit.getDefaultToolkit().beep()
+        for((className, samples) in model) {
+            for((sampleName, data) in samples) {
+                Monitor.add(sampleName, data(), className)
+                items++
+                progress = (100.0 * items / maxProgress).toInt()
+
+                ModelImporter.progress.value = progress
+                ModelImporter.progress.string = "Loading $sampleName from $className"
+            }
+        }
+    }
+
+    override fun done() {
+        ClassificationFrame.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+        ClassList.update()
+        SampleList.update()
+        dialog.dispose()
+    }
+}
+
+object ModelImporter: JDialog(ClassificationFrame, "Loading Data", true) {
+    val progress = JProgressBar(0, 100)
+    private lateinit var task: ModelImportTask
+
+    init {
+        //#region Dialog Layout
+        val panel = JPanel()
+        val layout = BoxLayout(panel, BoxLayout.Y_AXIS)
+        panel.layout = layout
+        panel.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        val label = JLabel("Loading Data")
+        label.font = ClassificationFrame.fonts[1]
+        panel.add(label)
+        panel.add(Box.createRigidArea(Dimension(0, 10)))
+        progress.font = ClassificationFrame.fonts[0]
+        val metrics = progress.getFontMetrics(progress.font)
+        val example = "Loading ${"a".repeat(20)} from ${"b".repeat(16)}"
+        progress.preferredSize = Dimension(metrics.stringWidth(example), (metrics.height * 1.5).toInt())
+        progress.isStringPainted = true
+        panel.add(progress)
+        add(panel)
+        pack()
+        setLocationRelativeTo(ClassificationFrame)
+        //#endregion
+    }
+
+    operator fun invoke(model: Map<String, List<Pair<String, () -> TextData<*>>>>) {
+        progress.value = 0
+
+        task = ModelImportTask(model, this)
+        task.execute()
+
+        isVisible = true
+    }
+}
 //#endregion
 
 //#region Menu Bar
@@ -456,6 +524,7 @@ private object MenuBar: JMenuBar() {
     init {
         add(FileMenu)
         add(ViewMenu)
+        add(ModelMenu)
     }
 }
 
@@ -519,6 +588,67 @@ private object ViewMenu: JMenu("View") {
                 mode = TEXT
             }
         }
+    }
+}
+
+private object ModelMenu: JMenu("Models") {
+    init {
+        mnemonic = KeyEvent.VK_M
+        font = ClassificationFrame.fonts[0]
+
+        val saveItem = JMenuItem("Science Distinction")
+        saveItem.font = ClassificationFrame.fonts[0]
+        saveItem.mnemonic = KeyEvent.VK_S
+        saveItem.addActionListener {
+            val label = JLabel("Are you sure you want to delete the current model?")
+            label.font = ClassificationFrame.fonts[0]
+            if(Monitor.isEmpty() || JOptionPane.showConfirmDialog(
+                    ClassificationFrame,
+                    label,
+                    "Delete Model",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+                ) == JOptionPane.YES_OPTION) {
+                ModelImporter(mapOf(
+                    "Mathematics" to listOf<Pair<String, () -> TextData<*>>>(
+                        "Interpolation" to { TextData.wiki("Interpolation") },
+                        "Pi" to { TextData.wiki("Pi") },
+                        "Euler's Number" to { TextData.wiki("E_(mathematical_constant)") },
+                        "Infinite Natural Sum" to { TextData.wiki("1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF") },
+                        "Riemann Zeta Function" to { TextData.wiki("Riemann_zeta_function") },
+                        "Euler's Identity" to { TextData.wiki("Euler%27s_identity") },
+                        "Complex Logarithm" to { TextData.wiki("Complex_logarithm") },
+                        "Hybercube" to { TextData.wiki("Hypercube") },
+                        "Tesseract" to { TextData.wiki("Tesseract") },
+                        "Klein Bottle" to { TextData.wiki("Klein_bottle") },
+                        "Sierpinski Triangle" to { TextData.wiki("Sierpinski_triangle") },
+                        "Manifold" to { TextData.wiki("Manifold") },
+                        "Polyhedron" to { TextData.wiki("Polyhedron") },
+                        "Hyperbolic Geometry" to { TextData.wiki("Hyperbolic_geometry") },
+                        "Mandelbrot Set" to { TextData.wiki("Mandelbrot_set") },
+                        "Julia Set" to { TextData.wiki("Julia_set") },
+                        "Trigonometric Functions" to { TextData.wiki("Trigonometric_functions") },
+                    ),
+                    "Biology" to listOf<Pair<String, () -> TextData<*>>>(
+                        "Heart" to { TextData.wiki("Heart") },
+                        "Brain" to { TextData.wiki("Brain") },
+                        "Lung" to { TextData.wiki("Lung") },
+                        "Liver" to { TextData.wiki("Liver") },
+                        "Kidney" to { TextData.wiki("Kidney") },
+                        "Stomach" to { TextData.wiki("Stomach") },
+                        "Pancreas" to { TextData.wiki("Pancreas") },
+                        "Spleen" to { TextData.wiki("Spleen") },
+                        "Muscle" to { TextData.wiki("Skeletal_muscle") },
+                        "DNA" to { TextData.wiki("DNA") },
+                        "RNA" to { TextData.wiki("RNA") },
+                        "Protein" to { TextData.wiki("Protein") },
+                        "Cell" to { TextData.wiki("Cell_(biology)") },
+                        "Tissue" to { TextData.wiki("Tissue") },
+                    )
+                ))
+            }
+        }
+        add(saveItem)
     }
 }
 //#endregion

@@ -60,6 +60,8 @@ object Monitor {
         dataCache.clear()
         dictVec.clear()
     }
+
+    fun isEmpty(): Boolean = clouds.isEmpty() && dataCache.isEmpty() && dictVec.dictionary.isEmpty()
     //#endregion
 
     //#region Math Stuff

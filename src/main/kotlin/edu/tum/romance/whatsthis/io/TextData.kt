@@ -101,6 +101,10 @@ abstract class TextData<T> {
             return InMemorySourceData(string)
         }
 
+        fun wiki(slug: String): TextData<URL> {
+            return WebSourceData(URL("https://en.wikipedia.org/wiki/$slug"))
+        }
+
         fun getPDF(pdDocument: PDDocument): String {
             val stripper = PDFTextStripper()
             stripper.sortByPosition = true
