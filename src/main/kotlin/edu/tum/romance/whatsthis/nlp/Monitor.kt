@@ -139,6 +139,7 @@ object Monitor {
         }
     }
     fun isClassified(dataRef: String) = dataRef !in unclassified
+    fun unclassified() = unclassified.toMutableList()
     operator fun contains(cloud: String): Boolean {
         return clouds.containsKey(cloud)
     }

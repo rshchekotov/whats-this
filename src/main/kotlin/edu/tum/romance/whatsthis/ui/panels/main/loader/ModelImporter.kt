@@ -24,6 +24,7 @@ object ModelImporter: JDialog(ClassificationFrame, "Loading Data", true) {
         val example = "Loading ${"a".repeat(20)} from ${"b".repeat(16)}"
         progress.preferredSize = Dimension(metrics.stringWidth(example), (metrics.height * 1.5).toInt())
         progress.isStringPainted = true
+        progress.string = "Initializing..."
         panel.add(progress)
         add(panel)
         pack()

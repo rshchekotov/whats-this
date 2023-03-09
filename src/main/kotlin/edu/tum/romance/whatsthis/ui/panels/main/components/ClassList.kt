@@ -4,10 +4,12 @@ import edu.tum.romance.whatsthis.nlp.Monitor
 import edu.tum.romance.whatsthis.ui.component.VectorModel
 import edu.tum.romance.whatsthis.ui.component.VectorTable
 import java.awt.datatransfer.DataFlavor
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
 import javax.swing.JScrollPane
 import javax.swing.TransferHandler
 
-object ClassList: JScrollPane() {
+object ClassList: JScrollPane(), MouseListener {
     var items = Monitor.cloudKeys().sorted().toMutableList()
     val list: VectorTable = VectorTable(VectorModel(
         "Classes",
@@ -47,10 +49,35 @@ object ClassList: JScrollPane() {
         }
 
         list.dragEnabled = true
+
+        addMouseListener(this)
     }
 
     fun update() {
         items = Monitor.cloudKeys().sorted().toMutableList()
         list.update()
     }
+
+    private fun clearSelection() {
+        list.selectionModel.clearSelection()
+        SampleList.update()
+    }
+
+    override fun mouseReleased(e: MouseEvent) {
+        if(e.button == MouseEvent.BUTTON1) {
+            val bounds = this.bounds
+            val absolutePoint = e.point
+            absolutePoint.translate(bounds.x, bounds.y)
+            if(absolutePoint in bounds) {
+                if(list.rowAtPoint(e.point) == -1) {
+                    clearSelection()
+                }
+            }
+        }
+    }
+
+    override fun mouseClicked(e: MouseEvent) {}
+    override fun mousePressed(e: MouseEvent) {}
+    override fun mouseEntered(e: MouseEvent) {}
+    override fun mouseExited(e: MouseEvent) {}
 }

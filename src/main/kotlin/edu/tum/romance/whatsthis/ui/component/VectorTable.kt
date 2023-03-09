@@ -7,6 +7,12 @@ import javax.swing.JTable
 import javax.swing.table.TableCellEditor
 
 class VectorTable(model: VectorModel): JTable(model) {
+    init {
+        if(model.getColumnName(0) == null) {
+            tableHeader.setUI(null)
+        }
+    }
+
     fun update() {
         (model as VectorModel).update()
     }
