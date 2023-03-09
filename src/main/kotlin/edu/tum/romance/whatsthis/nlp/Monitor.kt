@@ -11,6 +11,8 @@ object Monitor {
     private val clouds: MutableMap<String, MutableList<String>> = mutableMapOf()
     private val unclassified = mutableListOf<String>()
     private val dictVec = WordVec()
+    private val summaryCache = mutableMapOf<Int, Vector>()
+    private val significanceCache = mutableMapOf<Int, Vector>()
 
     private val emptyVector
         get() = Vector(dictVec.dictionary.size)
@@ -80,9 +82,13 @@ object Monitor {
 
     fun summary(cloud: String): Vector {
         if(cloud in Monitor && Monitor[cloud]!!.isNotEmpty()) {
+            val hash = clouds[cloud]!!.hashCode()
+            if(hash in summaryCache) return summaryCache[hash]!!
+
             val vec = emptyVector
             clouds[cloud]!!.forEach { vec += dataCache[it]!!.vector!! }
             vec.unit(EuclideanDistance)
+            summaryCache[hash] = vec
             return vec
         }
         return emptyVector
@@ -92,9 +98,16 @@ object Monitor {
         if(cloud in Monitor && Monitor[cloud]!!.isNotEmpty()) {
             val classVector = summary(cloud)
 
-            val result = emptyVector
-            for ((name, _) in clouds) {
-                result += summary(name)
+            var result: Vector = emptyVector
+
+            val hash = clouds.hashCode()
+            if (hash in significanceCache) {
+                result = significanceCache[hash]!!.clone()
+            } else {
+                for ((name, _) in clouds) {
+                    result += summary(name)
+                }
+                significanceCache[hash] = result.clone()
             }
 
             for(i in 0 until classVector.size) {

@@ -23,7 +23,7 @@ abstract class TextData<T> {
         var string = text
         if (string.isBlank()) return emptyList()
 
-        val hash = string.hashCode().toString()
+        val hash = string.hashCode()
         if (hash in cache) return cache[hash]!!
 
         var mathIndex = mathRegex.find(string)?.range?.first ?: -1
@@ -87,7 +87,7 @@ abstract class TextData<T> {
         const val ngram: UInt = 1u
 
         var characterSizeFilter = 1
-        private val cache = mutableMapOf<String, List<WordCount>>()
+        private val cache = mutableMapOf<Int, List<WordCount>>()
 
         operator fun invoke(file: File): TextData<File> {
             return FileSource(file)

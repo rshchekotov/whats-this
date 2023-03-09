@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.math
 
-class Vector(x: List<Double>){
+class Vector(x: List<Double>): Cloneable {
     var data: MutableList<Double> = x.toMutableList()
 
     constructor(ints: Array<Int>) : this(ints.map { it.toDouble() })
@@ -35,5 +35,9 @@ class Vector(x: List<Double>){
     fun unit(norm: Distance) {
         val length = norm(this)
         data = data.map { (it / length) }.toMutableList()
+    }
+
+    public override fun clone(): Vector {
+        return Vector(data)
     }
 }
