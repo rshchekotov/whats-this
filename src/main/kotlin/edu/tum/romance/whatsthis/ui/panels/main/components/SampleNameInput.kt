@@ -19,7 +19,7 @@ object SampleNameInput: HintTextField("Sample Name") {
             return
         }
 
-        if(Editor.isBlank()) {
+        if(MainViewComponent.isBlank()) {
             ClassificationFrame.visualError("Sample text cannot be blank!")
             return
         }
@@ -36,7 +36,7 @@ object SampleNameInput: HintTextField("Sample Name") {
             }
         }
 
-        val sample = TextData(Editor.content)
+        val sample = TextData(MainViewComponent.content)
         val className = ClassList.list.selection()
         if(className != null) {
             Monitor.add(text, sample, className)
@@ -52,7 +52,7 @@ object SampleNameInput: HintTextField("Sample Name") {
         }
 
         text = ""
-        Editor.content = ""
+        MainViewComponent.content = ""
         SampleList.update()
     }
 }

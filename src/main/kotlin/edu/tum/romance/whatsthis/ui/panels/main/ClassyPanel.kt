@@ -37,26 +37,26 @@ object ClassyPanel: JPanel() {
         this.layout = layout
         this.preferredSize = Dimension(maxX, maxY)
 
-        add(Editor)
-        Editor.preferredSize = computeSize(0..4, 0..0)
-        layout.putConstraint(SpringLayout.NORTH, Editor, 5, SpringLayout.NORTH, this)
-        layout.putConstraint(SpringLayout.WEST, Editor, 5, SpringLayout.WEST, this)
-        layout.putConstraint(SpringLayout.EAST, Editor, -5, SpringLayout.EAST, this)
+        add(MainViewComponent)
+        MainViewComponent.preferredSize = computeSize(0..4, 0..0)
+        layout.putConstraint(SpringLayout.NORTH, MainViewComponent, 5, SpringLayout.NORTH, this)
+        layout.putConstraint(SpringLayout.WEST, MainViewComponent, 5, SpringLayout.WEST, this)
+        layout.putConstraint(SpringLayout.EAST, MainViewComponent, -5, SpringLayout.EAST, this)
 
         add(SourceSelector)
         SourceSelector.preferredSize = computeSize(4..4, 1..1)
-        layout.putConstraint(SpringLayout.NORTH, SourceSelector, 5, SpringLayout.SOUTH, Editor)
+        layout.putConstraint(SpringLayout.NORTH, SourceSelector, 5, SpringLayout.SOUTH, MainViewComponent)
         layout.putConstraint(SpringLayout.EAST, SourceSelector, -5, SpringLayout.EAST, this)
 
         add(SourceButton)
         SourceButton.preferredSize = computeSize(3..3, 1..1)
-        layout.putConstraint(SpringLayout.NORTH, SourceButton, 5, SpringLayout.SOUTH, Editor)
+        layout.putConstraint(SpringLayout.NORTH, SourceButton, 5, SpringLayout.SOUTH, MainViewComponent)
         layout.putConstraint(SpringLayout.EAST, SourceButton, -5, SpringLayout.WEST, SourceSelector)
 
         sourceInputElement = SourceSelector.card as JComponent
         add(sourceInputElement)
         sourceInputElement.preferredSize = computeSize(0..2, 1..1)
-        layout.putConstraint(SpringLayout.NORTH, sourceInputElement, 5, SpringLayout.SOUTH, Editor)
+        layout.putConstraint(SpringLayout.NORTH, sourceInputElement, 5, SpringLayout.SOUTH, MainViewComponent)
         layout.putConstraint(SpringLayout.WEST, sourceInputElement, 5, SpringLayout.WEST, this)
         layout.putConstraint(SpringLayout.EAST, sourceInputElement, -5, SpringLayout.WEST, SourceButton)
         layout.putConstraint(SpringLayout.SOUTH, sourceInputElement, 0, SpringLayout.SOUTH, SourceSelector)

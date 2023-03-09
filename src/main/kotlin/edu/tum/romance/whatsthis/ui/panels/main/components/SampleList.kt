@@ -10,7 +10,7 @@ import javax.swing.JScrollPane
 import javax.swing.TransferHandler
 
 object SampleList: JScrollPane() {
-    var items = Monitor.cloudKeys().sorted().toMutableList()
+    private var items = Monitor.cloudKeys().sorted().toMutableList()
     val list: VectorTable = VectorTable(VectorModel(
         "Samples",
         { idx, value -> items[idx] = value; items.sort() },
@@ -28,8 +28,10 @@ object SampleList: JScrollPane() {
                 if(selection != null) {
                     val sample = Monitor.loadFromCache(selection)
                     if(sample != null) {
-                        Editor.content = sample.text
+                        MainViewComponent.content = sample.text
                     }
+                } else {
+                    MainViewComponent.content = ""
                 }
             }
         }

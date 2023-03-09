@@ -22,10 +22,7 @@ object ClassList: JScrollPane() {
         viewport.view = list
         list.selectionModel.addListSelectionListener {
             if(!it.valueIsAdjusting) {
-                val selection = list.selection()
-                if(selection != null) {
-                    SampleList.update()
-                }
+                SampleList.update()
             }
         }
 

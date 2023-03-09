@@ -1,14 +1,14 @@
 package edu.tum.romance.whatsthis.ui.panels.main.menu
 
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
-import edu.tum.romance.whatsthis.ui.panels.main.components.Editor
+import edu.tum.romance.whatsthis.ui.panels.main.components.MainViewComponent
 import java.awt.event.ItemEvent
 import java.awt.event.KeyEvent
 import javax.swing.JCheckBoxMenuItem
 import javax.swing.JMenu
 
 object ViewMenu: JMenu("View") {
-    const val TEXT = 0
+    private const val TEXT = 0
     const val VEC = 1
 
     var mode = TEXT
@@ -33,7 +33,7 @@ object ViewMenu: JMenu("View") {
             if(it.stateChange == ItemEvent.SELECTED) {
                 mode = TEXT
                 vecView.state = false
-                Editor.update()
+                MainViewComponent.update()
             } else {
                 mode = VEC
             }
@@ -43,7 +43,7 @@ object ViewMenu: JMenu("View") {
             if(it.stateChange == ItemEvent.SELECTED) {
                 mode = VEC
                 textView.state = false
-                Editor.update()
+                MainViewComponent.update()
             } else {
                 mode = TEXT
             }
