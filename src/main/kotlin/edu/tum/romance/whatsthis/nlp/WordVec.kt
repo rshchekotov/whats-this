@@ -21,6 +21,10 @@ class WordVec {
         return this
     }
 
+    /**
+     * Creates a vector from the given TextData and adds the words to the dictionary
+     * @param data The TextData to create the vector from
+     */
     fun createAndAddVec(data: TextData<*>) {
         for((word, _) in data.tokens) {
             if(!dictionary.contains(word)) {
@@ -30,6 +34,10 @@ class WordVec {
         createVec(data)
     }
 
+    /**
+     * Creates a vector from the given TextData
+     * @param data The TextData to create the vector from
+     */
     fun createVec(data: TextData<*>) {
         val vecList = Array(dictionary.size) { 0 }
         val wordVec = data.tokens.map { it.first }

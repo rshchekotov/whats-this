@@ -20,6 +20,12 @@ object Monitor {
         get() = dictVec.dictionary.toSet()
 
     //#region CRUD Ops
+    /**
+     * Adds a new data with its name to the cloud(by name as String)
+     * @param name The name of the TextData
+     * @param data The sample data
+     * @param cloud The cloud to assign the sample to
+     */
     fun add(name: String, data: TextData<*>, cloud: String? = null) {
         addToCache(name, data)
         if(cloud != null) {
@@ -32,6 +38,11 @@ object Monitor {
         }
     }
 
+    /**
+     * Assigns a data to a cloud, removing it from the previous cloud
+     * @param dataRef The name of the data
+     * @param cloud The cloud to assign the data to
+     */
     fun assign(dataRef: String, cloud: String): Monitor{
         clouds.forEach {
             if(dataRef in it.value) {
@@ -53,6 +64,11 @@ object Monitor {
         return this
     }
 
+    /**
+     * Revoke a data from a cloud and classify it as "unclassified"
+     * @param dataRef The name of the data
+     * @param cloud The cloud to revoke the data from
+     */
     fun revoke(dataRef: String, cloud: String): Monitor {
         clouds[cloud]?.remove(dataRef)
         unclassified += dataRef
@@ -60,7 +76,11 @@ object Monitor {
         return this
     }
 
+    /**
+     * Clears all data from the monitor
+     */
     fun clear() {
+        //TODO: Clear all data caches
         clouds.clear()
         dataCache.clear()
         dictVec.clear()
@@ -80,6 +100,10 @@ object Monitor {
         }?.key ?: "default"
     }
 
+    /**
+     * Summarizes the cloud by calculating the average vector of all data in the cloud
+     * @param cloud The cloud to summarize
+     */
     fun summary(cloud: String): Vector {
         if(cloud in Monitor && Monitor[cloud]!!.isNotEmpty()) {
             val hash = clouds[cloud]!!.hashCode()
@@ -94,6 +118,10 @@ object Monitor {
         return emptyVector
     }
 
+    /**
+     * Calculates the significance of the cloud by dividing the average vector of the cloud by the average vector of all clouds
+     * @param cloud The cloud to calculate the significance of
+     */
     fun significance(cloud: String): Vector {
         if(cloud in Monitor && Monitor[cloud]!!.isNotEmpty()) {
             val classVector = summary(cloud)
