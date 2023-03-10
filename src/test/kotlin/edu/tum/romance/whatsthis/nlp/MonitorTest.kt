@@ -3,13 +3,142 @@ package edu.tum.romance.whatsthis.nlp
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 internal class MonitorTest {
+
+    @Test
+    fun testClear(){
+        Monitor.clear()
+        assertEquals(0, Monitor.vocabulary.size, "Vocabulary size does not match!")
+        assertTrue( Monitor.cloudKeys().isEmpty() , "Clouds size does not match!" )
+    }
+
+    @Test
+    fun testAdd(){
+        Monitor.clear()
+        val simpleSample = TextData("this is a simple sample")
+        Monitor.add("Simple Sample", simpleSample, "Example")
+
+        assertEquals(5, Monitor.vocabulary.size, "Vocabulary size does not match!")
+        assertEquals(1, Monitor.cloudKeys().size, "Clouds size does not match!")
+        assertEquals(1, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(0, Monitor.unclassified().size, "Unclassified size does not match!")
+        assertEquals("Simple Sample", Monitor["Example"]!![0], "Cloud 'Example' does not match!")
+
+        val shortSample = TextData("this is a short sample")
+        Monitor.add("Short Sample", shortSample)
+
+        assertEquals(6, Monitor.vocabulary.size, "Vocabulary size does not match!")
+        assertEquals(1, Monitor.cloudKeys().size, "Clouds size does not match!")
+        assertEquals(1, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(1, Monitor.unclassified().size, "Unclassified size does not match!")
+
+        val longSample = TextData("this is a long sample")
+        val longSample2 = TextData("this is a long sample")
+
+        Monitor.add("Long Sample", longSample, "Example")
+        Monitor.add("Long Sample 2", longSample2)
+
+        assertEquals(7, Monitor.vocabulary.size, "Vocabulary size does not match!")
+        assertEquals(1, Monitor.cloudKeys().size, "Clouds size does not match!")
+        assertEquals(2, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(2, Monitor.unclassified().size, "Unclassified size does not match!")
+
+    }
+
+    @Test
+    fun testAssignRevoke(){
+        Monitor.clear()
+        val shortSample = TextData("this is a short sample")
+        val longSample = TextData("this is a long sample")
+
+        Monitor.add("Short Sample", shortSample, "Example")
+        Monitor.add("Long Sample", longSample, "Example")
+
+        Monitor.assign("Long Sample", "Example 2")
+        assertEquals(1, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(1, Monitor["Example 2"]!!.size, "Cloud 'Example 2' size does not match!")
+        assertEquals(0, Monitor.unclassified().size, "Unclassified size does not match!")
+
+        Monitor.revoke("Long Sample", "Example 2")
+        assertEquals(1, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(0, Monitor["Example 2"]!!.size, "Cloud 'Example 2' size does not match!")
+        assertEquals(1, Monitor.unclassified().size, "Unclassified size does not match!")
+
+        Monitor.assign("Long Sample", "Example")
+        assertEquals(2, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(0, Monitor["Example 2"]!!.size, "Cloud 'Example 2' size does not match!")
+        assertEquals(0, Monitor.unclassified().size, "Unclassified size does not match!")
+    }
+
+    @Test
+    fun cloudManipulation(){
+        Monitor.clear()
+        val simpleSample = TextData("this is a simple sample")
+        val shortSample = TextData("this is a short sample")
+        val longSample = TextData("this is a long sample")
+
+        Monitor.add("Simple Sample", simpleSample, "Example")
+        Monitor.add("Short Sample", shortSample, "Example")
+        Monitor.add("Long Sample", longSample, "Example")
+
+        val splineMath =
+            TextData("""This is an excerpt from the 'Cubic Spline'-Wikipedia page {\displaystyle p(t) = 2t^3 - 3t^2 + 1}""")
+        val interpolationMath =
+            TextData("""Generally, linear interpolation takes two data points, say {\displaystyle (x_a,y_a)} and {\displaystyle (x_b,y_b)}, and the interpolant is given by: {\displaystyle y = y_a + (y_b - y_a)\frac{x-x_a}{x_b-x_a}} at the point {\displaystyle (x,y)}""")
+
+        Monitor.add("Cubic Spline", splineMath, "Math")
+        Monitor.add("Interpolation", interpolationMath, "Math")
+
+        assertEquals(2, Monitor.cloudKeys().size, "Clouds size does not match!")
+        assertEquals(2, Monitor["Math"]!!.size, "Cloud 'Math' size does not match!")
+        assertEquals(3, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertTrue(Monitor["Math 2"] == null, "Cloud 'Math 2' is not null!")
+        assertTrue(Monitor["Math 3"] == null, "Cloud 'Math 2' is not null!")
+
+        Monitor.createCloud("Math 2")
+
+        assertEquals(3, Monitor.cloudKeys().size, "Clouds size does not match!")
+        assertEquals(2, Monitor["Math"]!!.size, "Cloud 'Math' size does not match!")
+        assertEquals(3, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(0, Monitor["Math 2"]!!.size, "Cloud 'Math 2' size does not match!")
+        assertTrue(Monitor["Math 3"] == null, "Cloud 'Math 2' is not null!")
+
+        Monitor.renameCloud("Math 2", "Math 3")
+
+        assertEquals(3, Monitor.cloudKeys().size, "Clouds size does not match!")
+        assertEquals(2, Monitor["Math"]!!.size, "Cloud 'Math' size does not match!")
+        assertEquals(3, Monitor["Example"]!!.size, "Cloud 'Example' size does not match!")
+        assertEquals(0, Monitor["Math 3"]!!.size, "Cloud 'Math 2' size does not match!")
+
+    }
+
+    @Test
+    fun testSimpleFunctions(){
+        Monitor.clear()
+
+        assertEquals(0, Monitor.cloudKeys().size, "Clouds are not empty!")
+        assertEquals(0, Monitor.vocabulary.size, "Vocabulary is not empty!")
+        assertEquals(0, Monitor.unclassified().size, "Unclassified is not empty!")
+
+        assertTrue(Monitor.isEmpty(), "Monitor is not empty!")
+
+        val simpleSample = TextData("this is a simple sample")
+        Monitor.add("Simple Sample", simpleSample, "Example")
+
+        assertFalse(Monitor.isEmpty(), "Monitor is empty!")
+        assertTrue(Monitor.isClassified("Simple Sample"), "Sample is not classified!")
+
+        Monitor.revoke("Simple Sample", "Example")
+        assertFalse(Monitor.isEmpty(), "Monitor is empty!")
+        assertFalse(Monitor.isClassified("Simple Sample"), "Sample is classified!")
+    }
+
+
     @Test
     fun testCloudSignificance() {
+        Monitor.clear()
         val simpleSample = TextData("this is a simple sample")
         val shortSample = TextData("this is a short sample")
         val longSample = TextData("this is a long sample")
@@ -91,6 +220,14 @@ internal class MonitorTest {
         }
         mathSignificance.unit(EuclideanDistance)
         assertContentEquals(mathSignificance.data, Monitor.significance("Math").data, "Significance of 'Cubic Spline' does not match!")
+
+        // Test edge cases (empty clouds)
+        assertTrue(Monitor.emptyVector.same(Monitor.summary("Example_2")), "Summary of 'Example 2' does not match!")
+        assertTrue(Monitor.emptyVector.same(Monitor.significance("Example_2")), "Significance of 'Example 2' does not match!")
+
+        Monitor.createCloud("Example_3")
+        assertTrue(Monitor.emptyVector.same(Monitor.summary("Example_3")), "Significance of 'Example 3' does not match!")
+        assertTrue(Monitor.emptyVector.same(Monitor.significance("Example_3")), "Significance of 'Example 3' does not match!")
     }
 }
 

@@ -40,4 +40,14 @@ class Vector(x: List<Double>): Cloneable {
     public override fun clone(): Vector {
         return Vector(data)
     }
+
+    fun same(other: Any): Boolean {
+        if (other !is Vector) return false
+        if(data.size != other.data.size) return false
+        var b = true
+        for (i in 0 until data.size) {
+            b = b && (data[i] == other.data[i])
+        }
+        return b
+    }
 }

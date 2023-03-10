@@ -1,7 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.math.Distance
 import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
 
@@ -14,7 +13,7 @@ object Monitor {
     private val summaryCache = mutableMapOf<Int, Vector>()
     private val significanceCache = mutableMapOf<Int, Vector>()
 
-    private val emptyVector
+    val emptyVector
         get() = Vector(dictVec.dictionary.size)
     val vocabulary
         get() = dictVec.dictionary.toSet()
@@ -84,12 +83,15 @@ object Monitor {
         clouds.clear()
         dataCache.clear()
         dictVec.clear()
+        unclassified.clear()
     }
 
     fun isEmpty(): Boolean = clouds.isEmpty() && dataCache.isEmpty() && dictVec.dictionary.isEmpty()
     //#endregion
 
     //#region Math Stuff
+    //Finds the closest cloud to a data point
+    /*
     private fun findClosestCloud(data: TextData<*>, distance: Distance = EuclideanDistance): String {
         dictVec.createVec(data)
         return clouds.minByOrNull { cloud ->
@@ -99,6 +101,7 @@ object Monitor {
             } ?: Double.MAX_VALUE)
         }?.key ?: "default"
     }
+    */
 
     /**
      * Summarizes the cloud by calculating the average vector of all data in the cloud
