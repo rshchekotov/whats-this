@@ -59,22 +59,14 @@ object WordVectorManager {
         dirty = true
     }
 
-    /**
-     * Rename the vector with the given name to the given name.
-     * If a vector with the new name already exists it is
-     * overwritten (deleted and replaced).
-     *
-     * @param name The name of the vector to rename
-     * @param ref The new name of the vector
-     */
-    operator fun set(name: String, ref: String) {
-        val index = reverse[name]
+    fun rename(old: String, new: String) {
+        val index = reverse[old]
         if (index != null) {
-            if(ref in reverse) {
-                val replace = reverse[ref]!!
+            if(new in reverse) {
+                val replace = reverse[new]!!
                 this -= vectors[replace]
-                reverse -= name
-                reverse[ref] = index
+                reverse -= old
+                reverse[new] = index
             }
         }
     }

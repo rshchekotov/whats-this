@@ -20,7 +20,7 @@ object API {
 
     fun vectors() = vectors.names()
 
-    fun spaceVectors(name: String?): List<String> {
+    fun spaceVectors(name: String? = null): List<String> {
         return if(name != null) {
             spaces[name]?.let { space -> space.vectors().map { vectors.name(it) } } ?: emptyList()
         } else {
@@ -95,7 +95,7 @@ object API {
 
     fun renameSample(old: String, new: String) {
         if(old in vectors) {
-            vectors[new] = vectors[old]!!
+            vectors.rename(old, new)
         }
     }
 
