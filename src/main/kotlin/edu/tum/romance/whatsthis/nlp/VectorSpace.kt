@@ -13,12 +13,12 @@ class VectorSpace(val name: String) {
     private var summary: Vector = Vector(0)
 
     operator fun plusAssign(ref: Int) {
-        dirty = true
         for(space in VectorSpaceManager.spaces()) {
             val vectorSpace = VectorSpaceManager[space]!!
             if(ref in vectorSpace) {
                 vectorSpace -= ref
             }
+            vectorSpace.flagDirty()
         }
         vectors += ref
     }
