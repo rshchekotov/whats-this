@@ -219,6 +219,22 @@ internal class APITest {
         assertTrue("Example" in API.spaces, "Example should be in the vector spaces!")
         assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
     }
+
+    @Test
+    @Order(7)
+    fun testAssignmentRevocation() {
+        val sample = TextData("this is a simple sample", "Simple Sample")
+        API.addSample(sample, "Example")
+        assertEquals(1, API.spaces().size, "There should be one vector space!")
+        assertEquals(0, API.spaces.unclassified().size, "There should be no unclassified samples!")
+        assertTrue("Example" in API.spaces, "Example should be in the vector spaces!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
+        API.addSample(sample)
+        assertEquals(1, API.spaces().size, "There should be one vector space!")
+        assertEquals(1, API.spaces.unclassified().size, "There should be one unclassified sample!")
+        assertTrue("Example" in API.spaces, "Example should remain in the vector spaces!")
+        assertEquals(0, API.spaces["Example"]!!.size(), "Sample was not removed from the vector space!")
+    }
 }
 
 /**
