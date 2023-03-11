@@ -67,8 +67,13 @@ object VectorSpaceManager {
     }
 
     fun rename(old: String, new: String) {
-        val index = reverse[old] ?: return
+        var index = reverse[old] ?: return
         reverse.remove(old)
+        if(new in reverse) {
+            val replace = reverse[new]!!
+            spaces[replace] = spaces[index]
+            index = replace
+        }
         reverse[new] = index
         spaces[index].first.name = new
     }
