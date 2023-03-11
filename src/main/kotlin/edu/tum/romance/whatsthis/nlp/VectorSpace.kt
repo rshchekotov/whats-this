@@ -1,15 +1,28 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.math.Distance
-import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
 
+/**
+ * A VectorSpace is a collection of vectors that are related to each other.
+ * It is used to classify vectors into different groups.
+ *
+ * (*protected*) YOU SHOULD HAVE NO REASON TO USE THIS DIRECTLY
+ *
+ * Use the methods provided by [API] instead.
+ *
+ * The only reason this is not 'formally'
+ * protected, is because Kotlin doesn't
+ * support that.
+ *
+ * @property name The name of the vector space
+ */
 class VectorSpace(val name: String) {
     private val vectors = mutableListOf<Int>()
 
     // Computed Properties
     private var dirty = false
-    private var lastNorm: Distance = EuclideanDistance
+    private var lastNorm: Distance = Distance.Euclidean
     private var summary: Vector = Vector(0)
 
     operator fun plusAssign(ref: Int) {
@@ -46,7 +59,7 @@ class VectorSpace(val name: String) {
         summary = Vector(0)
         if (vectors.isNotEmpty()) {
             for (ref in vectors) {
-                val textVector = WordVectorManager[ref]
+                val textVector = API.vectors[ref]
                 if (textVector != null) {
                     if (summary.size() == 0) {
                         summary = textVector.vector!!.clone()

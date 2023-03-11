@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.math.EuclideanDistance
+import edu.tum.romance.whatsthis.math.Distance
 import edu.tum.romance.whatsthis.math.Vector
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
@@ -27,8 +27,8 @@ internal class APITest {
         assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
         assertEquals(5, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
         (0 until 5).forEach { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
-        val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(EuclideanDistance)
-        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(Distance.Euclidean)
+        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(Distance.Euclidean).data, "Summary of 'Example' does not match!")
         assertContentEquals(vec.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
     }
 
@@ -61,9 +61,9 @@ internal class APITest {
             val expected = if (it == 3) 0.0 else 1.0
             assertEquals(expected, API.vectors["Short Sample"]!!.vector!![it], "Vector 'Short Sample' does not match!")
         }
-        val vec = Vector(arrayOf(2, 2, 2, 1, 2, 1)).unit(EuclideanDistance)
-        val unit = Vector(arrayOf(1, 1, 1, 1, 1, 1)).unit(EuclideanDistance)
-        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        val vec = Vector(arrayOf(2, 2, 2, 1, 2, 1)).unit(Distance.Euclidean)
+        val unit = Vector(arrayOf(1, 1, 1, 1, 1, 1)).unit(Distance.Euclidean)
+        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(Distance.Euclidean).data, "Summary of 'Example' does not match!")
         assertContentEquals(unit.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
     }
 
@@ -93,8 +93,10 @@ internal class APITest {
         (0 until 2).forEach { assertEquals(1.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
         (2 until 5).forEach { assertEquals(0.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
         (5 until 13).forEach { assertEquals(1.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
-        assertContentEquals(API.vectors["Simple Sample"]!!.vector!!.clone().unit(EuclideanDistance).data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
-        assertContentEquals(API.vectors["Cubic Spline"]!!.vector!!.clone().unit(EuclideanDistance).data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
+        assertContentEquals(API.vectors["Simple Sample"]!!.vector!!.clone().unit(Distance.Euclidean).data, API.spaces["Example"]!!.summary(
+            Distance.Euclidean).data, "Summary of 'Example' does not match!")
+        assertContentEquals(API.vectors["Cubic Spline"]!!.vector!!.clone().unit(Distance.Euclidean).data, API.spaces["Math"]!!.summary(
+            Distance.Euclidean).data, "Summary of 'Math' does not match!")
     }
 
     @Test
@@ -138,8 +140,8 @@ internal class APITest {
 
         var sampleSummary = Vector(arrayOf(3, 3, 3, 1, 3, 1, 1))
         sampleSummary.growTo(API.vocabulary.size())
-        sampleSummary = sampleSummary.unit(EuclideanDistance)
-        assertContentEquals(sampleSummary.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        sampleSummary = sampleSummary.unit(Distance.Euclidean)
+        assertContentEquals(sampleSummary.data, API.spaces["Example"]!!.summary(Distance.Euclidean).data, "Summary of 'Example' does not match!")
 
         var mathSummary = Vector(API.vocabulary.size())
         mathSummary.set(
@@ -155,8 +157,8 @@ internal class APITest {
             v["given"] to 1.0, v["by"] to 1.0,
             v["at"] to 1.0, v["point"] to 1.0
         )
-        mathSummary = mathSummary.unit(EuclideanDistance)
-        assertContentEquals(mathSummary.data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
+        mathSummary = mathSummary.unit(Distance.Euclidean)
+        assertContentEquals(mathSummary.data, API.spaces["Math"]!!.summary(Distance.Euclidean).data, "Summary of 'Math' does not match!")
 
         var sampleSignificance = Vector(API.vocabulary.size())
         var significance = { it: String ->
@@ -165,7 +167,7 @@ internal class APITest {
         for (i in 0 until sampleSignificance.size()) {
             sampleSignificance[i] = significance(v[i])
         }
-        sampleSignificance = sampleSignificance.unit(EuclideanDistance)
+        sampleSignificance = sampleSignificance.unit(Distance.Euclidean)
         val actualSampleSignificance = API.spaces.significance("Example")!!.data
         assertContentEquals(
             sampleSignificance.data,
@@ -180,7 +182,7 @@ internal class APITest {
         for (i in 0 until mathSignificance.size()) {
             mathSignificance[i] = significance(v[i])
         }
-        mathSignificance = mathSignificance.unit(EuclideanDistance)
+        mathSignificance = mathSignificance.unit(Distance.Euclidean)
         val actualMathSignificance = API.spaces.significance("Math")!!.data
         assertContentEquals(
             mathSignificance.data,
@@ -195,15 +197,15 @@ internal class APITest {
         val sample = TextData("this is a simple sample", "Simple Sample")
         API.addSample(sample, "Example")
         assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
-        val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(EuclideanDistance)
-        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(Distance.Euclidean)
+        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(Distance.Euclidean).data, "Summary of 'Example' does not match!")
         assertFalse("Math" in API.spaces, "Math should not be in the vector spaces!")
         API.addSample(sample, "Math")
         assertTrue("Math" in API.spaces, "Math should now be in the vector spaces!")
         assertEquals(1, API.spaces["Math"]!!.size(), "Sample was not moved to the vector space 'Math'!")
         assertEquals(0, API.spaces["Example"]!!.size(), "Sample was not removed from the vector space 'Example'!")
-        assertContentEquals(vec.data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
-        assertContentEquals(Vector(0).data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        assertContentEquals(vec.data, API.spaces["Math"]!!.summary(Distance.Euclidean).data, "Summary of 'Math' does not match!")
+        assertContentEquals(Vector(0).data, API.spaces["Example"]!!.summary(Distance.Euclidean).data, "Summary of 'Example' does not match!")
     }
 
     @Test

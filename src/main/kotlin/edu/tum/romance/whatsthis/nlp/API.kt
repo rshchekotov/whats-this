@@ -1,11 +1,11 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.math.EuclideanDistance
+import edu.tum.romance.whatsthis.math.Distance
 
 @Suppress("unused")
 object API {
-    var norm = EuclideanDistance
+    private var norm = Distance.Euclidean
     val spaces = VectorSpaceManager
     val vectors = WordVectorManager
     val vocabulary = VocabularyManager
@@ -22,9 +22,9 @@ object API {
 
     fun spaceVectors(name: String?): List<String> {
         return if(name != null) {
-            spaces[name]?.let { space -> space.vectors().map { WordVectorManager.name(it) } } ?: emptyList()
+            spaces[name]?.let { space -> space.vectors().map { vectors.name(it) } } ?: emptyList()
         } else {
-            spaces.unclassified().map { WordVectorManager.name(it) }
+            spaces.unclassified().map { vectors.name(it) }
         }
     }
 
@@ -49,7 +49,7 @@ object API {
             }
         }
         /* Create Text Vector */
-        val vector = VocabularyManager.emptyVector()
+        val vector = vocabulary.emptyVector()
         for((word, count) in sample.tokens) {
             vector[vocabulary[word]] = count
         }

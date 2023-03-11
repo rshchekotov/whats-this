@@ -2,6 +2,19 @@ package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.TextData
 
+/**
+ * A singleton object that manages all word vectors.
+ * It is used to access vectors by name and to
+ * add and remove vectors.
+ *
+ * (*protected*): DO NOT USE THIS DIRECTLY
+ *
+ * Use the [API] instead.
+ *
+ * The only reason this is not 'formally'
+ * protected, is because Kotlin doesn't
+ * support that.
+ */
 object WordVectorManager {
     private val vectors = mutableListOf<TextData<*>>()
     private val reverse = mutableMapOf<String, Int>()

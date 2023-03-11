@@ -2,6 +2,17 @@ package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.math.Vector
 
+/**
+ * This class is used to manage the vocabulary of the system.
+ *
+ * (*protected*) DO NOT USE THIS DIRECTLY.
+ *
+ * Use the [API] instead.
+ *
+ * The only reason this is not 'formally'
+ * protected, is because Kotlin doesn't
+ * support that.
+ */
 object VocabularyManager {
     private val vocabulary = mutableListOf<String>()
     private val reverse = mutableMapOf<Int, Int>()

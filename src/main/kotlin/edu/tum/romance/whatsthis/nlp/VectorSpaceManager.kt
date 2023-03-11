@@ -2,6 +2,17 @@ package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.math.Vector
 
+/**
+ * A manager for [VectorSpace]s.
+ *
+ * (*protected*): DO NOT USE THIS DIRECTLY
+ *
+ * Use the [API] instead.
+ *
+ * The only reason this is not 'formally'
+ * protected, is because Kotlin doesn't
+ * support that.
+ */
 object VectorSpaceManager {
     private val spaces = mutableListOf<Pair<VectorSpace, Vector>>()
     private val reverse = mutableMapOf<String, Int>()
