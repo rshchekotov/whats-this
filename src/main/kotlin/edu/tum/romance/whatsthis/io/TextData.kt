@@ -11,7 +11,7 @@ import java.net.URL
 
 abstract class TextData<T> {
     abstract val source: T
-    abstract val name: String
+    abstract var name: String
     abstract var text: String
     abstract var titleSuggestion: String
 
@@ -102,6 +102,7 @@ abstract class TextData<T> {
             return InMemorySourceData(string, name)
         }
 
+        @Suppress("unused")
         fun wiki(slug: String, name: String): TextData<URL> {
             return WebSourceData(URL("https://en.wikipedia.org/wiki/$slug"), name)
         }

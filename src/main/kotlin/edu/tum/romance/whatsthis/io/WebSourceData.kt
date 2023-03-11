@@ -13,7 +13,7 @@ import java.net.URL
  * - text/plain
  * - application/pdf
  */
-class WebSourceData(override val source: URL, override val name: String) : TextData<URL>() {
+class WebSourceData(override val source: URL, override var name: String) : TextData<URL>() {
     override lateinit var text: String
     override lateinit var titleSuggestion: String
 
