@@ -1,16 +1,19 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.math.Distance
+import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
 
 class VectorSpace(val name: String) {
     private val vectors = mutableListOf<Int>()
 
     // Computed Properties
-    private var cache = mutableMapOf<Int, Vector>()
+    private var dirty = false
+    private var lastNorm: Distance = EuclideanDistance
     private var summary: Vector = Vector(0)
 
     operator fun plusAssign(ref: Int) {
+        dirty = true
         for(space in VectorSpaceManager.spaces()) {
             val vectorSpace = VectorSpaceManager[space]!!
             if(ref in vectorSpace) {
@@ -21,6 +24,7 @@ class VectorSpace(val name: String) {
     }
 
     operator fun minusAssign(ref: Int) {
+        dirty = true
         vectors -= ref
     }
 
@@ -30,10 +34,11 @@ class VectorSpace(val name: String) {
     fun vectors() = vectors.toList()
 
     fun summary(norm: Distance): Vector {
-        val hash = norm.hashCode() + vectors.hashCode()
-        if (hash in cache) {
-            return cache[hash]!!
+        if(!dirty && norm == this.lastNorm) {
+            return summary
         }
+        dirty = false
+        lastNorm = norm
         summary = Vector(0)
         if (vectors.isNotEmpty()) {
             for (ref in vectors) {
@@ -48,7 +53,10 @@ class VectorSpace(val name: String) {
             }
             summary = summary.unit(norm)
         }
-        cache[hash] = summary
         return summary
+    }
+
+    fun flagDirty() {
+        dirty = true
     }
 }

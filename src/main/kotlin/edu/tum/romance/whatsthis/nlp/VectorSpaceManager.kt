@@ -12,6 +12,9 @@ object VectorSpaceManager {
         reverse[space.name] = spaces.size
         spaces += (space to Vector(0))
         dirty = true
+        for((it, _) in spaces) {
+            it.flagDirty()
+        }
     }
 
     operator fun plusAssign(name: String) {
@@ -41,7 +44,9 @@ object VectorSpaceManager {
     operator fun set(name: String, space: VectorSpace) {
         val index = reverse[name] ?: return
         spaces[index] = (space to Vector(0))
-        dirty = true
+        for((it, _) in spaces) {
+            it.flagDirty()
+        }
     }
 
     operator fun set(name: String, significance: Vector) {
@@ -54,9 +59,16 @@ object VectorSpaceManager {
 
     fun unclassified(ref: Int) {
         unclassified.add(ref)
+        var found = false
         for((space, _) in spaces) {
             if(ref in space) {
                 space -= ref
+                found = true
+            }
+        }
+        if(found) {
+            for((space, _) in spaces) {
+                space.flagDirty()
             }
         }
     }
