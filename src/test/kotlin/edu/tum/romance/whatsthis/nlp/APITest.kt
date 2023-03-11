@@ -3,7 +3,6 @@ package edu.tum.romance.whatsthis.nlp
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.TestMethodOrder
@@ -99,7 +98,7 @@ internal class APITest {
     }
 
     @Test
-    @Disabled
+    @Order(4)
     fun testCloudSignificance() {
         val simpleSample = TextData("this is a simple sample", "Simple Sample")
         val shortSample = TextData("this is a short sample", "Short Sample")
@@ -142,7 +141,7 @@ internal class APITest {
         sampleSummary = sampleSummary.unit(EuclideanDistance)
         assertContentEquals(sampleSummary.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
 
-        val mathSummary = Vector(API.vocabulary.size())
+        var mathSummary = Vector(API.vocabulary.size())
         mathSummary.set(
             v["this"] to 1.0, v["is"] to 2.0, v["an"] to 1.0,
             v["excerpt"] to 1.0, v["from"] to 1.0, v["the"] to 3.0,
@@ -156,17 +155,17 @@ internal class APITest {
             v["given"] to 1.0, v["by"] to 1.0,
             v["at"] to 1.0, v["point"] to 1.0
         )
-        mathSummary.unit(EuclideanDistance)
+        mathSummary = mathSummary.unit(EuclideanDistance)
         assertContentEquals(mathSummary.data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
 
-        val sampleSignificance = Vector(API.vocabulary.size())
+        var sampleSignificance = Vector(API.vocabulary.size())
         var significance = { it: String ->
             sampleSummary[v[it]] / (mathSummary[v[it]] + sampleSummary[v[it]])
         }
         for (i in 0 until sampleSignificance.size()) {
             sampleSignificance[i] = significance(v[i])
         }
-        sampleSignificance.unit(EuclideanDistance)
+        sampleSignificance = sampleSignificance.unit(EuclideanDistance)
         val actualSampleSignificance = API.spaces.significance("Example")!!.data
         assertContentEquals(
             sampleSignificance.data,
@@ -174,14 +173,14 @@ internal class APITest {
             "Significance of 'Simple Sample' does not match!"
         )
 
-        val mathSignificance = Vector(Array(API.vocabulary.size()) { 1 })
+        var mathSignificance = Vector(Array(API.vocabulary.size()) { 1 })
         significance = { it: String ->
             mathSummary[v[it]] / (mathSummary[v[it]] + sampleSummary[v[it]])
         }
         for (i in 0 until mathSignificance.size()) {
             mathSignificance[i] = significance(v[i])
         }
-        mathSignificance.unit(EuclideanDistance)
+        mathSignificance = mathSignificance.unit(EuclideanDistance)
         val actualMathSignificance = API.spaces.significance("Math")!!.data
         assertContentEquals(
             mathSignificance.data,
