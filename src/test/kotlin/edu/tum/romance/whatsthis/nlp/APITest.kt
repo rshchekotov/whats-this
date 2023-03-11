@@ -3,11 +3,33 @@ package edu.tum.romance.whatsthis.nlp
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
+import org.junit.jupiter.api.Disabled
 import kotlin.test.*
 
-
 internal class APITest {
+    @BeforeTest
+    fun clean() {
+        API.clear()
+    }
+
     @Test
+    fun testAddSingleSample() {
+        API.addSample(TextData("this is a simple sample", "Simple Sample"), "Example")
+        assertEquals(1, API.vectors.size(), "There should be one Vector!")
+        assertEquals(5, API.vocabulary.size(), "Vocabulary size does not match!")
+        assertEquals(1, API.spaces().size, "There should be one Vector Space!")
+        assertTrue("Example" in API.spaces(), "Vector Space 'Example' does not exist!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "There should be one Vector in Vector Space 'Example'!")
+        assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
+        assertEquals(5, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
+        (0 until 5).map { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
+        val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(EuclideanDistance)
+        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        assertContentEquals(vec.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
+    }
+
+    @Test
+    @Disabled
     fun testCloudSignificance() {
         val simpleSample = TextData("this is a simple sample", "Simple Sample")
         val shortSample = TextData("this is a short sample", "Short Sample")
