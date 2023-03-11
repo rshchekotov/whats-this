@@ -73,6 +73,10 @@ object VectorSpaceManager {
         }
     }
 
+    fun classified(ref: Int) {
+        unclassified -= ref
+    }
+
     fun spaces(): List<String> {
         return reverse.map { it.key }.sorted()
     }
