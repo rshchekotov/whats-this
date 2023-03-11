@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.ui.panels.main.loader
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.nlp.Monitor
+import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.panels.main.components.ClassList
 import edu.tum.romance.whatsthis.ui.panels.main.components.SampleList
@@ -11,7 +11,7 @@ import javax.swing.JDialog
 import javax.swing.SwingWorker
 
 class ModelImportTask(
-    private val model: Map<String, List<Pair<String, () -> TextData<*>>>>,
+    private val model: Map<String, List<() -> TextData<*>>>,
     private val dialog: JDialog
 ):
     SwingWorker<Unit, Unit>() {
@@ -19,19 +19,20 @@ class ModelImportTask(
     override fun doInBackground() {
         var items = 0
         progress = 0
-        Monitor.clear()
+        API.clear()
         ClassList.update()
         SampleList.update()
         ClassificationFrame.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
         Toolkit.getDefaultToolkit().beep()
         for((className, samples) in model) {
-            for((sampleName, data) in samples) {
-                Monitor.add(sampleName, data(), className)
+            for(data in samples) {
+                val sample = data()
+                API.addSample(sample, className)
                 items++
                 progress = (100.0 * items / maxProgress).toInt()
 
                 ModelImporter.progress.value = progress
-                ModelImporter.progress.string = "Loading $sampleName from $className"
+                ModelImporter.progress.string = "Loading ${sample.name} from $className"
             }
         }
     }

@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.panels.main.components
 
-import edu.tum.romance.whatsthis.nlp.Monitor
+import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.component.VectorModel
 import edu.tum.romance.whatsthis.ui.component.VectorTable
 import java.awt.datatransfer.DataFlavor
@@ -10,13 +10,13 @@ import javax.swing.JScrollPane
 import javax.swing.TransferHandler
 
 object ClassList: JScrollPane(), MouseListener {
-    var items = Monitor.cloudKeys().sorted().toMutableList()
+    var items = API.spaces().sorted().toMutableList()
     val list: VectorTable = VectorTable(VectorModel(
         "Classes",
         { idx, value -> items[idx] = value; items.sort() },
         { idx -> items[idx] },
-        { old, new -> Monitor.renameCloud(old, new) },
-        { name -> name in Monitor },
+        { old, new -> API.alterSpace(old, new) },
+        { name -> name in API.spaces },
         { items.size }
     ))
 
@@ -40,7 +40,7 @@ object ClassList: JScrollPane(), MouseListener {
                 val dropIndex = list.dropLocation.row
                 if(dropIndex in items.indices) {
                     val className = items[dropIndex]
-                    Monitor.assign(data, className)
+                    API.resample(data, className)
                     SampleList.update()
                     return true
                 }
@@ -54,7 +54,7 @@ object ClassList: JScrollPane(), MouseListener {
     }
 
     fun update() {
-        items = Monitor.cloudKeys().sorted().toMutableList()
+        items = API.spaces().sorted().toMutableList()
         list.update()
     }
 

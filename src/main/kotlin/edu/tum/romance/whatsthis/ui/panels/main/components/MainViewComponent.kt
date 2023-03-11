@@ -60,7 +60,7 @@ object MainViewComponent: JScrollPane(
     fun update() {
         if(content.isNotBlank()) {
             if(ViewMenu.mode == ViewMenu.VEC) {
-                val data = TextData(content)
+                val data = TextData(content, "")
 
                 (tokenTable.model as DefaultTableModel).setDataVector(
                     data.tokens.map { arrayOf(it.first, it.second) }.toTypedArray(),

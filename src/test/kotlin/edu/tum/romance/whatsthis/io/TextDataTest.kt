@@ -10,7 +10,7 @@ internal class TextDataTest {
     @Test
     fun testLoadString() {
         val text = "Tea"
-        val data = TextData(text)
+        val data = TextData(text, "")
 
         assertEquals(data.text, text, "Text should be equal")
         assertEquals(data.source, text, "Source should be equal")
@@ -23,7 +23,7 @@ internal class TextDataTest {
     fun testLoadURL() {
         val url = URL("https://en.wikipedia.org/wiki/Bayesian_network")
         assumeConnectivity(url)
-        val data = TextData(url)
+        val data = TextData(url, "")
 
         assertEquals(data.source, url, "Source should be equal")
         assertTrue(data.text.isNotEmpty(), "Text should not be empty")
@@ -35,7 +35,7 @@ internal class TextDataTest {
     @Test
     fun testCleaningAlgorithm() {
         val text = "Some math follows... {\\displaystyle x^2 - (\\frac{1}{2}\\pi)}. That's it!"
-        val data = TextData(text)
+        val data = TextData(text, "")
 
         assertEquals(data.text, text, "Text should be equal")
         assertEquals(data.source, text, "Source should be equal")
@@ -66,7 +66,7 @@ internal class TextDataTest {
     @Test
     fun testInvalid() {
         val text = "'Cubic Spline'-Wikipedia"
-        val data = TextData(text)
+        val data = TextData(text, "")
         assertEquals(2, data.tokens.size, "Vector should have two elements")
         assertEquals("cubic", data.tokens[0].first, "Vector should contain 'cubic'")
         assertEquals(1, data.tokens[0].second, "Vector should contain 'cubic' once")

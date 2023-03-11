@@ -11,6 +11,7 @@ import java.net.URL
 
 abstract class TextData<T> {
     abstract val source: T
+    abstract val name: String
     abstract var text: String
     abstract var titleSuggestion: String
 
@@ -89,20 +90,20 @@ abstract class TextData<T> {
         var characterSizeFilter = 1
         private val cache = mutableMapOf<Int, List<WordCount>>()
 
-        operator fun invoke(file: File): TextData<File> {
-            return FileSource(file)
+        operator fun invoke(file: File, name: String): TextData<File> {
+            return FileSource(file, name)
         }
 
-        operator fun invoke(url: URL): TextData<URL> {
-            return WebSourceData(url)
+        operator fun invoke(url: URL, name: String): TextData<URL> {
+            return WebSourceData(url, name)
         }
 
-        operator fun invoke(string: String): TextData<String> {
-            return InMemorySourceData(string)
+        operator fun invoke(string: String, name: String): TextData<String> {
+            return InMemorySourceData(string, name)
         }
 
-        fun wiki(slug: String): TextData<URL> {
-            return WebSourceData(URL("https://en.wikipedia.org/wiki/$slug"))
+        fun wiki(slug: String, name: String): TextData<URL> {
+            return WebSourceData(URL("https://en.wikipedia.org/wiki/$slug"), name)
         }
 
         fun getPDF(pdDocument: PDDocument): String {

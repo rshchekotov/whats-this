@@ -18,7 +18,7 @@ object SourceSelector: JComboBox<String>() {
             override fun run() {
                 if(text.isNotBlank()) {
                     try {
-                        val content = TextData(URL(text))
+                        val content = TextData(URL(text), "")
                         MainViewComponent.content = content.text
                         SampleNameInput.text = content.titleSuggestion
                         text = ""
@@ -36,7 +36,7 @@ object SourceSelector: JComboBox<String>() {
                     val file = fileChooser.selectedFile
                     if (file != null) {
                         try {
-                            val content = TextData(file)
+                            val content = TextData(file, "")
                             MainViewComponent.content = content.text
                             SampleNameInput.text = content.titleSuggestion
                         } catch (e: Exception) {

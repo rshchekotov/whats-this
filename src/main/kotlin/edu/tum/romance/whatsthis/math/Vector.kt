@@ -6,11 +6,13 @@ class Vector(x: List<Double>): Cloneable {
     constructor(ints: Array<Int>) : this(ints.map { it.toDouble() })
     constructor(size: Int) : this(List(size) { 0.0 })
 
-    val size: Int
-        get() = data.size
-
     operator fun plusAssign(other: Vector) {
         data = data.zip(other.data) { a, b -> a + b }.toMutableList()
+    }
+    operator fun plus(other: Vector): Vector {
+        val vector = this.clone()
+        vector += other
+        return vector
     }
     operator fun get(index: Int): Double {
         return data[index]
@@ -18,6 +20,10 @@ class Vector(x: List<Double>): Cloneable {
 
     operator fun set(index: Int, value: Double) {
         data[index] = value
+    }
+
+    operator fun set(index: Int, value: Int) {
+        data[index] = value.toDouble()
     }
 
     fun set(vararg indexedValues: Pair<Int, Double>) {
@@ -32,16 +38,22 @@ class Vector(x: List<Double>): Cloneable {
         }
     }
 
-    fun unit(norm: Distance) {
-        val length = norm(this)
-        data = data.map { (it / length) }.toMutableList()
+    fun unit(norm: Distance): Vector {
+        val vector = this.clone()
+        val length = norm(vector)
+        vector.data = vector.data.map { (it / length) }.toMutableList()
+        return vector
+    }
+
+    fun size(): Int {
+        return data.size
     }
 
     public override fun clone(): Vector {
         return Vector(data)
     }
 
-    fun same(other: Any): Boolean {
+    override fun equals(other: Any?): Boolean {
         if (other !is Vector) return false
         if(data.size != other.data.size) return false
         var b = true
@@ -49,5 +61,11 @@ class Vector(x: List<Double>): Cloneable {
             b = b && (data[i] == other.data[i])
         }
         return b
+    }
+
+    override fun hashCode(): Int {
+        var result = data.hashCode()
+        result = 31 * result + data.hashCode()
+        return result
     }
 }

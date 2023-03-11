@@ -4,7 +4,7 @@ import org.apache.pdfbox.Loader
 import org.jsoup.Jsoup
 import java.io.File
 
-class FileSource(override val source: File): TextData<File>() {
+class FileSource(override val source: File, override val name: String): TextData<File>() {
     override var text: String = text()
     override var titleSuggestion: String = source.nameWithoutExtension
 

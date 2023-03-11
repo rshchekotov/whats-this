@@ -32,7 +32,7 @@ object ModelImporter: JDialog(ClassificationFrame, "Loading Data", true) {
         //#endregion
     }
 
-    operator fun invoke(model: Map<String, List<Pair<String, () -> TextData<*>>>>) {
+    operator fun invoke(model: Map<String, List<() -> TextData<*>>>) {
         progress.value = 0
 
         task = ModelImportTask(model, this)

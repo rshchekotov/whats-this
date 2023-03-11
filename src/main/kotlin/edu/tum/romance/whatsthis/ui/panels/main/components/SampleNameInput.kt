@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.ui.panels.main.components
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.nlp.Monitor
+import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.component.HintTextField
 import javax.swing.JLabel
@@ -24,7 +24,7 @@ object SampleNameInput: HintTextField("Sample Name") {
             return
         }
 
-        if(text in Monitor.cacheKeys()) {
+        if(text in API.vectors()) {
             val label = JLabel("Sample '$text' already exists. Overwrite?")
             label.font = ClassificationFrame.fonts[0]
             val override = JOptionPane.showConfirmDialog(
@@ -36,10 +36,10 @@ object SampleNameInput: HintTextField("Sample Name") {
             }
         }
 
-        val sample = TextData(MainViewComponent.content)
+        val sample = TextData(MainViewComponent.content, text)
         val className = ClassList.list.selection()
         if(className != null) {
-            Monitor.add(text, sample, className)
+            API.addSample(sample, className)
         } else {
             val label = JLabel("No class selected. Create variable sample?")
             label.font = ClassificationFrame.fonts[0]
@@ -48,7 +48,7 @@ object SampleNameInput: HintTextField("Sample Name") {
                 "ClassConfirmation", JOptionPane.YES_NO_OPTION
             )
             if(classlessAdd != JOptionPane.YES_OPTION) return
-            Monitor.add(text, sample)
+            API.addSample(sample)
         }
 
         text = ""

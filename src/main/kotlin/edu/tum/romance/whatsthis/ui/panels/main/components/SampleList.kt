@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.panels.main.components
 
-import edu.tum.romance.whatsthis.nlp.Monitor
+import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.component.VectorModel
 import edu.tum.romance.whatsthis.ui.component.VectorTable
 import java.awt.datatransfer.StringSelection
@@ -12,21 +12,23 @@ import javax.swing.JTabbedPane
 import javax.swing.TransferHandler
 
 object SampleList: JTabbedPane() {
-    private var items = Monitor.cacheKeys().sorted().toMutableList()
+    private var items = API.vectors().sorted().toMutableList()
 
+    // TODO: Rewrite this to use a shared state where the model
+    //       changes are reflected on change of the state
     private val listVariants = arrayOf(VectorTable(VectorModel(
         null,
         { idx, value -> items[idx] = value; items.sort() },
         { idx -> items[idx] },
-        { old, new -> Monitor.renameInCache(old, new) },
-        { name -> name in Monitor.cacheKeys() },
+        { old, new -> API.vectors[old] = new },
+        { name -> name in API.vectors() },
         { items.size }
     )), VectorTable(VectorModel(
         null,
         { idx, value -> items[idx] = value; items.sort() },
         { idx -> items[idx] },
-        { old, new -> Monitor.renameInCache(old, new) },
-        { name -> name in Monitor.unclassified() },
+        { old, new -> API.vectors[old] = new },
+        { name -> name in API.vectors() },
         { items.size }
     ))).map {
         it.apply {
@@ -35,7 +37,7 @@ object SampleList: JTabbedPane() {
                 if(!e.valueIsAdjusting) {
                     val selection = selection()
                     if(!selection.isNullOrEmpty()) {
-                        val sample = Monitor.loadFromCache(selection)
+                        val sample = API.vectors[selection]
                         if(sample != null) {
                             MainViewComponent.content = sample.text
                         }
@@ -71,16 +73,14 @@ object SampleList: JTabbedPane() {
 
     fun update() {
         if(this.selectedIndex == 0) {
-            items = Monitor.cacheKeys().sorted().toMutableList()
+            items = API.vectors().sorted().toMutableList()
             val classFilter = ClassList.list.selection()
-            if(classFilter != null && (classFilter in Monitor)) {
-                items = items.filter {
-                    Monitor[classFilter]!!.contains(it)
-                }.toMutableList()
+            if(classFilter != null && (classFilter in API.spaces())) {
+                items = API.spaceVectors(classFilter).sorted().toMutableList()
             }
             list.update()
         } else {
-            items = Monitor.unclassified()
+            items = API.vectors().sorted().toMutableList()
             list.update()
         }
     }

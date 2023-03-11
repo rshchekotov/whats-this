@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.ui.panels.main.menu
 
 import edu.tum.romance.whatsthis.io.TextData
-import edu.tum.romance.whatsthis.nlp.Monitor
+import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.panels.main.loader.ModelImporter
 import java.awt.event.KeyEvent
@@ -21,7 +21,7 @@ object ModelMenu: JMenu("Models") {
         saveItem.addActionListener {
             val label = JLabel("Are you sure you want to delete the current model?")
             label.font = ClassificationFrame.fonts[0]
-            if(Monitor.isEmpty() || JOptionPane.showConfirmDialog(
+            if(API.isEmpty() || JOptionPane.showConfirmDialog(
                     ClassificationFrame,
                     label,
                     "Delete Model",
@@ -31,40 +31,40 @@ object ModelMenu: JMenu("Models") {
             ) {
                 ModelImporter(
                     mapOf(
-                        "Mathematics" to listOf<Pair<String, () -> TextData<*>>>(
-                            "Interpolation" to { TextData.wiki("Interpolation") },
-                            "Pi" to { TextData.wiki("Pi") },
-                            "Euler's Number" to { TextData.wiki("E_(mathematical_constant)") },
-                            "Infinite Natural Sum" to { TextData.wiki("1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF") },
-                            "Riemann Zeta Function" to { TextData.wiki("Riemann_zeta_function") },
-                            "Euler's Identity" to { TextData.wiki("Euler%27s_identity") },
-                            "Complex Logarithm" to { TextData.wiki("Complex_logarithm") },
-                            "Hybercube" to { TextData.wiki("Hypercube") },
-                            "Tesseract" to { TextData.wiki("Tesseract") },
-                            "Klein Bottle" to { TextData.wiki("Klein_bottle") },
-                            "Sierpinski Triangle" to { TextData.wiki("Sierpinski_triangle") },
-                            "Manifold" to { TextData.wiki("Manifold") },
-                            "Polyhedron" to { TextData.wiki("Polyhedron") },
-                            "Hyperbolic Geometry" to { TextData.wiki("Hyperbolic_geometry") },
-                            "Mandelbrot Set" to { TextData.wiki("Mandelbrot_set") },
-                            "Julia Set" to { TextData.wiki("Julia_set") },
-                            "Trigonometric Functions" to { TextData.wiki("Trigonometric_functions") },
+                        "Mathematics" to listOf<() -> TextData<*>>(
+                            { TextData.wiki("Interpolation", "Interpolation") },
+                            { TextData.wiki("Pi", "Pi") },
+                            { TextData.wiki("E_(mathematical_constant)", "Euler's Number") },
+                            { TextData.wiki("1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF", "Infinite Natural Sum") },
+                            { TextData.wiki("Riemann_zeta_function", "Riemann Zeta Function") },
+                            { TextData.wiki("Euler%27s_identity", "Euler's Identity") },
+                            { TextData.wiki("Complex_logarithm", "Complex logarithm") },
+                            { TextData.wiki("Hypercube", "Hybercube") },
+                            { TextData.wiki("Tesseract", "Tesseract") },
+                            { TextData.wiki("Klein_bottle", "Klein bottle") },
+                            { TextData.wiki("Sierpinski_triangle", "Sierpinski Triangle") },
+                            { TextData.wiki("Manifold", "Manifold") },
+                            { TextData.wiki("Polyhedron", "Polyhedron") },
+                            { TextData.wiki("Hyperbolic_geometry", "Hyberbolic geometry") },
+                            { TextData.wiki("Mandelbrot_set", "Mandelbrot set") },
+                            { TextData.wiki("Julia_set", "Julia set") },
+                            { TextData.wiki("Trigonometric_functions", "Trigonometric functions") },
                         ),
-                        "Biology" to listOf<Pair<String, () -> TextData<*>>>(
-                            "Heart" to { TextData.wiki("Heart") },
-                            "Brain" to { TextData.wiki("Brain") },
-                            "Lung" to { TextData.wiki("Lung") },
-                            "Liver" to { TextData.wiki("Liver") },
-                            "Kidney" to { TextData.wiki("Kidney") },
-                            "Stomach" to { TextData.wiki("Stomach") },
-                            "Pancreas" to { TextData.wiki("Pancreas") },
-                            "Spleen" to { TextData.wiki("Spleen") },
-                            "Muscle" to { TextData.wiki("Skeletal_muscle") },
-                            "DNA" to { TextData.wiki("DNA") },
-                            "RNA" to { TextData.wiki("RNA") },
-                            "Protein" to { TextData.wiki("Protein") },
-                            "Cell" to { TextData.wiki("Cell_(biology)") },
-                            "Tissue" to { TextData.wiki("Tissue") },
+                        "Biology" to listOf<() -> TextData<*>>(
+                            { TextData.wiki("Heart", "Heart") },
+                            { TextData.wiki("Brain", "Brain") },
+                            { TextData.wiki("Lung", "Lung") },
+                            { TextData.wiki("Liver", "Liver") },
+                            { TextData.wiki("Kidney", "Kidney") },
+                            { TextData.wiki("Stomach", "Stomach") },
+                            { TextData.wiki("Pancreas", "Pancreas") },
+                            { TextData.wiki("Spleen", "Spleen") },
+                            { TextData.wiki("Skeletal_muscle", "Muscle") },
+                            { TextData.wiki("DNA", "DNA") },
+                            { TextData.wiki("RNA", "RNA") },
+                            { TextData.wiki("Protein", "Protein") },
+                            { TextData.wiki("Cell_(biology)", "Cell") },
+                            { TextData.wiki("Tissue", "Tissue") },
                         )
                     )
                 )

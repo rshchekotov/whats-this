@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.panels.main.components
 
-import edu.tum.romance.whatsthis.nlp.Monitor
+import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.component.HintTextField
 
@@ -12,11 +12,11 @@ object ClassInput: HintTextField("Class Name") {
 
     fun submit() {
         if(text.isNotBlank()) {
-            if(text in Monitor) {
+            if(text in API.spaces) {
                 ClassificationFrame.visualError("Class '$text' already exists!")
                 return
             }
-            Monitor.createCloud(text)
+            API.alterSpace(text)
             ClassList.update()
             text = ""
         } else {
