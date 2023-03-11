@@ -205,6 +205,20 @@ internal class APITest {
         assertContentEquals(vec.data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
         assertContentEquals(Vector(0).data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
     }
+
+    @Test
+    @Order(6)
+    fun testAssignmentFromVariable() {
+        val sample = TextData("this is a simple sample", "Simple Sample")
+        API.addSample(sample)
+        assertEquals(0, API.spaces().size, "There should be no vector spaces!")
+        assertEquals(1, API.spaces.unclassified().size, "There should be one unclassified sample!")
+        API.addSample(sample, "Example")
+        assertEquals(1, API.spaces().size, "There should be one vector space!")
+        assertEquals(0, API.spaces.unclassified().size, "There should be no unclassified samples!")
+        assertTrue("Example" in API.spaces, "Example should be in the vector spaces!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
+    }
 }
 
 /**
