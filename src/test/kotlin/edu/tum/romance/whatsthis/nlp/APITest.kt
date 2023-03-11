@@ -69,6 +69,36 @@ internal class APITest {
     }
 
     @Test
+    @Order(3)
+    fun testTwoSpaces() {
+        val simpleSample = TextData("this is a simple sample", "Simple Sample")
+        val splineSample = TextData(
+            """This is an excerpt from the 'Cubic Spline'-Wikipedia page {\displaystyle p(t) = 2t^3 - 3t^2 + 1}""",
+            "Cubic Spline"
+        )
+        API.addSample(simpleSample, "Example")
+        API.addSample(splineSample, "Math")
+        assertEquals(2, API.vectors.size(), "There should be two Vectors!")
+        assertEquals(13, API.vocabulary.size(), "Vocabulary size does not match!")
+        assertEquals(2, API.spaces().size, "There should be two Vector Spaces!")
+        assertTrue("Example" in API.spaces(), "Vector Space 'Example' does not exist!")
+        assertTrue("Math" in API.spaces(), "Vector Space 'Math' does not exist!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "There should be one Vector in Vector Space 'Example'!")
+        assertEquals(1, API.spaces["Math"]!!.size(), "There should be one Vector in Vector Space 'Math'!")
+        assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
+        assertEquals(13, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
+        (0 until 5).forEach { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
+        (5 until 13).forEach { assertEquals(0.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
+        assertNotNull(API.vectors["Cubic Spline"]!!.vector, "Vector 'Cubic Spline' does not exist!")
+        assertEquals(13, API.vectors["Cubic Spline"]!!.vector!!.size(), "Vector 'Cubic Spline' size does not match!")
+        (0 until 2).forEach { assertEquals(1.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
+        (2 until 5).forEach { assertEquals(0.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
+        (5 until 13).forEach { assertEquals(1.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
+        assertContentEquals(API.vectors["Simple Sample"]!!.vector!!.clone().unit(EuclideanDistance).data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        assertContentEquals(API.vectors["Cubic Spline"]!!.vector!!.clone().unit(EuclideanDistance).data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
+    }
+
+    @Test
     @Disabled
     fun testCloudSignificance() {
         val simpleSample = TextData("this is a simple sample", "Simple Sample")
