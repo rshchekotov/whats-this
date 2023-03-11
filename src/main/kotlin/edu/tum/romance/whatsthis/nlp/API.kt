@@ -31,8 +31,7 @@ object API {
     fun alterSpace(space: String, rename: String? = null) {
         if(rename != null) {
             if(space in spaces) {
-                spaces[rename] = spaces[space]!!
-                spaces -= space
+                spaces.rename(space, rename)
             } else {
                 spaces += rename
             }

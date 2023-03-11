@@ -17,7 +17,7 @@ import edu.tum.romance.whatsthis.math.Vector
  *
  * @property name The name of the vector space
  */
-class VectorSpace(val name: String) {
+class VectorSpace(var name: String) {
     private val vectors = mutableListOf<Int>()
 
     // Computed Properties

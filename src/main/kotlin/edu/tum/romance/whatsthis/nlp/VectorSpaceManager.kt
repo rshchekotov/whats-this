@@ -66,6 +66,13 @@ object VectorSpaceManager {
         dirty = true
     }
 
+    fun rename(old: String, new: String) {
+        val index = reverse[old] ?: return
+        reverse.remove(old)
+        reverse[new] = index
+        spaces[index].first.name = new
+    }
+
     fun unclassified(): List<Int> = unclassified.toList()
 
     fun unclassified(ref: Int) {
