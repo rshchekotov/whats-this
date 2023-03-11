@@ -188,6 +188,23 @@ internal class APITest {
             "Significance of 'Math' does not match!"
         )
     }
+
+    @Test
+    @Order(5)
+    fun testReassignment() {
+        val sample = TextData("this is a simple sample", "Simple Sample")
+        API.addSample(sample, "Example")
+        assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
+        val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(EuclideanDistance)
+        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        assertFalse("Math" in API.spaces, "Math should not be in the vector spaces!")
+        API.addSample(sample, "Math")
+        assertTrue("Math" in API.spaces, "Math should now be in the vector spaces!")
+        assertEquals(1, API.spaces["Math"]!!.size(), "Sample was not moved to the vector space 'Math'!")
+        assertEquals(0, API.spaces["Example"]!!.size(), "Sample was not removed from the vector space 'Example'!")
+        assertContentEquals(vec.data, API.spaces["Math"]!!.summary(EuclideanDistance).data, "Summary of 'Math' does not match!")
+        assertContentEquals(Vector(0).data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+    }
 }
 
 /**
