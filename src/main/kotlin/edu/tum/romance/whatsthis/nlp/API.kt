@@ -60,9 +60,9 @@ object API {
         }
         /* Register new Vector */
         val ref: Int
-        if(sample in vectors) {
-            vectors[sample.text] = sample
-            ref = vectors.ref(sample.text)
+        if(sample.name in vectors()) {
+            vectors[sample.name] = sample
+            ref = vectors.ref(sample.name)
         } else {
             ref = vectors.size()
             vectors += sample
