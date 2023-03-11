@@ -40,7 +40,7 @@ class VectorSpace(val name: String) {
                 val textVector = WordVectorManager[ref]
                 if (textVector != null) {
                     if (summary.size() == 0) {
-                        summary = textVector.vector!!
+                        summary = textVector.vector!!.clone()
                     } else {
                         summary.plusAssign(textVector.vector!!)
                     }
