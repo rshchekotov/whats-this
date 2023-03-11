@@ -4,8 +4,12 @@ import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.math.EuclideanDistance
 import edu.tum.romance.whatsthis.math.Vector
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.TestMethodOrder
 import kotlin.test.*
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 internal class APITest {
     @BeforeTest
     fun clean() {
@@ -13,6 +17,7 @@ internal class APITest {
     }
 
     @Test
+    @Order(1)
     fun testAddSingleSample() {
         API.addSample(TextData("this is a simple sample", "Simple Sample"), "Example")
         assertEquals(1, API.vectors.size(), "There should be one Vector!")
@@ -22,10 +27,45 @@ internal class APITest {
         assertEquals(1, API.spaces["Example"]!!.size(), "There should be one Vector in Vector Space 'Example'!")
         assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
         assertEquals(5, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
-        (0 until 5).map { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
+        (0 until 5).forEach { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
         val vec = Vector(arrayOf(1, 1, 1, 1, 1)).unit(EuclideanDistance)
         assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
         assertContentEquals(vec.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
+    }
+
+    @Test
+    @Order(2)
+    fun testTwoSamples() {
+        API.addSample(TextData("this is a simple sample", "Simple Sample"), "Example")
+        assertEquals(1, API.vectors.size(), "There should be one Vector!")
+        assertEquals(5, API.vocabulary.size(), "Vocabulary size does not match!")
+        assertEquals(1, API.spaces().size, "There should be one Vector Space!")
+        assertTrue("Example" in API.spaces(), "Vector Space 'Example' does not exist!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "There should be one Vector in Vector Space 'Example'!")
+        assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
+        assertEquals(5, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
+        (0 until 5).forEach { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' has been altered!") }
+
+        API.addSample(TextData("this is a short sample", "Short Sample"), "Example")
+        assertEquals(2, API.vectors.size(), "There should be two Vectors!")
+        assertEquals(6, API.vocabulary.size(), "Vocabulary size does not match!")
+        assertEquals(1, API.spaces().size, "There should be one Vector Space!")
+        assertTrue("Example" in API.spaces(), "Vector Space 'Example' does not exist!")
+        assertEquals(2, API.spaces["Example"]!!.size(), "There should be two Vectors in Vector Space 'Example'!")
+        assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
+        assertEquals(6, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
+        (0 until 5).forEach { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' has been altered!") }
+        assertEquals(0.0, API.vectors["Simple Sample"]!!.vector!![5], "Vector 'Simple Sample' does not match!")
+        assertNotNull(API.vectors["Short Sample"]!!.vector, "Vector 'Short Sample' does not exist!")
+        assertEquals(6, API.vectors["Short Sample"]!!.vector!!.size(), "Vector 'Short Sample' size does not match!")
+        (0 until 6).forEach {
+            val expected = if (it == 3) 0.0 else 1.0
+            assertEquals(expected, API.vectors["Short Sample"]!!.vector!![it], "Vector 'Short Sample' does not match!")
+        }
+        val vec = Vector(arrayOf(2, 2, 2, 1, 2, 1)).unit(EuclideanDistance)
+        val unit = Vector(arrayOf(1, 1, 1, 1, 1, 1)).unit(EuclideanDistance)
+        assertContentEquals(vec.data, API.spaces["Example"]!!.summary(EuclideanDistance).data, "Summary of 'Example' does not match!")
+        assertContentEquals(unit.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
     }
 
     @Test
