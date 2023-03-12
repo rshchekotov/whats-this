@@ -38,12 +38,16 @@ object ClassificationFrame: JFrame() {
     }
 
     fun swapView(view: View) {
-        this.content.onClose()
+        this.content.onUnload()
         this.remove(content)
         this.content = view
         this.add(content)
         this.pack()
-        this.content.onOpen()
+        this.content.onLoad()
+    }
+
+    fun componentSize(percentage: Pair<Double, Double>): Dimension {
+        return Dimension((width * percentage.first).toInt(), (height * percentage.second).toInt())
     }
 
     fun unimplemented() {
@@ -58,5 +62,12 @@ object ClassificationFrame: JFrame() {
         label.font = fonts[0]
         JOptionPane.showMessageDialog(this, label,
             "Error", JOptionPane.ERROR_MESSAGE)
+    }
+
+    fun visualQuestion(message: String): Boolean {
+        val label = JLabel(message)
+        label.font = fonts[0]
+        return JOptionPane.showConfirmDialog(this, label,
+            "Question", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
     }
 }
