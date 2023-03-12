@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.space
 
+import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.views.main.MainView
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -13,6 +14,7 @@ object SpaceListPane: JScrollPane(
     val table = SpaceList
 
     init {
+        this.font = ClassificationFrame.fonts[0]
         addMouseListener(object: MouseAdapter() {
             override fun mouseReleased(e: MouseEvent) {
                 if(e.button == MouseEvent.BUTTON1) {

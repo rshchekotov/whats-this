@@ -102,7 +102,6 @@ abstract class TextData<T> {
             return InMemorySourceData(string, name)
         }
 
-        @Suppress("unused")
         fun wiki(slug: String, name: String): TextData<URL> {
             return WebSourceData(URL("https://en.wikipedia.org/wiki/$slug"), name)
         }

@@ -20,6 +20,10 @@ object API {
 
     fun vectors() = vectors.names()
 
+    fun classified(): List<String> {
+        return vectors().filter { WordVectorManager.ref(it) !in spaces.unclassified() }
+    }
+
     fun spaceVectors(name: String? = null): List<String> {
         return if(name != null) {
             spaces[name]?.let { space -> space.vectors().map { vectors.name(it) } } ?: emptyList()

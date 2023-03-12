@@ -7,16 +7,20 @@ import javax.swing.table.AbstractTableModel
 
 object ClassifiedListModel: AbstractTableModel() {
     private var space: String? = null
-    private val samples
-        get() = API.spaceVectors(space)
+    private val samples: List<String>
+        get() {
+            return if(space != null) {
+                API.spaceVectors(space)
+            } else {
+                API.classified()
+            }
+        }
 
     init {
         MainView.selectedSpace.observe(1) {
             val new = it.second
-            if(new != -1) {
-                space = API.spaces()[new]
-                fireTableDataChanged()
-            }
+            space = if(new != -1) API.spaces()[new] else null
+            fireTableDataChanged()
         }
 
         MainView.dataUpdate.observe(1) {

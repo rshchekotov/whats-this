@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.sample
 
+import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.views.main.MainView
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.list.ClassifiedListModel
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.list.SampleListPane
@@ -24,10 +25,10 @@ object SampleList: JTabbedPane() {
     init {
         addTab("Classified Samples", classifiedPane)
         addTab("Unclassified Samples", unclassifiedPane)
-
         val panes = arrayOf(classifiedPane, unclassifiedPane)
         @Suppress("DuplicatedCode")
         for(pane in panes) {
+            pane.font = ClassificationFrame.fonts[0]
             pane.addMouseListener(object: MouseAdapter() {
                 override fun mouseReleased(e: MouseEvent) {
                     if(e.button == MouseEvent.BUTTON1) {

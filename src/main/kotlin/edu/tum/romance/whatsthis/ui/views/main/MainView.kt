@@ -2,6 +2,7 @@ package edu.tum.romance.whatsthis.ui.views.main
 
 import edu.tum.romance.whatsthis.io.TextData
 import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.componentSize
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.unimplemented
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
@@ -11,6 +12,8 @@ import edu.tum.romance.whatsthis.ui.components.SymbolicButton
 import edu.tum.romance.whatsthis.ui.views.View
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataTextView
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataVectorView
+import edu.tum.romance.whatsthis.ui.views.main.components.menu.TopBar
+import edu.tum.romance.whatsthis.ui.views.main.components.menu.importer.ModelImporter
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleInput
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleList
 import edu.tum.romance.whatsthis.ui.views.main.components.source.SourceSelector
@@ -41,8 +44,11 @@ object MainView: View() {
     val selectedData = Observable(-1)
     val dataUpdateAttempt = Observable(false)
     val dataUpdate = Observable(false)
+
     val selectedSpace = Observable(-1)
     val spaceUpdate = Observable(false)
+
+    val progressUpdate = Observable("Invalid" to -1.0)
     //#endregion
 
     //#region Data Views
@@ -140,6 +146,8 @@ object MainView: View() {
         layout.putConstraint(SpringLayout.WEST, SampleList, 5, SpringLayout.EAST, SpaceListPane)
         layout.putConstraint(SpringLayout.SOUTH, SampleList, 0, SpringLayout.SOUTH, SpaceListPane)
         layout.putConstraint(SpringLayout.EAST, SampleList, -5, SpringLayout.EAST, this)
+
+        ModelImporter.classLoad()
     }
 
     private fun setupMainView(change: Pair<Int, Int>) {
@@ -229,6 +237,7 @@ object MainView: View() {
     }
 
     override fun onLoad() {
+        ClassificationFrame.jMenuBar = TopBar
         selectedSourceType.observe(1, ::setupSourceInput)
         selectedDataViewType.observe(1, ::setupMainView)
 
@@ -236,6 +245,7 @@ object MainView: View() {
     }
 
     override fun onUnload() {
+        ClassificationFrame.jMenuBar = null
         selectedSourceType.stopObserving(1)
         selectedDataViewType.stopObserving(1)
         dataUpdateAttempt.stopObserving(1)
