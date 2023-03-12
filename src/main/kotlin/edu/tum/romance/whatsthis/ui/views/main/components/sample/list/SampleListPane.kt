@@ -1,17 +1,20 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.sample.list
 
 import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.views.main.MainView
+import java.awt.Component
 import java.awt.datatransfer.StringSelection
 import javax.swing.JComponent
 import javax.swing.JTable
 import javax.swing.TransferHandler
 import javax.swing.table.AbstractTableModel
+import javax.swing.table.TableCellEditor
 
 class SampleListPane(model: AbstractTableModel): JTable(model) {
     init {
         tableHeader.setUI(null)
-
+        font = ClassificationFrame.fonts[0]
         selectionModel.addListSelectionListener {
             if(!it.valueIsAdjusting) {
                 val selection = selection()
@@ -36,5 +39,11 @@ class SampleListPane(model: AbstractTableModel): JTable(model) {
             return model.getValueAt(selectedRow, 0) as String
         }
         return null
+    }
+
+    override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
+        val prepared = super.prepareEditor(editor, row, column)
+        prepared.font = ClassificationFrame.fonts[0]
+        return prepared
     }
 }

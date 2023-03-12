@@ -67,11 +67,11 @@ object WordVectorManager {
         val index = reverse[old]
         if (index != null) {
             if(new in reverse) {
-                val replace = reverse[new]!!
-                this -= vectors[replace]
-                reverse -= old
-                reverse[new] = index
+                API.deleteSample(new)
             }
+            reverse -= old
+            reverse[new] = index
+            vectors[index].name = new
         }
     }
 
