@@ -11,6 +11,8 @@ import javax.swing.table.AbstractTableModel
 
 class SampleListPane(model: AbstractTableModel): JTable(model), Loadable {
     init {
+        tableHeader.setUI(null)
+
         selectionModel.addListSelectionListener {
             if(!it.valueIsAdjusting) {
                 val selection = selection()

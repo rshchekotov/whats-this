@@ -7,17 +7,17 @@ import edu.tum.romance.whatsthis.ui.ClassificationFrame.unimplemented
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualQuestion
 import edu.tum.romance.whatsthis.ui.components.Loadable
-import edu.tum.romance.whatsthis.ui.components.StyledButton
+import edu.tum.romance.whatsthis.ui.components.SymbolicButton
 import edu.tum.romance.whatsthis.ui.views.View
-import edu.tum.romance.whatsthis.ui.views.main.components.source.SourceSelector
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataTextView
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataVectorView
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleInput
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleList
+import edu.tum.romance.whatsthis.ui.views.main.components.source.SourceSelector
 import edu.tum.romance.whatsthis.ui.views.main.components.source.io.FileSourceInput
 import edu.tum.romance.whatsthis.ui.views.main.components.source.io.WebSourceInput
 import edu.tum.romance.whatsthis.ui.views.main.components.space.SpaceInput
-import edu.tum.romance.whatsthis.ui.views.main.components.space.SpaceList
+import edu.tum.romance.whatsthis.ui.views.main.components.space.SpaceListPane
 import edu.tum.romance.whatsthis.util.observer.Observable
 import edu.tum.romance.whatsthis.util.observer.trigger
 import java.awt.Dimension
@@ -61,19 +61,19 @@ object MainView: View() {
     //#endregion
 
     //#region Components
-    private val sourceButton = StyledButton(0, "⏎", "Load data from source") {
+    private val sourceButton = SymbolicButton("⏎", "Load data from source") {
         (sourceInput as Runnable).run()
     }
 
-    private val spaceButton = StyledButton(0, "⏎", "Create Vector Space") {
+    private val spaceButton = SymbolicButton("⏎", "Create Vector Space") {
         (SpaceInput as Runnable).run()
     }
 
-    private val sampleButton = StyledButton(0, "⏎", "Create Sample") {
+    private val sampleButton = SymbolicButton("⏎", "Create Sample") {
         (SampleInput as Runnable).run()
     }
 
-    private val classifyButton = StyledButton(0, "✓", "Classify the sample") {
+    private val classifyButton = SymbolicButton("✓", "Classify the sample") {
         unimplemented()
     }
     //#endregion
@@ -87,15 +87,16 @@ object MainView: View() {
 
         setupSourceInput(-1 to 0)
 
-        add(sourceButton)
-        sourceButton.preferredSize = componentSize(3 to 3, 1 to 1)
-        layout.putConstraint(SpringLayout.NORTH, sourceButton, 0, SpringLayout.NORTH, sourceInput)
-        layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
-
         add(SourceSelector)
         SourceSelector.preferredSize = componentSize(4 to 4, 1 to 1)
         layout.putConstraint(SpringLayout.NORTH, SourceSelector, 5, SpringLayout.SOUTH, dataView)
         layout.putConstraint(SpringLayout.EAST, SourceSelector, -5, SpringLayout.EAST, this)
+
+        add(sourceButton)
+        sourceButton.preferredSize = componentSize(3 to 3, 1 to 1)
+        layout.putConstraint(SpringLayout.NORTH, sourceButton, 0, SpringLayout.NORTH, SourceSelector)
+        layout.putConstraint(SpringLayout.EAST, sourceButton, -5, SpringLayout.WEST, SourceSelector)
+        layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
 
         add(SpaceInput)
         SpaceInput.preferredSize = componentSize(0 to 0, 2 to 2)
@@ -126,18 +127,18 @@ object MainView: View() {
         layout.putConstraint(SpringLayout.WEST, classifyButton, 0, SpringLayout.WEST, SourceSelector)
         layout.putConstraint(SpringLayout.EAST, classifyButton, -5, SpringLayout.EAST, this)
 
-        add(SpaceList)
-        SpaceList.preferredSize = componentSize(0 to 1, 3 to 3)
-        layout.putConstraint(SpringLayout.NORTH, SpaceList, 5, SpringLayout.SOUTH, SpaceInput)
-        layout.putConstraint(SpringLayout.WEST, SpaceList, 5, SpringLayout.WEST, this)
-        layout.putConstraint(SpringLayout.SOUTH, SpaceList, -5, SpringLayout.SOUTH, this)
-        layout.putConstraint(SpringLayout.EAST, SpaceList, 0, SpringLayout.EAST, spaceButton)
+        add(SpaceListPane)
+        SpaceListPane.preferredSize = componentSize(0 to 1, 3 to 3)
+        layout.putConstraint(SpringLayout.NORTH, SpaceListPane, 5, SpringLayout.SOUTH, SpaceInput)
+        layout.putConstraint(SpringLayout.WEST, SpaceListPane, 5, SpringLayout.WEST, this)
+        layout.putConstraint(SpringLayout.SOUTH, SpaceListPane, -5, SpringLayout.SOUTH, this)
+        layout.putConstraint(SpringLayout.EAST, SpaceListPane, 0, SpringLayout.EAST, spaceButton)
 
         add(SampleList)
         SampleList.preferredSize = componentSize(2 to 4, 3 to 3)
-        layout.putConstraint(SpringLayout.NORTH, SampleList, 0, SpringLayout.NORTH, SpaceList)
-        layout.putConstraint(SpringLayout.WEST, SampleList, 5, SpringLayout.EAST, SpaceList)
-        layout.putConstraint(SpringLayout.SOUTH, SampleList, 0, SpringLayout.SOUTH, SpaceList)
+        layout.putConstraint(SpringLayout.NORTH, SampleList, 0, SpringLayout.NORTH, SpaceListPane)
+        layout.putConstraint(SpringLayout.WEST, SampleList, 5, SpringLayout.EAST, SpaceListPane)
+        layout.putConstraint(SpringLayout.SOUTH, SampleList, 0, SpringLayout.SOUTH, SpaceListPane)
         layout.putConstraint(SpringLayout.EAST, SampleList, -5, SpringLayout.EAST, this)
     }
 
@@ -179,17 +180,16 @@ object MainView: View() {
             layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, dataView)
 
             if(old != -1) {
-                layout.putConstraint(SpringLayout.NORTH, sourceButton, 0, SpringLayout.NORTH, sourceInput)
-                layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
-
                 layout.putConstraint(SpringLayout.EAST, SampleInput, 0, SpringLayout.EAST, sourceInput)
+
+                layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
             }
         }
     }
 
     private fun componentSize(xStretch: Pair<Int, Int>, yStretch: Pair<Int, Int>): Dimension {
-        val x = weights[0].slice(xStretch.first until xStretch.second).sum()
-        val y = weights[1].slice(yStretch.first until yStretch.second).sum()
+        val x = weights[0].slice(xStretch.first .. xStretch.second).sum()
+        val y = weights[1].slice(yStretch.first .. yStretch.second).sum()
         return componentSize(x.toDouble() / xFactor to y.toDouble() / yFactor)
     }
 
