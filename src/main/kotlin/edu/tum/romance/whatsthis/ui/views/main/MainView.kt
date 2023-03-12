@@ -89,65 +89,90 @@ object MainView: View() {
         this.layout = layout
         this.preferredSize = componentSize(0 to 4, 0 to 3)
 
+        DataTextView.preferredSize = dataViewSize
+        DataVectorView.preferredSize = dataViewSize
         setupMainView(-1 to 0)
 
+        WebSourceInput.preferredSize = componentSize(0 to 2, 1 to 1)
+        FileSourceInput.preferredSize = componentSize(0 to 2, 1 to 1)
         setupSourceInput(-1 to 0)
 
         add(SourceSelector)
         SourceSelector.preferredSize = componentSize(4 to 4, 1 to 1)
-        layout.putConstraint(SpringLayout.NORTH, SourceSelector, 5, SpringLayout.SOUTH, dataView)
-        layout.putConstraint(SpringLayout.EAST, SourceSelector, -5, SpringLayout.EAST, this)
 
         add(sourceButton)
         sourceButton.preferredSize = componentSize(3 to 3, 1 to 1)
+
+        add(SpaceInput)
+        SpaceInput.preferredSize = componentSize(0 to 0, 2 to 2)
+
+        add(spaceButton)
+        spaceButton.preferredSize = componentSize(1 to 1, 2 to 2)
+
+        add(SampleInput)
+        SampleInput.preferredSize = componentSize(2 to 2, 2 to 2)
+
+        add(sampleButton)
+        sampleButton.preferredSize = componentSize(3 to 3, 2 to 2)
+
+        add(classifyButton)
+        classifyButton.preferredSize = componentSize(4 to 4, 2 to 2)
+
+        add(SpaceListPane)
+        SpaceListPane.preferredSize = componentSize(0 to 1, 3 to 3)
+
+        add(SampleList)
+        SampleList.preferredSize = componentSize(2 to 4, 3 to 3)
+
+        rewire()
+
+        ModelImporter.classLoad()
+    }
+
+    private fun rewire() {
+        val layout = this.layout as SpringLayout
+
+        layout.putConstraint(SpringLayout.WEST, dataView, 5, SpringLayout.WEST, this)
+        layout.putConstraint(SpringLayout.NORTH, dataView, 5, SpringLayout.NORTH, this)
+        layout.putConstraint(SpringLayout.EAST, dataView, -5, SpringLayout.EAST, this)
+
+        layout.putConstraint(SpringLayout.WEST, sourceInput, 5, SpringLayout.WEST, this)
+        layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, dataView)
+
+        layout.putConstraint(SpringLayout.NORTH, SourceSelector, 5, SpringLayout.SOUTH, dataView)
+        layout.putConstraint(SpringLayout.EAST, SourceSelector, -5, SpringLayout.EAST, this)
+
         layout.putConstraint(SpringLayout.NORTH, sourceButton, 0, SpringLayout.NORTH, SourceSelector)
         layout.putConstraint(SpringLayout.EAST, sourceButton, -5, SpringLayout.WEST, SourceSelector)
         layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
 
-        add(SpaceInput)
-        SpaceInput.preferredSize = componentSize(0 to 0, 2 to 2)
         layout.putConstraint(SpringLayout.NORTH, SpaceInput, 5, SpringLayout.SOUTH, SourceSelector)
         layout.putConstraint(SpringLayout.WEST, SpaceInput, 5, SpringLayout.WEST, this)
 
-        add(spaceButton)
-        spaceButton.preferredSize = componentSize(1 to 1, 2 to 2)
         layout.putConstraint(SpringLayout.NORTH, spaceButton, 0, SpringLayout.NORTH, SpaceInput)
         layout.putConstraint(SpringLayout.WEST, spaceButton, 5, SpringLayout.EAST, SpaceInput)
 
-
-        add(SampleInput)
-        SampleInput.preferredSize = componentSize(2 to 2, 2 to 2)
         layout.putConstraint(SpringLayout.NORTH, SampleInput, 0, SpringLayout.NORTH, spaceButton)
         layout.putConstraint(SpringLayout.WEST, SampleInput, 5, SpringLayout.EAST, spaceButton)
         layout.putConstraint(SpringLayout.EAST, SampleInput, 0, SpringLayout.EAST, sourceInput)
 
-        add(sampleButton)
-        sampleButton.preferredSize = componentSize(3 to 3, 2 to 2)
         layout.putConstraint(SpringLayout.NORTH, sampleButton, 0, SpringLayout.NORTH, SampleInput)
         layout.putConstraint(SpringLayout.WEST, sampleButton, 5, SpringLayout.EAST, SampleInput)
         layout.putConstraint(SpringLayout.EAST, sampleButton, 0, SpringLayout.EAST, sourceButton)
 
-        add(classifyButton)
-        classifyButton.preferredSize = componentSize(4 to 4, 2 to 2)
         layout.putConstraint(SpringLayout.NORTH, classifyButton, 0, SpringLayout.NORTH, sampleButton)
         layout.putConstraint(SpringLayout.WEST, classifyButton, 0, SpringLayout.WEST, SourceSelector)
         layout.putConstraint(SpringLayout.EAST, classifyButton, -5, SpringLayout.EAST, this)
 
-        add(SpaceListPane)
-        SpaceListPane.preferredSize = componentSize(0 to 1, 3 to 3)
         layout.putConstraint(SpringLayout.NORTH, SpaceListPane, 5, SpringLayout.SOUTH, SpaceInput)
         layout.putConstraint(SpringLayout.WEST, SpaceListPane, 5, SpringLayout.WEST, this)
         layout.putConstraint(SpringLayout.SOUTH, SpaceListPane, -5, SpringLayout.SOUTH, this)
         layout.putConstraint(SpringLayout.EAST, SpaceListPane, 0, SpringLayout.EAST, spaceButton)
 
-        add(SampleList)
-        SampleList.preferredSize = componentSize(2 to 4, 3 to 3)
         layout.putConstraint(SpringLayout.NORTH, SampleList, 0, SpringLayout.NORTH, SpaceListPane)
         layout.putConstraint(SpringLayout.WEST, SampleList, 5, SpringLayout.EAST, SpaceListPane)
         layout.putConstraint(SpringLayout.SOUTH, SampleList, 0, SpringLayout.SOUTH, SpaceListPane)
         layout.putConstraint(SpringLayout.EAST, SampleList, -5, SpringLayout.EAST, this)
-
-        ModelImporter.classLoad()
     }
 
     private fun setupMainView(change: Pair<Int, Int>) {
@@ -158,19 +183,11 @@ object MainView: View() {
         }
         if (new != -1) {
             val component = dataViews[new].second as JComponent
-            val layout = this.layout as SpringLayout
-
             (dataViews[new].second as Loadable).onLoad()
             add(component)
-
-            component.preferredSize = dataViewSize
-            layout.putConstraint(SpringLayout.WEST, component, 5, SpringLayout.WEST, this)
-            layout.putConstraint(SpringLayout.NORTH, component, 5, SpringLayout.NORTH, this)
-            layout.putConstraint(SpringLayout.EAST, component, -5, SpringLayout.EAST, this)
-
-            if(old != -1) {
-                layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, component)
-            }
+        }
+        if(old != -1) {
+            rewire()
         }
 
         revalidate()
@@ -179,23 +196,9 @@ object MainView: View() {
 
     private fun setupSourceInput(change: Pair<Int, Int>) {
         val (old, new) = change
-        if (old != -1) {
-            remove(sources[old].second as JComponent)
-        }
-        if (new != -1) {
-            val layout = this.layout as SpringLayout
-            add(sourceInput)
-
-            sourceInput.preferredSize = componentSize(0 to 2, 1 to 1)
-            layout.putConstraint(SpringLayout.WEST, sourceInput, 5, SpringLayout.WEST, this)
-            layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, dataView)
-
-            if(old != -1) {
-                layout.putConstraint(SpringLayout.EAST, SampleInput, 0, SpringLayout.EAST, sourceInput)
-
-                layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
-            }
-        }
+        if (old != -1) remove(sources[old].second as JComponent)
+        if (new != -1) add(sourceInput)
+        if(old != -1) rewire()
         revalidate()
         repaint()
     }
