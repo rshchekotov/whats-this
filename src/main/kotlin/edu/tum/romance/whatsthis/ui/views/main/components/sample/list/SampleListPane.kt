@@ -1,7 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.sample.list
 
 import edu.tum.romance.whatsthis.nlp.API
-import edu.tum.romance.whatsthis.ui.components.Loadable
 import edu.tum.romance.whatsthis.ui.views.main.MainView
 import java.awt.datatransfer.StringSelection
 import javax.swing.JComponent
@@ -9,7 +8,7 @@ import javax.swing.JTable
 import javax.swing.TransferHandler
 import javax.swing.table.AbstractTableModel
 
-class SampleListPane(model: AbstractTableModel): JTable(model), Loadable {
+class SampleListPane(model: AbstractTableModel): JTable(model) {
     init {
         tableHeader.setUI(null)
 
@@ -38,13 +37,4 @@ class SampleListPane(model: AbstractTableModel): JTable(model), Loadable {
         }
         return null
     }
-
-    override fun onLoad() {
-        (model as Loadable).onLoad()
-    }
-
-    override fun onUnload() {
-        (model as Loadable).onUnload()
-    }
-
 }

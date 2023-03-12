@@ -6,8 +6,6 @@ import edu.tum.romance.whatsthis.ui.views.main.MainView
 import edu.tum.romance.whatsthis.util.observer.trigger
 import java.awt.Component
 import java.awt.datatransfer.DataFlavor
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
 import javax.swing.JTable
 import javax.swing.TransferHandler
 import javax.swing.table.TableCellEditor
@@ -19,6 +17,9 @@ object SpaceList: JTable() {
         selectionModel.addListSelectionListener {
             if(!it.valueIsAdjusting) {
                 MainView.dataUpdate.trigger()
+
+                val row = selectedRow
+                MainView.selectedSpace.value = row
             }
         }
 
@@ -43,21 +44,6 @@ object SpaceList: JTable() {
         }
 
         dragEnabled = true
-
-        addMouseListener(object: MouseAdapter() {
-            override fun mouseReleased(e: MouseEvent) {
-                if(e.button == MouseEvent.BUTTON1) {
-                    val bounds = this@SpaceList.bounds
-                    val absolutePoint = e.point
-                    absolutePoint.translate(bounds.x, bounds.y)
-                    if(absolutePoint in bounds) {
-                        if(this@SpaceList.rowAtPoint(e.point) == -1) {
-                            clearSelection()
-                        }
-                    }
-                }
-            }
-        })
     }
 
     override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {

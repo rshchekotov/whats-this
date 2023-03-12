@@ -9,6 +9,9 @@ import edu.tum.romance.whatsthis.util.observer.trigger
 object SpaceInput: HintTextField("Enter space separated words"), Runnable {
     init {
         addActionListener { run() }
+        MainView.spaceUpdate.observe(2) {
+            text = ""
+        }
     }
 
     override fun run() {

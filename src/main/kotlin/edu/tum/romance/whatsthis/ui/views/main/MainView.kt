@@ -164,6 +164,9 @@ object MainView: View() {
                 layout.putConstraint(SpringLayout.NORTH, sourceInput, 5, SpringLayout.SOUTH, component)
             }
         }
+
+        revalidate()
+        repaint()
     }
 
     private fun setupSourceInput(change: Pair<Int, Int>) {
@@ -185,6 +188,8 @@ object MainView: View() {
                 layout.putConstraint(SpringLayout.WEST, sourceButton, 5, SpringLayout.EAST, sourceInput)
             }
         }
+        revalidate()
+        repaint()
     }
 
     private fun componentSize(xStretch: Pair<Int, Int>, yStretch: Pair<Int, Int>): Dimension {

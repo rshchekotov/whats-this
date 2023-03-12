@@ -2,11 +2,18 @@ package edu.tum.romance.whatsthis.ui.views.main.components.space
 
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
+import edu.tum.romance.whatsthis.ui.views.main.MainView
 import javax.swing.table.AbstractTableModel
 
 object SpaceListModel: AbstractTableModel() {
     private val spaces
         get() = API.spaces()
+
+    init {
+        MainView.spaceUpdate.observe(1) {
+            fireTableDataChanged()
+        }
+    }
 
     override fun getRowCount(): Int = spaces.size
     override fun getColumnCount(): Int = 1

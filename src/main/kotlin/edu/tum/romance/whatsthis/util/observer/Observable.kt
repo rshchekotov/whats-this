@@ -6,9 +6,9 @@ class Observable<T>(initialValue: T) {
         get() = data
         set(value) {
             if(value == data) return
+            val old = this.data
             data = value
-            val old = this.value
-            notifyObservers(old to value)
+            notifyObservers(old to data)
         }
 
     private val observers = mutableMapOf<Int, Observer<T>>()

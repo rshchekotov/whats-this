@@ -2,13 +2,18 @@ package edu.tum.romance.whatsthis.ui.views.main.components.sample.list
 
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
-import edu.tum.romance.whatsthis.ui.components.Loadable
 import edu.tum.romance.whatsthis.ui.views.main.MainView
 import javax.swing.table.AbstractTableModel
 
-object UnclassifiedListModel: AbstractTableModel(), Loadable {
+object UnclassifiedListModel: AbstractTableModel() {
     private val samples
         get() = API.spaceVectors()
+
+    init {
+        MainView.dataUpdate.observe(2) {
+            fireTableDataChanged()
+        }
+    }
 
     override fun getRowCount() = samples.size
     override fun getColumnCount() = 1
@@ -26,14 +31,5 @@ object UnclassifiedListModel: AbstractTableModel(), Loadable {
             return
         }
         API.renameSample(samples[rowIndex], aValue.toString())
-    }
-
-    override fun onLoad() {
-        MainView.dataUpdate.observe(1) {
-            fireTableDataChanged()
-        }
-    }
-    override fun onUnload() {
-        MainView.dataUpdate.stopObserving(1)
     }
 }
