@@ -10,8 +10,13 @@ import javax.swing.JTable
 import javax.swing.TransferHandler
 import javax.swing.table.AbstractTableModel
 import javax.swing.table.TableCellEditor
+import javax.swing.table.TableCellRenderer
 
-class SampleListPane(model: AbstractTableModel): JTable(model) {
+class SampleListPane(
+    model: AbstractTableModel,
+    private val renderer: Map<Int, TableCellRenderer> = mapOf(),
+    private val editor: Map<Int, TableCellEditor> = mapOf()
+): JTable(model) {
     init {
         tableHeader.setUI(null)
         font = ClassificationFrame.fonts[0]
@@ -41,9 +46,23 @@ class SampleListPane(model: AbstractTableModel): JTable(model) {
         return null
     }
 
-    override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
-        val prepared = super.prepareEditor(editor, row, column)
-        prepared.font = ClassificationFrame.fonts[0]
+    override fun prepareEditor(preset: TableCellEditor?, row: Int, column: Int): Component {
+        val prepared = super.prepareEditor(preset, row, column)
+        if(column !in editor) {
+            prepared.font = ClassificationFrame.fonts[0]
+        }
         return prepared
+    }
+
+    override fun getCellEditor(row: Int, column: Int): TableCellEditor {
+        return if (editor.isNotEmpty() && editor[column] != null) {
+            editor[column]!!
+        } else super.getCellEditor(row, column)
+    }
+
+    override fun getCellRenderer(row: Int, column: Int): TableCellRenderer {
+        return if(renderer.isNotEmpty() && renderer[column] != null) {
+            renderer[column]!!
+        } else super.getCellRenderer(row, column)
     }
 }

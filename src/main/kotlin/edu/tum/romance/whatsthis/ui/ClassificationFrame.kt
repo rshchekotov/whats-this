@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatLightLaf
 import edu.tum.romance.whatsthis.ui.views.View
 import edu.tum.romance.whatsthis.ui.views.menu.MenuView
 import java.awt.Dimension
+import java.awt.GraphicsEnvironment
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JOptionPane
@@ -24,6 +25,9 @@ object ClassificationFrame: JFrame() {
     fun open() {
         try {
             UIManager.setLookAndFeel(FlatLightLaf())
+            for(font in fonts) {
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -50,11 +54,13 @@ object ClassificationFrame: JFrame() {
         return Dimension((width * percentage.first).toInt(), (height * percentage.second).toInt())
     }
 
-    fun unimplemented() {
-        val label = JLabel("Not implemented yet!")
-        label.font = fonts[1]
+    fun unimplemented() = visualInfo("Not implemented yet!", 1)
+
+    fun visualInfo(message: String, size: Int = 0) {
+        val label = JLabel(message)
+        label.font = fonts[size]
         JOptionPane.showMessageDialog(this, label,
-            "Not implemented", JOptionPane.INFORMATION_MESSAGE)
+            "Information", JOptionPane.INFORMATION_MESSAGE)
     }
 
     fun visualError(message: String) {

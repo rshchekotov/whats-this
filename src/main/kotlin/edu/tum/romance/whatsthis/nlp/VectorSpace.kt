@@ -50,8 +50,8 @@ class VectorSpace(var name: String) {
     fun size() = vectors.size
     fun vectors() = vectors.toList()
 
-    fun summary(norm: Distance): Vector {
-        if(!dirty && norm == this.lastNorm) {
+    fun summary(norm: Distance, force: Boolean = false): Vector {
+        if(!force && !dirty && norm == this.lastNorm) {
             return summary
         }
         dirty = false

@@ -218,7 +218,8 @@ object MainView: View() {
     private fun createSample() {
         if(selectedSpace.value == -1) {
             val create =
-                visualQuestion("No Vector Space has been selected, would you like to create a variable sample?")
+                visualQuestion("<html>No Vector Space has been selected.<br/>" +
+                        "Would you like to create a variable sample?</html>")
             if (!create) return
         }
 

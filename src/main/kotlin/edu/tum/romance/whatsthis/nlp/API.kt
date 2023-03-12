@@ -77,10 +77,8 @@ object API {
                 spaces[space]!! += ref
             }
         }
-        /* Recalculate Summaries & Significance if a Space has been altered */
-        if(space != null) {
-            recalculateSignificance()
-        }
+        /* Recalculate Summaries & Significance */
+        recalculateSignificance()
     }
 
     fun deleteSpace(space: String) {
@@ -108,15 +106,18 @@ object API {
         recalculateSignificance()
     }
 
-    private fun recalculateSignificance() {
+    private fun recalculateSignificance(force: Boolean = false) {
         if(spaces.isEmpty()) {
             return
         }
-        val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(norm) }
+        val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(norm, force) }
         val total = summaries.map { it.second }.reduce { a, b -> a + b }
         for((name, summary) in summaries) {
             val result = total.clone()
             for(i in 0 until result.size()) {
+                if(result[i] == 0.0) {
+                    continue
+                }
                 result[i] = summary[i] / result[i]
             }
             spaces[name] = result.unit(norm)
@@ -141,5 +142,17 @@ object API {
         spaces.clear()
         vectors.clear()
         vocabulary.clear()
+    }
+
+    fun distances(value: String): List<Double> {
+        val data = vectors[value] ?: return emptyList()
+        recalculateSignificance(true)
+        val vector = data.vector!!.unit(norm)
+        val norms = spaces.spaces().map {
+            val significance = spaces.significance(it)!!
+            this.norm(vector, significance)
+        }
+        val total = norms.sum()
+        return norms.map { (total - it) / total }
     }
 }
