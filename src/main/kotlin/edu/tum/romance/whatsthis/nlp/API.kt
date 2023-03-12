@@ -18,10 +18,8 @@ object API {
         return spaces.spaces()
     }
 
-    fun vectors() = vectors.names()
-
     fun classified(): List<String> {
-        return vectors().filter { WordVectorManager.ref(it) !in spaces.unclassified() }
+        return vectors.names().filter { WordVectorManager.ref(it) !in spaces.unclassified() }
     }
 
     fun spaceVectors(name: String? = null): List<String> {
@@ -63,7 +61,7 @@ object API {
         }
         /* Register new Vector */
         val ref: Int
-        if(sample.name in vectors()) {
+        if(sample.name in vectors.names()) {
             vectors[sample.name] = sample
             ref = vectors.ref(sample.name)
         } else {
@@ -85,7 +83,35 @@ object API {
         }
     }
 
+    fun deleteSpace(space: String) {
+        if(space !in spaces) {
+            return
+        }
+        for(ref in spaces[space]!!.vectors()) {
+            spaces.unclassified(ref)
+        }
+        spaces -= space
+        recalculateSignificance()
+    }
+
+    fun deleteSample(name: String) {
+        val ref = vectors.ref(name)
+        if(ref == -1) {
+            return
+        }
+
+        if(ref in spaces.unclassified()) {
+            spaces.removeUnclassified(ref)
+        }
+        vectors -= vectors[name]!!
+        spaces.deleteRef(ref)
+        recalculateSignificance()
+    }
+
     private fun recalculateSignificance() {
+        if(spaces.isEmpty()) {
+            return
+        }
         val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(norm) }
         val total = summaries.map { it.second }.reduce { a, b -> a + b }
         for((name, summary) in summaries) {

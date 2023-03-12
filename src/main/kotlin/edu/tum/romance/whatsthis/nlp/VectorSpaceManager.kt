@@ -40,6 +40,12 @@ object VectorSpaceManager {
         val index = reverse[name] ?: return
         spaces -= spaces[index]
         reverse.remove(name)
+        /* Update all Indices, that have shifted */
+        val update = spaces.slice(index until spaces.size)
+        for((i, value) in update.withIndex()) {
+            val (space, _) = value
+            reverse[space.name] = i + index
+        }
         dirty = true
     }
 
@@ -93,6 +99,17 @@ object VectorSpaceManager {
             for((space, _) in spaces) {
                 space.flagDirty()
             }
+        }
+    }
+
+    fun removeUnclassified(ref: Int) {
+        unclassified -= ref
+    }
+
+    fun deleteRef(ref: Int) {
+        for((space, _) in spaces) {
+            space.decreaseRefsHigherThan(ref)
+            space.flagDirty()
         }
     }
 

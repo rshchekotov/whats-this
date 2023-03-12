@@ -254,6 +254,38 @@ internal class APITest {
         assertEquals(1, API.spaces["Math"]!!.size(), "Sample was not added to the vector space!")
         assertFalse("Example" in API.spaces, "Example should not be in the vector spaces!")
     }
+
+    @Test
+    @Order(9)
+    fun testBasicSpaceDeletion() {
+        val sample = TextData("this is a simple sample", "Simple Sample")
+        API.addSample(sample, "Example")
+        assertEquals(1, API.spaces().size, "There should be one vector space!")
+        assertEquals(0, API.spaces.unclassified().size, "There should be no unclassified samples!")
+        assertTrue("Example" in API.spaces, "Example should be in the vector spaces!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
+        API.deleteSpace("Example")
+        assertEquals(0, API.spaces().size, "There should be no vector spaces!")
+        assertEquals(1, API.spaces.unclassified().size, "There should be one unclassified sample!")
+        assertFalse("Example" in API.spaces, "Example should not be in the vector spaces!")
+        assertSame(sample, API.vectors[API.spaces.unclassified()[0]], "Sample was not moved to the unclassified samples!")
+    }
+
+    @Test
+    @Order(10)
+    fun testBasicSampleDeletion() {
+        val sample = TextData("this is a simple sample", "Simple Sample")
+        API.addSample(sample, "Example")
+        assertEquals(1, API.spaces().size, "There should be one vector space!")
+        assertEquals(0, API.spaces.unclassified().size, "There should be no unclassified samples!")
+        assertTrue("Example" in API.spaces, "Example should be in the vector spaces!")
+        assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
+        API.deleteSample("Simple Sample")
+        assertEquals(1, API.spaces().size, "There should be one vector space!")
+        assertEquals(0, API.spaces.unclassified().size, "There should be no unclassified samples!")
+        assertTrue("Example" in API.spaces, "Example should be in the vector spaces!")
+        assertEquals(0, API.spaces["Example"]!!.size(), "Sample was not removed from the vector space!")
+    }
 }
 
 /**

@@ -27,9 +27,13 @@ object WordVectorManager {
     }
 
     operator fun minusAssign(vector: TextData<*>) {
-        vectors -= vector
+        val index = reverse[vector.name] ?: return
+        vectors -= vectors[index]
         reverse.remove(vector.name)
-        // TODO: Move indices of all vectors after the removed one
+        val update = vectors.subList(index, vectors.size)
+        for(vec in update) {
+            reverse[vec.name] = reverse[vec.name]!! - 1
+        }
         dirty = true
     }
 

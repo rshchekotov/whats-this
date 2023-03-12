@@ -73,6 +73,17 @@ class VectorSpace(var name: String) {
         return summary
     }
 
+    fun decreaseRefsHigherThan(ref: Int) {
+        if(ref in vectors) {
+            vectors -= ref
+        }
+        for(i in 0 until vectors.size) {
+            if(vectors[i] > ref) {
+                vectors[i]--
+            }
+        }
+    }
+
     fun flagDirty() {
         dirty = true
     }
