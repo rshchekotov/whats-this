@@ -21,7 +21,6 @@ class ModelImportTask(
         }.start()
         API.clear()
         ClassificationFrame.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
-        Toolkit.getDefaultToolkit().beep()
         for((className, samples) in model) {
             for(sample in samples) {
                 val data = sample()
@@ -36,6 +35,7 @@ class ModelImportTask(
     }
 
     override fun done() {
+        Toolkit.getDefaultToolkit().beep()
         ClassificationFrame.cursor = Cursor.getDefaultCursor()
         MainView.progressUpdate.value = "Done." to -1.0
         MainView.dataUpdate.trigger()

@@ -13,6 +13,7 @@ import javax.swing.table.TableCellEditor
 object SpaceList: JTable() {
     init {
         font = ClassificationFrame.fonts[0]
+        tableHeader.font = ClassificationFrame.fonts[0]
         model = SpaceListModel
         selectionModel.addListSelectionListener {
             if(!it.valueIsAdjusting) {

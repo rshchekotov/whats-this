@@ -31,6 +31,9 @@ object SampleList: JTabbedPane() {
         addTab("Classified Samples", classifiedPane)
         addTab("Unclassified Samples", unclassifiedPane)
         val panes = arrayOf(classifiedPane, unclassifiedPane)
+
+        font = ClassificationFrame.fonts[0]
+
         @Suppress("DuplicatedCode")
         for (pane in panes) {
             pane.font = ClassificationFrame.fonts[0]
