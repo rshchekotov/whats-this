@@ -10,7 +10,7 @@ import java.net.URL
 object WebSourceInput: HintTextField("URL"), Runnable {
     init {
         addActionListener { run() }
-        MainView.dataUpdate.observe(3) { text = "" }
+        MainView.dataUpdate.observe(4) { text = "" }
     }
 
     override fun run() {

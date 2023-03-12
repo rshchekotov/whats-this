@@ -12,6 +12,7 @@ import edu.tum.romance.whatsthis.ui.components.SymbolicButton
 import edu.tum.romance.whatsthis.ui.views.View
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataTextView
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataVectorView
+import edu.tum.romance.whatsthis.ui.views.main.components.main.dictionary.DictionaryView
 import edu.tum.romance.whatsthis.ui.views.main.components.menu.TopBar
 import edu.tum.romance.whatsthis.ui.views.main.components.menu.importer.ModelImporter
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleInput
@@ -54,7 +55,11 @@ object MainView: View() {
     //#region Data Views
     private val dataView: JComponent
         get() = dataViews[selectedDataViewType.value].second as JComponent
-    val dataViews = arrayOf("Text" to DataTextView, "Word Vector" to DataVectorView)
+    val dataViews = arrayOf(
+        "Text" to DataTextView,
+        "Word Vector" to DataVectorView,
+        "Dictionary" to DictionaryView
+    )
     val dataViewSize = componentSize(0 to 4, 0 to 0)
     val selectedDataViewType = Observable(0)
     //#endregion
@@ -91,6 +96,7 @@ object MainView: View() {
 
         DataTextView.preferredSize = dataViewSize
         DataVectorView.preferredSize = dataViewSize
+        DictionaryView.preferredSize = dataViewSize
         setupMainView(-1 to 0)
 
         WebSourceInput.preferredSize = componentSize(0 to 2, 1 to 1)
