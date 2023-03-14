@@ -142,7 +142,9 @@ interface SourceFormat {
             }
 
             override fun read(): NLPModel {
-                return file.readLines().mapNotNull {
+                return file.readLines().asSequence().filter {
+                    it.isNotBlank() || it.startsWith('#')
+                }.mapNotNull {
                     val coreMatch = coreRegEx.matchEntire(it)
                     if(coreMatch != null) {
                         val (name, sourceID, source, space) = coreMatch.destructured
