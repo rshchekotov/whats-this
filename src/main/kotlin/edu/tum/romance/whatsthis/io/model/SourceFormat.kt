@@ -111,6 +111,7 @@ interface SourceFormat {
             override val header = "# What's This Sources (DSL) v1.0.0"
             override fun write() {
                 val contents = buildString {
+                    appendLine(header).appendLine()
                     for(space in API.spaces()) {
                         val safeSpace = space.replace("\"", "\\\"")
                         appendLine("space(\"$safeSpace\")")
