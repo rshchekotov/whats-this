@@ -1,11 +1,10 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.io.data.TextData
-import edu.tum.romance.whatsthis.math.Distance
 
 @Suppress("unused")
 object API {
-    private var norm = Distance.Euclidean
+    private var norm = Similarity.Euclidean
     val spaces = VectorSpaceManager
     val vectors = WordVectorManager
     val vocabulary = VocabularyManager
@@ -110,7 +109,7 @@ object API {
         if(spaces.isEmpty()) {
             return
         }
-        val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(norm, force) }
+        val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(norm.dist , force) }
         val total = summaries.map { it.second }.reduce { a, b -> a + b }
         for((name, summary) in summaries) {
             val result = total.clone()
@@ -120,7 +119,7 @@ object API {
                 }
                 result[i] = summary[i] / result[i]
             }
-            spaces[name] = result.unit(norm)
+            spaces[name] = result.unit(norm.dist)
         }
     }
 
@@ -147,10 +146,9 @@ object API {
     fun distances(value: String): List<Double> {
         val data = vectors[value] ?: return emptyList()
         recalculateSignificance(true)
-        val vector = data.vector!!.unit(norm)
+        val vector = data.vector!!.unit(norm.dist)
         val norms = spaces.spaces().map {
-            val significance = spaces.significance(it)!!
-            this.norm(vector, significance)
+            norm(vector, it)
         }
         val total = norms.sum()
         return norms.map { (total - it) / total }
