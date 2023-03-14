@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main
 
-import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.io.data.TextData
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.componentSize
@@ -14,7 +14,7 @@ import edu.tum.romance.whatsthis.ui.views.main.components.main.DataTextView
 import edu.tum.romance.whatsthis.ui.views.main.components.main.DataVectorView
 import edu.tum.romance.whatsthis.ui.views.main.components.main.dictionary.DictionaryView
 import edu.tum.romance.whatsthis.ui.views.main.components.menu.TopBar
-import edu.tum.romance.whatsthis.ui.views.main.components.menu.importer.ModelImporter
+import edu.tum.romance.whatsthis.ui.views.main.components.menu.importer.SourceImporter
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleInput
 import edu.tum.romance.whatsthis.ui.views.main.components.sample.SampleList
 import edu.tum.romance.whatsthis.ui.views.main.components.source.SourceSelector
@@ -132,7 +132,7 @@ object MainView: View() {
 
         rewire()
 
-        ModelImporter.classLoad()
+        SourceImporter.classLoad()
     }
 
     private fun rewire() {

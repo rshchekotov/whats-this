@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.main
 
-import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.io.data.TextData
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError

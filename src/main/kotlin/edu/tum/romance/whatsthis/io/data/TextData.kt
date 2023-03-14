@@ -1,7 +1,8 @@
 @file:Suppress("SpellCheckingInspection")
 
-package edu.tum.romance.whatsthis.io
+package edu.tum.romance.whatsthis.io.data
 
+import edu.tum.romance.whatsthis.io.model.SerializableData
 import edu.tum.romance.whatsthis.math.Vector
 import edu.tum.romance.whatsthis.util.*
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -9,8 +10,8 @@ import org.apache.pdfbox.text.PDFTextStripper
 import java.io.File
 import java.net.URL
 
-abstract class TextData<T> {
-    abstract val source: T
+abstract class TextData<T>: SerializableData<TextData<T>> {
+    abstract var source: T
     abstract var name: String
     abstract var text: String
     abstract var titleSuggestion: String
@@ -100,6 +101,16 @@ abstract class TextData<T> {
 
         operator fun invoke(string: String, name: String): TextData<String> {
             return InMemorySourceData(string, name)
+        }
+
+        fun deserialize(string: String): TextData<*> {
+            val split = string.split(':', ignoreCase = true, limit = 3)
+            return when(val type = split[0]) {
+                "file" -> FileSource(File(split[2]), split[1])
+                "web" -> WebSourceData(URL(split[2]), split[1])
+                "memory" -> error("InMemorySourceData cannot be deserialized")
+                else -> throw IllegalArgumentException("Unknown type $type")
+            }
         }
 
         fun wiki(slug: String, name: String): TextData<URL> {

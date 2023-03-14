@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.menu.importer
 
-import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.io.data.TextData
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.views.main.MainView
@@ -9,7 +9,7 @@ import java.awt.Cursor
 import java.awt.Toolkit
 import javax.swing.SwingWorker
 
-class ModelImportTask(
+class SourceImportTask(
     private val model: List<Pair<String?, List<() -> TextData<*>>>>
 ): SwingWorker<Unit, Unit>() {
     private val maxProgress = model.map { it.second }.sumOf { it.size }

@@ -1,10 +1,10 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.menu
 
-import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.io.data.TextData
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualQuestion
-import edu.tum.romance.whatsthis.ui.views.main.components.menu.importer.ModelImportTask
+import edu.tum.romance.whatsthis.ui.views.main.components.menu.importer.SourceImportTask
 import java.awt.event.KeyEvent
 import javax.swing.JMenu
 import javax.swing.JMenuItem
@@ -18,7 +18,7 @@ object ModelMenu: JMenu("Model") {
         science.mnemonic = KeyEvent.VK_S
         science.addActionListener {
             if(API.isEmpty() || visualQuestion("Are you sure you want to delete the current model?")) {
-                val task = ModelImportTask(listOf(
+                val task = SourceImportTask(listOf(
                     "Mathematics" to listOf<() -> TextData<*>>(
                         { TextData.wiki("Interpolation", "Interpolation") },
                         { TextData.wiki("Pi", "Pi") },

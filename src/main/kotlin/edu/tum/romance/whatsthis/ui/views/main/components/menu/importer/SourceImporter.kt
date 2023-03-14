@@ -6,7 +6,7 @@ import edu.tum.romance.whatsthis.ui.views.main.MainView
 import java.awt.Dimension
 import javax.swing.*
 
-object ModelImporter: JDialog(ClassificationFrame, "Loading Data", true) {
+object SourceImporter: JDialog(ClassificationFrame, "Loading Data", true) {
     private val progress = JProgressBar(0, 100)
 
     /**

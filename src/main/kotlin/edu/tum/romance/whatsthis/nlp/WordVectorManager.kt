@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
-import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.io.data.TextData
 
 /**
  * A singleton object that manages all word vectors.

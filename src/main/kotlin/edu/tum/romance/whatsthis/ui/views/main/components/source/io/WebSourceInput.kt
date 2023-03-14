@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.ui.views.main.components.source.io
 
-import edu.tum.romance.whatsthis.io.TextData
+import edu.tum.romance.whatsthis.io.data.TextData
 import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
 import edu.tum.romance.whatsthis.ui.components.HintTextField
 import edu.tum.romance.whatsthis.ui.views.main.MainView
