@@ -1,28 +1,33 @@
 package edu.tum.romance.whatsthis.ui
 
 import com.formdev.flatlaf.FlatLightLaf
-import edu.tum.romance.whatsthis.ui.panels.menu.MainMenu
+import edu.tum.romance.whatsthis.ui.views.View
+import edu.tum.romance.whatsthis.ui.views.menu.MenuView
 import java.awt.Dimension
+import java.awt.GraphicsEnvironment
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JOptionPane
-import javax.swing.JPanel
 import javax.swing.UIManager
 
+@Suppress("unused")
 object ClassificationFrame: JFrame() {
-    const val width = 800
-    const val height = 600
+    private const val width = 800
+    private const val height = 600
 
     val fonts = arrayOf(
         FontCache.font("Comfortaa-Regular", 12f),
         FontCache.font("Comfortaa-Regular", 16f),
         FontCache.font("Comfortaa-Regular", 32f)
     )
-    private var content: JPanel = MainMenu
+    private var content: View = MenuView
 
     fun open() {
         try {
             UIManager.setLookAndFeel(FlatLightLaf())
+            for(font in fonts) {
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -31,25 +36,31 @@ object ClassificationFrame: JFrame() {
         this.size = Dimension(width, height)
         this.defaultCloseOperation = EXIT_ON_CLOSE
         this.setLocationRelativeTo(null)
-        add(content)
+        this.add(content)
         this.pack()
         this.isVisible = true
     }
 
-    fun swapView(view: JPanel) {
-        content.isEnabled = false
-        remove(content)
-        content = view
-        add(content)
+    fun swapView(view: View) {
+        this.content.onUnload()
+        this.remove(content)
+        this.content = view
+        this.add(content)
         this.pack()
-        content.isEnabled = true
+        this.content.onLoad()
     }
 
-    fun unimplemented() {
-        val label = JLabel("Not implemented yet!")
-        label.font = fonts[1]
+    fun componentSize(percentage: Pair<Double, Double>): Dimension {
+        return Dimension((width * percentage.first).toInt(), (height * percentage.second).toInt())
+    }
+
+    fun unimplemented() = visualInfo("Not implemented yet!", 1)
+
+    fun visualInfo(message: String, size: Int = 0) {
+        val label = JLabel(message)
+        label.font = fonts[size]
         JOptionPane.showMessageDialog(this, label,
-            "Not implemented", JOptionPane.INFORMATION_MESSAGE)
+            "Information", JOptionPane.INFORMATION_MESSAGE)
     }
 
     fun visualError(message: String) {
@@ -57,5 +68,12 @@ object ClassificationFrame: JFrame() {
         label.font = fonts[0]
         JOptionPane.showMessageDialog(this, label,
             "Error", JOptionPane.ERROR_MESSAGE)
+    }
+
+    fun visualQuestion(message: String): Boolean {
+        val label = JLabel(message)
+        label.font = fonts[0]
+        return JOptionPane.showConfirmDialog(this, label,
+            "Question", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
     }
 }
