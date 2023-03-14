@@ -14,6 +14,7 @@ import java.net.URL
  * - application/pdf
  */
 class WebSourceData(override var source: URL, override var name: String) : TextData<URL>() {
+    override val sourceID: String = "web"
     override lateinit var text: String
     override lateinit var titleSuggestion: String
 
@@ -42,18 +43,7 @@ class WebSourceData(override var source: URL, override var name: String) : TextD
         }
     }
 
-    override fun deserialize(data: String) {
-        val fragments = data.split(":")
-        if(fragments.size != 3 || fragments[0] != id) error("Invalid Data: $data")
-        source = URL(fragments[2])
-        name = fragments[1]
-    }
-
-    override fun serialize(): String {
-        return "$id:$name:$source"
-    }
-
-    companion object {
-        const val id = "web"
+    override fun toString(): String {
+        return this.source.toExternalForm()
     }
 }

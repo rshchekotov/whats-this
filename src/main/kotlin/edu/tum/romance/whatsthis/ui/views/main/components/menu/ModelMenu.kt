@@ -18,7 +18,7 @@ object ModelMenu: JMenu("Model") {
         science.mnemonic = KeyEvent.VK_S
         science.addActionListener {
             if(API.isEmpty() || visualQuestion("Are you sure you want to delete the current model?")) {
-                val task = SourceImportTask(listOf(
+                val task = SourceImportTask(mutableListOf(
                     "Mathematics" to listOf<() -> TextData<*>>(
                         { TextData.wiki("Interpolation", "Interpolation") },
                         { TextData.wiki("Pi", "Pi") },
@@ -54,7 +54,8 @@ object ModelMenu: JMenu("Model") {
                         { TextData.wiki("Cell_(biology)", "Cell") },
                         { TextData.wiki("Tissue", "Tissue") },
                     )
-                ))
+                )
+                )
                 task.execute()
             }
         }

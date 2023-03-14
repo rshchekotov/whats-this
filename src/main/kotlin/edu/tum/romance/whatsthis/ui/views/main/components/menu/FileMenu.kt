@@ -3,7 +3,6 @@ package edu.tum.romance.whatsthis.ui.views.main.components.menu
 import edu.tum.romance.whatsthis.io.model.IO
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.ui.ClassificationFrame
-import edu.tum.romance.whatsthis.ui.ClassificationFrame.visualError
 import edu.tum.romance.whatsthis.ui.views.main.MainView
 import edu.tum.romance.whatsthis.util.observer.trigger
 import java.awt.event.KeyEvent
@@ -14,7 +13,7 @@ import javax.swing.JMenuItem
 import javax.swing.JOptionPane
 import javax.swing.filechooser.FileFilter
 
-private const val SOURCES = "What's This Sources (*.wts)"
+private const val SOURCES = "What's This Sources (*.wts or *.wts.yaml)"
 private const val MODELS = "What's This Model (*.wtm)"
 
 object FileMenu: JMenu("File") {
@@ -30,29 +29,7 @@ object FileMenu: JMenu("File") {
             fileChooser.addActionListener ChooserAction@ {
                 val file: File? = fileChooser.selectedFile
                 if(file != null) {
-                    if(file.extension == "wts") {
-                        return@ChooserAction IO.exportAsSources(file)
-                    } else if(file.extension == "wtm") {
-                        return@ChooserAction IO.exportAsModel(file)
-                    }
-
-                    // Check filter
-                    if(fileChooser.fileFilter.description == SOURCES) {
-                        return@ChooserAction IO.exportAsSources(file)
-                    } else if(fileChooser.fileFilter.description == MODELS) {
-                        return@ChooserAction IO.exportAsModel(file)
-                    }
-
-                    // Ask User to choose between "Source" and "Model"
-                    val option = JOptionPane.showOptionDialog(ClassificationFrame,
-                        "What do you want to save?", "Save", 2,
-                        JOptionPane.QUESTION_MESSAGE, null, arrayOf("Sources", "Model", "Cancel"), "Sources")
-
-                    if(option == 0) {
-                        return@ChooserAction IO.exportAsSources(file)
-                    } else if(option == 1) {
-                        return@ChooserAction IO.exportAsModel(file)
-                    }
+                    return@ChooserAction IO.exportAsSources(file)
                 }
             }
             fileChooser.showSaveDialog(ClassificationFrame)
@@ -67,12 +44,7 @@ object FileMenu: JMenu("File") {
             chooser.addActionListener ChooserAction@ {
                 val file: File? = chooser.selectedFile
                 if(file != null) {
-                    if(file.extension == "wts") {
-                        return@ChooserAction confirmOverwrite { IO.importFromSources(file) }
-                    } else if(file.extension == "wtm") {
-                        return@ChooserAction confirmOverwrite { IO.importFromModel(file) }
-                    }
-                    visualError("Something went terribly wrong. Please contact the developers.")
+                    return@ChooserAction confirmOverwrite { IO.importFromSources(file) }
                 }
             }
             chooser.showOpenDialog(ClassificationFrame)
@@ -84,7 +56,9 @@ object FileMenu: JMenu("File") {
         val fileChooser = JFileChooser()
         fileChooser.isAcceptAllFileFilterUsed = false
         fileChooser.addChoosableFileFilter(object : FileFilter() {
-            override fun accept(f: File) = f.isDirectory || f.extension == "wts"
+            override fun accept(f: File) = f.isDirectory ||
+                    f.absolutePath.endsWith(".wts") ||
+                    f.absolutePath.endsWith(".wts.yaml")
             override fun getDescription() = SOURCES
         })
         fileChooser.addChoosableFileFilter(object : FileFilter() {
