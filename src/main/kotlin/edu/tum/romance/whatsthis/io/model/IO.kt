@@ -3,21 +3,19 @@ package edu.tum.romance.whatsthis.io.model
 import java.io.File
 
 object IO {
-    @Suppress("unused") // To be done
-    fun exportAsModel(file: File) {
-        TODO(file.absolutePath)
-    }
-
-    @Suppress("unused") // To be done
-    fun importFromModel(file: File) {
-        TODO(file.absolutePath)
-    }
-
-    fun exportAsSources(file: File) {
+    fun exportAsYamlSources(file: File) {
         SourceFormat.fromFile(file).write()
     }
 
-    fun importFromSources(file: File) {
+    fun importAsYamlSources(file: File) {
         SourceFormat.fromFile(file).load()
+    }
+
+    fun exportAsCustomSources(file: File) {
+        SourceFormat.fromFile(file, "DSL").write()
+    }
+
+    fun importFromCustomSources(file: File) {
+        SourceFormat.fromFile(file, "DSL").load()
     }
 }

@@ -32,12 +32,8 @@ interface SourceFormat {
         const val YAML_EXT = ".wts.yaml"
         const val DSL_EXT = ".wts"
 
-        fun fromFile(file: File): SourceFormat {
-            return when {
-                file.absolutePath.endsWith(YAML_EXT) -> YAML(file)
-                file.absolutePath.endsWith(DSL_EXT) -> DSL(file)
-                else -> YAML(file)
-            }
+        fun fromFile(file: File, ext: String = "YAML"): SourceFormat {
+            return if(ext == "YAML") YAML(file) else DSL(file)
         }
 
         class YAML(override val file: File): SourceFormat {

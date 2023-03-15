@@ -13,8 +13,8 @@ import javax.swing.JMenuItem
 import javax.swing.JOptionPane
 import javax.swing.filechooser.FileFilter
 
-private const val SOURCES = "What's This Sources (*.wts or *.wts.yaml)"
-private const val MODELS = "What's This Model (*.wtm)"
+private const val WTS_YAML = "What's This Sources YAML (*.wts.yaml)"
+private const val WTS = "What's This Source DSL (*.wts)"
 
 object FileMenu: JMenu("File") {
     init {
@@ -29,7 +29,11 @@ object FileMenu: JMenu("File") {
             fileChooser.addActionListener ChooserAction@ {
                 val file: File? = fileChooser.selectedFile
                 if(file != null) {
-                    return@ChooserAction IO.exportAsSources(file)
+                    if(fileChooser.fileFilter.description == WTS_YAML) {
+                        return@ChooserAction IO.exportAsYamlSources(file)
+                    } else if(fileChooser.fileFilter.description == WTS) {
+                        return@ChooserAction IO.exportAsCustomSources(file)
+                    }
                 }
             }
             fileChooser.showSaveDialog(ClassificationFrame)
@@ -44,7 +48,11 @@ object FileMenu: JMenu("File") {
             chooser.addActionListener ChooserAction@ {
                 val file: File? = chooser.selectedFile
                 if(file != null) {
-                    return@ChooserAction confirmOverwrite { IO.importFromSources(file) }
+                    if(chooser.fileFilter.description == WTS) {
+                        return@ChooserAction confirmOverwrite { IO.importAsYamlSources(file) }
+                    } else if(chooser.fileFilter.description == WTS_YAML) {
+                        return@ChooserAction confirmOverwrite { IO.importFromCustomSources(file) }
+                    }
                 }
             }
             chooser.showOpenDialog(ClassificationFrame)
@@ -57,13 +65,12 @@ object FileMenu: JMenu("File") {
         fileChooser.isAcceptAllFileFilterUsed = false
         fileChooser.addChoosableFileFilter(object : FileFilter() {
             override fun accept(f: File) = f.isDirectory ||
-                    f.absolutePath.endsWith(".wts") ||
                     f.absolutePath.endsWith(".wts.yaml")
-            override fun getDescription() = SOURCES
+            override fun getDescription() = WTS_YAML
         })
         fileChooser.addChoosableFileFilter(object : FileFilter() {
-            override fun accept(f: File) = f.isDirectory || f.extension == "wtm"
-            override fun getDescription() = MODELS
+            override fun accept(f: File) = f.isDirectory || f.extension == "wts"
+            override fun getDescription() = WTS
         })
         return fileChooser
     }
