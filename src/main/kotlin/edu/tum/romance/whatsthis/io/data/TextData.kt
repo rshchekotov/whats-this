@@ -2,7 +2,6 @@
 
 package edu.tum.romance.whatsthis.io.data
 
-import edu.tum.romance.whatsthis.io.model.SerializableData
 import edu.tum.romance.whatsthis.math.Vector
 import edu.tum.romance.whatsthis.util.*
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -10,11 +9,12 @@ import org.apache.pdfbox.text.PDFTextStripper
 import java.io.File
 import java.net.URL
 
-abstract class TextData<T>: SerializableData<TextData<T>> {
+abstract class TextData<T> {
     abstract var source: T
     abstract var name: String
     abstract var text: String
     abstract var titleSuggestion: String
+    abstract val sourceID: String
 
     var coefficient: Double = 1.0
     var vector: Vector? = null
@@ -103,13 +103,12 @@ abstract class TextData<T>: SerializableData<TextData<T>> {
             return InMemorySourceData(string, name)
         }
 
-        fun deserialize(string: String): TextData<*> {
-            val split = string.split(':', ignoreCase = true, limit = 3)
-            return when(val type = split[0]) {
-                "file" -> FileSource(File(split[2]), split[1])
-                "web" -> WebSourceData(URL(split[2]), split[1])
-                "memory" -> error("InMemorySourceData cannot be deserialized")
-                else -> throw IllegalArgumentException("Unknown type $type")
+        operator fun invoke(source: String, name: String, data: String): TextData<*> {
+            return when(source) {
+                "file" -> invoke(File(data), name)
+                "web" -> invoke(URL(data), name)
+                "inmemory" -> invoke(data, name)
+                else -> error("Unknown source type: $source")
             }
         }
 

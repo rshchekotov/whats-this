@@ -5,6 +5,7 @@ import edu.tum.romance.whatsthis.math.Distance
 
 @Suppress("unused")
 object API {
+
     private var norm = Distance.Euclidean
     val spaces = VectorSpaceManager
     val vectors = WordVectorManager
@@ -156,3 +157,5 @@ object API {
         return norms.map { (total - it) / total }
     }
 }
+
+typealias NLPModel = MutableList<Pair<String?, List<() -> TextData<*>>>>
