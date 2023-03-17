@@ -14,21 +14,19 @@ repositories {
 val versions = mapOf(
     "jsoup" to "1.15.3",
     "pdfbox" to "3.0.0-alpha2",
-    "jackson" to "2.14.2",
-    "flatlaf" to "3.0"
+    "log4j" to "2.20.0",
+    "slf4j" to "2.0.6"
 )
 
 dependencies {
     implementation("org.jsoup:jsoup:${versions["jsoup"]}")
     implementation("org.apache.pdfbox:pdfbox:${versions["pdfbox"]}")
 
-    // Nothing can be done about this at the moment.
-    // We'll wait 'til Jackson upgrades its SnakeYAML to (the already released) v2.0
-    @Suppress("VulnerableLibrariesLocal")
-    implementation("com.fasterxml.jackson.core:jackson-databind:${versions["jackson"]}")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions["jackson"]}")
+    implementation("org.apache.logging.log4j:log4j-api:${versions["log4j"]}")
+    implementation("org.apache.logging.log4j:log4j-core:${versions["log4j"]}")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:${versions["log4j"]}")
 
-    implementation("com.formdev:flatlaf:${versions["flatlaf"]}")
+    implementation("org.slf4j:slf4j-api:${versions["slf4j"]}")
 
     testImplementation(kotlin("test"))
 }

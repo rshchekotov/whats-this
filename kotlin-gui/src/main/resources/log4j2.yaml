@@ -1,0 +1,15 @@
+Configuration:
+  name: Default
+  Appenders:
+    Console:
+      name: ConsoleLogger
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+  Loggers:
+    Logger:
+      - name: edu.tum.romance.whatsthis.kui
+        additivity: false
+        level: debug
+        AppenderRef:
+          - ref: ConsoleLogger

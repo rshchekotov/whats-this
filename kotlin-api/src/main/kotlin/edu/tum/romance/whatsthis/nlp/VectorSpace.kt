@@ -7,17 +7,9 @@ import edu.tum.romance.whatsthis.math.Vector
  * A VectorSpace is a collection of vectors that are related to each other.
  * It is used to classify vectors into different groups.
  *
- * (*protected*) YOU SHOULD HAVE NO REASON TO USE THIS DIRECTLY
- *
- * Use the methods provided by [API] instead.
- *
- * The only reason this is not 'formally'
- * protected, is because Kotlin doesn't
- * support that.
- *
  * @property name The name of the vector space
  */
-class VectorSpace(var name: String) {
+internal class VectorSpace(var name: String) {
     private val vectors = mutableListOf<Int>()
 
     // Computed Properties
