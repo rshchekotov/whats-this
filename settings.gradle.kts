@@ -13,3 +13,5 @@ gradleEnterprise {
         }
     }
 }
+
+include("kotlin-api")
