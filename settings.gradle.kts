@@ -15,3 +15,4 @@ gradleEnterprise {
 }
 
 include("kotlin-api")
+include("kotlin-gui")

@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.io
 
-import edu.tum.romance.whatsthis.io.data.TextData
+import edu.tum.romance.whatsthis.data.TextData
 import edu.tum.romance.whatsthis.util.assumeConnectivity
 import java.net.URL
 import kotlin.test.Test
