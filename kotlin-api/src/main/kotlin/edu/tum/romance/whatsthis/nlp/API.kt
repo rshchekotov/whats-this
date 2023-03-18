@@ -173,16 +173,20 @@ object API {
      * @param space Name of the space to create or rename
      * @param rename New name of the space, or null to keep the old name
      */
-    fun alterSpace(space: String, rename: String? = null) {
+    fun alterSpace(space: String, rename: String? = null): Int {
         if(rename != null) {
-            if(space in spaces) {
+            return if(space in spaces) {
                 spaces.rename(space, rename)
+                2
             } else {
                 spaces += rename
+                1
             }
         } else if(space !in spaces) {
             spaces += space
+            return 1
         }
+        return 0
     }
 
     /**

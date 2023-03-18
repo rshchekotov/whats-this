@@ -70,7 +70,10 @@ object EventBus {
             if(Any::class !in annotation.classes && event::class !in annotation.classes) continue
 
             when (method.parameterCount) {
-                1 -> method.invoke(listener, event)
+                1 -> {
+                    if(method.parameterTypes[0] != event::class.java) continue
+                    method.invoke(listener, event)
+                }
                 0 -> method.invoke(listener)
                 else -> error("Event handler method ${method.name} at ${listener.javaClass.simpleName} has wrong parameter count or type!")
             }

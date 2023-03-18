@@ -8,13 +8,13 @@ open class View: JPanel(), Loadable {
     override fun onLoad() {}
     override fun onUnload() {}
     fun switch() {
-        if(Main.currentView is View) {
-            Main.currentView!!.onUnload()
-            Main.remove(Main.currentView)
-        }
+        Main.currentView.onUnload()
+        Main.remove(Main.currentView)
         Main.currentView = this
         Main.add(this)
+        Main.pack()
         this.onLoad()
+        Main.setLocationRelativeTo(null)
         Main.revalidate()
         Main.repaint()
     }
