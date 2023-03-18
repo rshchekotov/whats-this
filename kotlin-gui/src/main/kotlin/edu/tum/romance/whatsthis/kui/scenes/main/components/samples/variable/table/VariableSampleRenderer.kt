@@ -3,6 +3,7 @@ package edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.ta
 import edu.tum.romance.whatsthis.kui.components.SymbolicButton
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.VariablePane
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualInfo
+import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.nlp.API
 import java.awt.Component
 import javax.swing.JTable
@@ -24,7 +25,7 @@ internal object VariableSampleRenderer: DefaultTableCellRenderer() {
                 return button
             }
 
-            val button = SymbolicButton("?", "Information on $value") {
+            val button = SymbolicButton(MEDIUM, "?", "Information on $value") {
                 val classifications = API.distances(value).mapIndexed { index, distance ->
                     val space = "<td>${API.spaces()[index]}</td>"
                     val dist = "<td>${String.format("%.2f", distance * 100)}</td>"

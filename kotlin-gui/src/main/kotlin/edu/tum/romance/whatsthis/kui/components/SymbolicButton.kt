@@ -12,11 +12,12 @@ import javax.swing.JToolTip
  * @param tooltip The tooltip to display when the mouse hovers over the button.
  * @param action The action to perform when the button is clicked.
  */
-open class SymbolicButton(text: String, tooltip: String? = null, action: (e: ActionEvent) -> Unit): JButton(text) {
+open class SymbolicButton(size: Int = SMALL, text: String, tooltip: String? = null, action: (e: ActionEvent) -> Unit): JButton(text) {
     init {
         if(tooltip != null) {
             this.toolTipText = tooltip
         }
+        this.font = this.font.deriveFont(size.toFloat())
         this.addActionListener(action)
     }
 

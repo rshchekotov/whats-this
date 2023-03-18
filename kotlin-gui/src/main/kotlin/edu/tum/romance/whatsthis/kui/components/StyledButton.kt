@@ -15,7 +15,7 @@ open class StyledButton(
     text: String,
     tooltip: String? = null,
     action: (e: ActionEvent) -> Unit
-): SymbolicButton(text, tooltip, action) {
+): SymbolicButton(size, text, tooltip, action) {
     init {
         this.font = comfortaa(size)
     }

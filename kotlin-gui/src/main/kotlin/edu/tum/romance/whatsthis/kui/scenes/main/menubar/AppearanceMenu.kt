@@ -40,6 +40,7 @@ object AppearanceMenu: JMenu("Appearance") {
         try {
             UIManager.setLookAndFeel(lafClass())
             SwingUtilities.updateComponentTreeUI(Main)
+            SwingUtilities.updateComponentTreeUI(TopBar)
         } catch (e: Exception) {
             logger.error("Failed to load '$name' Modern Look and Feel.", e)
         }

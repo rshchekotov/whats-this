@@ -1,6 +1,5 @@
 package edu.tum.romance.whatsthis.kui.components
 
-import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
 import java.awt.Graphics
 import java.awt.event.FocusEvent
@@ -13,12 +12,12 @@ import javax.swing.JTextField
  * @see JTextField
  */
 @Suppress("unused")
-class HintTextField(private val hint: String): JTextField(hint), FocusListener {
+class HintTextField(private val hint: String, fontSize: Int): JTextField(hint), FocusListener {
     private var showingHint = true
 
     init {
         addFocusListener(this)
-        font = comfortaa(SMALL)
+        font = comfortaa(fontSize)
     }
 
     override fun focusGained(e: FocusEvent?) {
