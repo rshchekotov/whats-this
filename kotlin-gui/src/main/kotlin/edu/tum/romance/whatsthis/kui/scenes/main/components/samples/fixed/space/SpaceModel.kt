@@ -1,12 +1,13 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.components.samples.fixed.space
 
 import edu.tum.romance.whatsthis.kui.event.EventHandler
+import edu.tum.romance.whatsthis.kui.event.events.data.FixedSampleCreateEvent
 import edu.tum.romance.whatsthis.kui.event.events.space.SpaceCreateEvent
 import edu.tum.romance.whatsthis.nlp.API
 import javax.swing.table.AbstractTableModel
 
 object SpaceModel: AbstractTableModel() {
-    private var spaces = API.spaces().sorted().toMutableList()
+    internal var spaces = API.spaces().sorted().toMutableList()
 
     override fun getColumnCount() = 1
     override fun getRowCount() = spaces.size
@@ -15,16 +16,26 @@ object SpaceModel: AbstractTableModel() {
 
     @EventHandler
     fun onSpaceCreate(event: SpaceCreateEvent) {
+        addSpaceIfNotExists(event.name)
+    }
+
+    @EventHandler
+    fun onFixedSampleCreate(event: FixedSampleCreateEvent) {
+        addSpaceIfNotExists(event.space)
+    }
+
+    private fun addSpaceIfNotExists(space: String) {
         for(i in 0 until spaces.size) {
-            if(spaces[i] > event.name) {
-                spaces.add(i, event.name)
+            if(spaces[i] == space) return
+            if(spaces[i] > space) {
+                spaces.add(i, space)
                 fireTableRowsInserted(i, i)
                 SpaceList.repaint()
                 return
             }
         }
-        spaces.add(event.name)
-        fireTableDataChanged()
+        spaces.add(space)
+        fireTableRowsInserted(spaces.size - 1, spaces.size - 1)
         SpaceList.repaint()
     }
 }

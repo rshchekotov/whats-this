@@ -3,8 +3,8 @@ package edu.tum.romance.whatsthis.kui.util
 import java.awt.Font
 
 object FontCache {
-    const val SMALL = 12
-    const val MEDIUM = 16
+    const val SMALL = 16
+    const val MEDIUM = 24
     const val HUGE = 32
 
     private val cache = mutableMapOf<Pair<String, Int>, Font>()

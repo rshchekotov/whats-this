@@ -1,7 +1,10 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.components.buttons
 
+import edu.tum.romance.whatsthis.data.TextData
 import edu.tum.romance.whatsthis.kui.components.StyledButton
+import edu.tum.romance.whatsthis.kui.event.events.data.FixedSampleCreateEvent
 import edu.tum.romance.whatsthis.kui.event.events.space.SpaceCreateEvent
+import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateFixedDialog
 import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateSpaceDialog
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.unimplemented
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
@@ -30,12 +33,18 @@ object MainButtonPane: JPanel() {
 
         add(StyledButton(MEDIUM, "Create Empty Space", "Create Space") {
             val name = CreateSpaceDialog.open()
-            API.alterSpace(name.toString())
-            SpaceCreateEvent(name.toString()).dispatch()
+            if(name is String) {
+                API.alterSpace(name.toString())
+                SpaceCreateEvent(name.toString()).dispatch()
+            }
         }, constraints)
         gridBagVSpace(20, constraints)
         add(StyledButton(MEDIUM, "Create Classified Sample", "Create Sample") {
-            unimplemented()
+            val data = CreateFixedDialog.open()
+            if(data is Pair<String, TextData<*>>) {
+                API.addSample(data.second, data.first)
+                FixedSampleCreateEvent(data.second, data.first).dispatch()
+            }
         }, constraints)
         gridBagVSpace(20, constraints)
         add(StyledButton(MEDIUM, "Create Variable Sample", "Create Sample") {

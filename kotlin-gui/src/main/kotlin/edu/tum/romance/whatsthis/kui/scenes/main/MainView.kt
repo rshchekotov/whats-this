@@ -14,6 +14,8 @@ import javax.swing.SpringLayout.*
 
 object MainView: View() {
     private const val padding = 5
+    // Hacky Hardcoded Value
+    private const val tabHeight = 32
 
     init {
         val layout = SpringLayout()
@@ -29,17 +31,15 @@ object MainView: View() {
         layout.putConstraint(EAST, MainPane, -padding, EAST, this)
 
         this.add(SamplePane)
-        SamplePane.preferredSize = contentSize * (0.85 to 0.3)
+        SamplePane.preferredSize = contentSize * (0.7 to 0.3)
         layout.putConstraint(WEST, SamplePane, 0, WEST, MainPane)
         layout.putConstraint(NORTH, SamplePane, padding, SOUTH, MainPane)
         layout.putConstraint(SOUTH, SamplePane, -padding, SOUTH, this)
 
         this.add(MainButtonPane)
-        MainButtonPane.preferredSize = contentSize * (0.15 to 0.3)
-        MainButtonPane.maximumSize = MainButtonPane.preferredSize
-        MainButtonPane.minimumSize = MainButtonPane.preferredSize
+        MainButtonPane.preferredSize = contentSize * (0.3 to 0.3)
         layout.putConstraint(WEST, MainButtonPane, padding, EAST, SamplePane)
-        layout.putConstraint(NORTH, MainButtonPane, 0, NORTH, SamplePane)
+        layout.putConstraint(NORTH, MainButtonPane, tabHeight, NORTH, SamplePane)
         layout.putConstraint(EAST, MainButtonPane, -padding, EAST, this)
         layout.putConstraint(SOUTH, MainButtonPane, 0, SOUTH, SamplePane)
     }

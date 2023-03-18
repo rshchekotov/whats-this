@@ -10,6 +10,7 @@ import javax.swing.table.TableCellRenderer
 object VariableSampleTable: JTable(VariableSampleModel) {
     init {
         this.tableHeader.setUI(null)
+        this.font = comfortaa(SMALL)
     }
 
     override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
