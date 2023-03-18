@@ -3,10 +3,11 @@ package edu.tum.romance.whatsthis.kui.scenes.main.components.buttons
 import edu.tum.romance.whatsthis.data.TextData
 import edu.tum.romance.whatsthis.kui.components.StyledButton
 import edu.tum.romance.whatsthis.kui.event.events.data.FixedSampleCreateEvent
+import edu.tum.romance.whatsthis.kui.event.events.data.VariableSampleCreateEvent
 import edu.tum.romance.whatsthis.kui.event.events.space.SpaceCreateEvent
 import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateFixedDialog
 import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateSpaceDialog
-import edu.tum.romance.whatsthis.kui.util.DialogUtils.unimplemented
+import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateVariableDialog
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.kui.util.gridBagVSpace
 import edu.tum.romance.whatsthis.nlp.API
@@ -48,7 +49,11 @@ object MainButtonPane: JPanel() {
         }, constraints)
         gridBagVSpace(20, constraints)
         add(StyledButton(MEDIUM, "Create Variable Sample", "Create Sample") {
-            unimplemented()
+            val data = CreateVariableDialog.open()
+            if(data is TextData<*>) {
+                API.addSample(data)
+                VariableSampleCreateEvent(data).dispatch()
+            }
         }, constraints)
     }
 }
