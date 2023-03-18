@@ -7,11 +7,10 @@ import edu.tum.romance.whatsthis.kui.scenes.main.MainView
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.unimplemented
 import edu.tum.romance.whatsthis.kui.util.FontCache.HUGE
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
-import java.awt.Dimension
+import edu.tum.romance.whatsthis.kui.util.emptyBorder
+import edu.tum.romance.whatsthis.kui.util.gridBagVSpace
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import javax.swing.Box
-import javax.swing.border.EmptyBorder
 
 @Suppress("unused")
 object MenuView: View() {
@@ -24,10 +23,10 @@ object MenuView: View() {
         }
 
         add(StyledLabel(HUGE, "What's This?"), constraints)
-        add(Box.createRigidArea(Dimension(0, 20)), constraints)
+        gridBagVSpace(20, constraints)
         add(StyledButton(MEDIUM, "New Model") { MainView.switch() }, constraints)
-        add(Box.createRigidArea(Dimension(0, 20)), constraints)
+        gridBagVSpace(20, constraints)
         add(StyledButton(MEDIUM, "Load Model") { unimplemented() }, constraints)
-        border = EmptyBorder(10, 10, 10, 10)
+        emptyBorder(10)
     }
 }
