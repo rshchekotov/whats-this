@@ -3,7 +3,9 @@ package edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.ta
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
 import java.awt.Component
+import javax.swing.DefaultCellEditor
 import javax.swing.JTable
+import javax.swing.JTextField
 import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
@@ -22,11 +24,10 @@ object VariableSampleTable: JTable(VariableSampleModel) {
     }
 
     override fun getCellEditor(row: Int, column: Int): TableCellEditor {
-        val cellEditor = super.getCellEditor()
-        if(column == 1) {
-            return VariableSampleEditor
+        return when (column) {
+            1 -> VariableButtonAdapter
+            else -> DefaultCellEditor(JTextField()) // TODO: Make it work...
         }
-        return cellEditor
     }
 
     override fun getCellRenderer(row: Int, column: Int): TableCellRenderer {

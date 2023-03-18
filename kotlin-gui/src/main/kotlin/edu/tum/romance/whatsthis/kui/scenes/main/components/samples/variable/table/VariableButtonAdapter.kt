@@ -6,7 +6,7 @@ import javax.swing.DefaultCellEditor
 import javax.swing.JCheckBox
 import javax.swing.JTable
 
-internal object VariableSampleEditor : DefaultCellEditor(JCheckBox()) {
+internal object VariableButtonAdapter : DefaultCellEditor(JCheckBox()) {
     private var pushed: String? = null
 
     override fun getTableCellEditorComponent(
