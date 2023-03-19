@@ -2,6 +2,7 @@ package edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.ta
 
 import edu.tum.romance.whatsthis.kui.event.EventHandler
 import edu.tum.romance.whatsthis.kui.event.events.data.VariableSampleCreateEvent
+import edu.tum.romance.whatsthis.kui.event.events.progress.ModelLoadEvent
 import edu.tum.romance.whatsthis.nlp.API
 import javax.swing.table.AbstractTableModel
 
@@ -29,5 +30,11 @@ internal object VariableSampleModel: AbstractTableModel() {
         }
         samples.add(event.data.name)
         fireTableRowsInserted(samples.size - 1, samples.size - 1)
+    }
+
+    @EventHandler(ModelLoadEvent::class)
+    fun onModelLoad() {
+        samples = API.spaceVectors().sorted().toMutableList()
+        fireTableDataChanged()
     }
 }

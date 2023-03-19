@@ -10,7 +10,7 @@ import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
 import java.awt.Dimension
 import javax.swing.*
 
-@Suppress("unused")
+@Suppress("unused") /* Intentionally */
 object SourceImporter: JDialog(Main, "Loading Data", true) {
     private val progress = JProgressBar(0, 100)
 
@@ -27,7 +27,7 @@ object SourceImporter: JDialog(Main, "Loading Data", true) {
         progress.font = comfortaa(SMALL)
         val metrics = progress.getFontMetrics(progress.font)
         val example = "Loading ${"a".repeat(20)} from ${"b".repeat(16)}"
-        progress.preferredSize = Dimension(metrics.stringWidth(example), progress.preferredSize.height)
+        progress.preferredSize = Dimension(metrics.stringWidth(example), progress.preferredSize.height * 4)
         progress.isStringPainted = true
         progress.string = "Inactive"
         panel.add(progress)
@@ -39,7 +39,7 @@ object SourceImporter: JDialog(Main, "Loading Data", true) {
 
     @EventHandler
     fun onProgressUpdate(event: ProgressUpdateEvent) {
-        if(progress.value == -1) {
+        if(event.percentage == 0.0) {
             isVisible = true
         }
 

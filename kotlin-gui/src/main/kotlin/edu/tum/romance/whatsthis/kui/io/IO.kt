@@ -8,7 +8,7 @@ object IO {
         SourceFormat.fromFile(file).write()
     }
 
-    fun importAsYamlSources(file: File) {
+    fun importFromYamlSources(file: File) {
         SourceFormat.fromFile(file).load()
     }
 

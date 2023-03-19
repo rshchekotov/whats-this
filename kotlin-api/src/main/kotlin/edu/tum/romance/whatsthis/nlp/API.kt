@@ -3,8 +3,9 @@ package edu.tum.romance.whatsthis.nlp
 import edu.tum.romance.whatsthis.data.TextData
 import edu.tum.romance.whatsthis.math.Distance
 import org.apache.logging.log4j.LogManager
+import java.util.*
 
-@Suppress("unused")
+@Suppress("unused", "EqualsOrHashCode")
 object API {
     private var norm = Distance.Euclidean
     private var logger = LogManager.getLogger(API::class.java)
@@ -263,6 +264,10 @@ object API {
         spaces.clear()
         vectors.clear()
         vocabulary.clear()
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(vectors, spaces, vocabulary)
     }
 
     fun words(): List<String> {

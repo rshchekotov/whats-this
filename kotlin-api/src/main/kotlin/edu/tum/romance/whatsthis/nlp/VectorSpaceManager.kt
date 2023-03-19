@@ -5,6 +5,7 @@ import edu.tum.romance.whatsthis.math.Vector
 /**
  * A manager for [VectorSpace]s.
  */
+@Suppress("EqualsOrHashCode")
 internal object VectorSpaceManager {
     private val spaces = mutableListOf<Pair<VectorSpace, Vector>>()
     private val reverse = mutableMapOf<String, Int>()
@@ -117,6 +118,11 @@ internal object VectorSpaceManager {
         val index = reverse[name] ?: return null
         return spaces[index].second
     }
+
+    override fun hashCode(): Int {
+        return spaces.hashCode()
+    }
+
     fun clear() {
         spaces.clear()
         reverse.clear()

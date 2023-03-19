@@ -7,6 +7,7 @@ import edu.tum.romance.whatsthis.data.TextData
  * It is used to access vectors by name and to
  * add and remove vectors.
  */
+@Suppress("EqualsOrHashCode")
 object WordVectorManager {
     private val vectors = mutableListOf<TextData<*>>()
     private val reverse = mutableMapOf<String, Int>()
@@ -87,6 +88,10 @@ object WordVectorManager {
 
     fun names(): List<String> {
         return vectors.map { it.name }.sorted()
+    }
+
+    override fun hashCode(): Int {
+        return vectors.hashCode()
     }
 
     fun clear() {
