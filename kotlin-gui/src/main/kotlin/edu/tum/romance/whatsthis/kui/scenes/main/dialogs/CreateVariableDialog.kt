@@ -6,6 +6,8 @@ import edu.tum.romance.whatsthis.kui.components.HintTextField
 import edu.tum.romance.whatsthis.kui.components.StyledButton
 import edu.tum.romance.whatsthis.kui.components.StyledLabel
 import edu.tum.romance.whatsthis.kui.components.SymbolicButton
+import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
+import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.SamplePane
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualError
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.kui.util.times
@@ -57,6 +59,10 @@ object CreateVariableDialog: JDialog(Main, "Create Fixed Sample", true) {
                 return@StyledButton
             }
             TextData(file, nameInput.text)
+        }
+
+        if(!MainModel.variable) {
+            SamplePane.selectedIndex = 1
         }
 
         clear()

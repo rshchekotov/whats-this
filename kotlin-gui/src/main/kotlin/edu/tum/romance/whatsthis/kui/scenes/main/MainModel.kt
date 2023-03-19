@@ -8,12 +8,6 @@ object MainModel {
     var sample = ""
     var space = ""
     var data: TextData<*>? = null
+    var variable = false
     var render: MainPaneRender = TextRender
-
-    val renders: Array<Pair<String, MainPaneRender>> = arrayOf(
-        "Text" to TextRender,
-        "Web" to WebRender,
-        "Vector" to WordVectorRender,
-        "Dictionary" to DictionaryRender,
-    )
 }

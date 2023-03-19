@@ -6,8 +6,7 @@ import edu.tum.romance.whatsthis.nlp.API
 import javax.swing.table.AbstractTableModel
 
 internal object VariableSampleModel: AbstractTableModel() {
-    @Suppress("unused")
-    private var samples = API.spaceVectors().sorted().toMutableList()
+    internal var samples = API.spaceVectors().sorted().toMutableList()
 
     override fun isCellEditable(rowIndex: Int, columnIndex: Int) = true
     override fun getValueAt(row: Int, column: Int): Any = samples[row]
