@@ -105,6 +105,7 @@ object FileMenu: JMenu("File") {
                 }
             }
             API.clear()
+            ModelLoadEvent().dispatch()
             MenuView.switch()
         }
         add(close)
@@ -153,8 +154,8 @@ object FileMenu: JMenu("File") {
         return result
     }
 
-    @EventHandler
-    fun onModelLoad(event: ModelLoadEvent) {
+    @EventHandler(ModelLoadEvent::class)
+    fun onModelLoad() {
         if(chooser.selectedFile != null) {
             saveState = API.hashCode() to chooser.selectedFile.absolutePath
         }

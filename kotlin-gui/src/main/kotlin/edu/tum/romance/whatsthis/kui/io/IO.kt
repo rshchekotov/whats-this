@@ -1,7 +1,10 @@
 package edu.tum.romance.whatsthis.kui.io
 
 import edu.tum.romance.whatsthis.kui.io.SourceFormat.Companion.DSL_EXT
+import edu.tum.romance.whatsthis.kui.io.SourceFormat.Companion.YAML_EXT
 import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
 @Suppress("unused")
 object IO {
@@ -12,6 +15,10 @@ object IO {
         }
     }
 
+    fun export(outputStream: OutputStream) {
+        SourceFormat.fromIOStream(null, outputStream).write()
+    }
+
     fun import(file: File) {
         when {
             file.endsWith(DSL_EXT) -> importFromCustomSources(file)
@@ -19,19 +26,35 @@ object IO {
         }
     }
 
+    fun import(inputStream: InputStream) {
+        SourceFormat.fromIOStream(inputStream, null).load()
+    }
+
     fun exportAsYamlSources(file: File) {
-        SourceFormat.fromFile(file).write()
+        val out =
+            if(file.absolutePath.endsWith(YAML_EXT)) file
+            else File(file.absolutePath + YAML_EXT)
+        SourceFormat.fromFile(out).write()
     }
 
     fun importFromYamlSources(file: File) {
-        SourceFormat.fromFile(file).load()
+        val out =
+            if(file.absolutePath.endsWith(YAML_EXT)) file
+            else File(file.absolutePath + YAML_EXT)
+        SourceFormat.fromFile(out).load()
     }
 
     fun exportAsCustomSources(file: File) {
-        SourceFormat.fromFile(file, "DSL").write()
+        val out =
+            if(file.absolutePath.endsWith(DSL_EXT)) file
+            else File(file.absolutePath + DSL_EXT)
+        SourceFormat.fromFile(out, "DSL").write()
     }
 
     fun importFromCustomSources(file: File) {
-        SourceFormat.fromFile(file, "DSL").load()
+        val out =
+            if(file.absolutePath.endsWith(DSL_EXT)) file
+            else File(file.absolutePath + DSL_EXT)
+        SourceFormat.fromFile(out, "DSL").load()
     }
 }
