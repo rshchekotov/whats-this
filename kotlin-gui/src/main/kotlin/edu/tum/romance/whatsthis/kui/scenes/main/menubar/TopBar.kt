@@ -6,6 +6,7 @@ object TopBar: JMenuBar() {
     init {
         add(FileMenu)
         add(ViewMenu)
+        add(PresetMenu)
         add(AppearanceMenu)
     }
 }
