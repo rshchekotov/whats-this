@@ -243,8 +243,7 @@ object API {
             val significance = spaces.significance(it)!!
             this.norm(vector, significance)
         }
-        val total = norms.sum()
-        return norms.map { (total - it) / total }
+        return norms
     }
 
     /**

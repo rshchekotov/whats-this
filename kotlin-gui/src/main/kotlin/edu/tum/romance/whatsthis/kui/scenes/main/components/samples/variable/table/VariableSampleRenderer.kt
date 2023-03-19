@@ -26,9 +26,13 @@ internal object VariableSampleRenderer: DefaultTableCellRenderer() {
             }
 
             val button = SymbolicButton(MEDIUM, "?", "Information on $value") {
-                val classifications = API.distances(value).mapIndexed { index, distance ->
+                var distances = API.distances(value)
+                val sum = distances.sum()
+                distances = distances.map { 1 - it / sum }
+
+                val classifications = distances.mapIndexed { index, distance ->
                     val space = "<td>${API.spaces()[index]}</td>"
-                    val dist = "<td>${String.format("%.2f", distance * 100)}</td>"
+                    val dist = "<td>${String.format("%.2f%%", distance * 100)}</td>"
                     "<tr>$space$dist</tr>"
                 }.joinToString("")
 
@@ -47,7 +51,7 @@ internal object VariableSampleRenderer: DefaultTableCellRenderer() {
                             <table>
                                 <tr>
                                     <th>Space</th>
-                                    <th>Distance</th>
+                                    <th>Relation</th>
                                 </tr>
                                 $classifications
                             </table>

@@ -15,8 +15,8 @@ object IO {
         }
     }
 
-    fun export(outputStream: OutputStream) {
-        SourceFormat.fromIOStream(null, outputStream).write()
+    fun export(outputStream: OutputStream, ext: String = "YAML") {
+        SourceFormat.fromIOStream(null, outputStream, ext).write()
     }
 
     fun import(file: File) {
@@ -26,8 +26,8 @@ object IO {
         }
     }
 
-    fun import(inputStream: InputStream) {
-        SourceFormat.fromIOStream(inputStream, null).load()
+    fun import(inputStream: InputStream, ext: String = "YAML") {
+        SourceFormat.fromIOStream(inputStream, null, ext).load()
     }
 
     fun exportAsYamlSources(file: File) {

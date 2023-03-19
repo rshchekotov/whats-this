@@ -11,7 +11,7 @@ object DialogUtils {
     @Suppress("unused")
     fun unimplemented() = visualInfo("Not implemented yet!", MEDIUM)
 
-    fun visualInfo(message: String, size: Int = 0) {
+    fun visualInfo(message: String, size: Int = SMALL) {
         val label = JLabel(message)
         label.font = comfortaa(size)
         JOptionPane.showMessageDialog(Main, label,
