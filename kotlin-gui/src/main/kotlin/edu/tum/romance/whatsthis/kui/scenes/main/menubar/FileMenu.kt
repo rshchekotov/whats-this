@@ -155,6 +155,8 @@ object FileMenu: JMenu("File") {
 
     @EventHandler
     fun onModelLoad(event: ModelLoadEvent) {
-        saveState = API.hashCode() to chooser.selectedFile.absolutePath
+        if(chooser.selectedFile != null) {
+            saveState = API.hashCode() to chooser.selectedFile.absolutePath
+        }
     }
 }
