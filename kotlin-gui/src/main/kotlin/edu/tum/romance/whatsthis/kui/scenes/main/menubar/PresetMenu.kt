@@ -72,6 +72,7 @@ object PresetMenu: JMenu("Presets") {
     }
 
     private fun loadCommon(name: String, data: InputStream) {
+        val ext = if(name.endsWith(".yaml")) "YAML" else "DSL"
         val title = name.split(".")[0]
             .replace("_", " ")
             .replace("-", " ")
@@ -96,7 +97,7 @@ object PresetMenu: JMenu("Presets") {
                     return@addActionListener
                 }
             }
-            IO.import(data)
+            IO.import(data, ext)
         }
         add(item)
     }
