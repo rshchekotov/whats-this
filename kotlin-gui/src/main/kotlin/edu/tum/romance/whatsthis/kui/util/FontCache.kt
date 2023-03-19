@@ -1,11 +1,14 @@
 package edu.tum.romance.whatsthis.kui.util
 
 import java.awt.Font
+import java.awt.Toolkit
 
 object FontCache {
-    const val SMALL = 16
-    const val MEDIUM = 24
-    const val HUGE = 32
+    val SCREEN = Toolkit.getDefaultToolkit().screenSize.width
+
+    val SMALL = if(SCREEN > 2000) 16 else 12
+    val MEDIUM = if(SCREEN > 2000) 24 else 16
+    val HUGE = if(SCREEN > 2000) 32 else 24
 
     private val cache = mutableMapOf<Pair<String, Int>, Font>()
 
