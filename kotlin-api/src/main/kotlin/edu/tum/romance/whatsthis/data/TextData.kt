@@ -83,6 +83,14 @@ abstract class TextData<T> {
         return result
     }
 
+    override fun hashCode(): Int {
+        return source.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is TextData<*> && other.source == source
+    }
+
     companion object {
         const val ngram: UInt = 1u
 

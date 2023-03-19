@@ -5,6 +5,7 @@ import edu.tum.romance.whatsthis.math.Vector
 /**
  * This class is used to manage the vocabulary of the system.
  */
+@Suppress("EqualsOrHashCode")
 object VocabularyManager {
     private val vocabulary = mutableListOf<String>()
     private val reverse = mutableMapOf<Int, Int>()
@@ -38,6 +39,10 @@ object VocabularyManager {
     }
     fun words(): List<String> {
         return vocabulary.toList()
+    }
+
+    override fun hashCode(): Int {
+        return vocabulary.hashCode()
     }
 
     fun clear() {

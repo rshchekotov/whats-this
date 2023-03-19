@@ -8,6 +8,7 @@ import javax.swing.JLabel
 import javax.swing.JOptionPane
 
 object DialogUtils {
+    @Suppress("unused")
     fun unimplemented() = visualInfo("Not implemented yet!", MEDIUM)
 
     fun visualInfo(message: String, size: Int = 0) {
@@ -26,10 +27,10 @@ object DialogUtils {
     }
 
     @Suppress("unused")
-    fun visualQuestion(message: String): Boolean {
+    fun visualQuestion(message: String): Int {
         val label = JLabel(message)
         label.font = comfortaa(SMALL)
         return JOptionPane.showConfirmDialog(Main, label,
-            "Question", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
+            "Question", JOptionPane.YES_NO_CANCEL_OPTION)
     }
 }

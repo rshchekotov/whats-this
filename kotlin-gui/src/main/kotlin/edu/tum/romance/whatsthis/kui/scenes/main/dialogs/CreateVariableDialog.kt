@@ -11,6 +11,7 @@ import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.SamplePane
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualError
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.kui.util.times
+import edu.tum.romance.whatsthis.util.urlRegex
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.net.URL
@@ -24,9 +25,23 @@ object CreateVariableDialog: JDialog(Main, "Create Fixed Sample", true) {
         fileSelectionMode = JFileChooser.FILES_ONLY
     }
     private val sampleLabel = StyledLabel(MEDIUM, "Sample:")
-    private val sampleUrlInput = HintTextField("(e.g. https://www.example.com)", MEDIUM)
+    private val sampleUrlInput = HintTextField("(e.g. https://www.example.com)", MEDIUM).apply {
+        addActionListener {
+            if(urlRegex.matches(text)) {
+                value = TextData(URL(text), "")
+                nameInput.text = value!!.titleSuggestion
+                nameInput.requestFocusInWindow()
+            }
+        }
+    }
     private val sampleFileInput = StyledButton(MEDIUM, "Select File", "Select File") {
-        chooser.showOpenDialog(this@CreateVariableDialog)
+        val response = chooser.showOpenDialog(this@CreateVariableDialog)
+        if(response == JFileChooser.APPROVE_OPTION) {
+            val file = chooser.selectedFile
+            value = TextData(file, "")
+            nameInput.text = value!!.titleSuggestion
+            nameInput.requestFocusInWindow()
+        }
     }
     private var sampleInput: JComponent = sampleUrlInput
     private val sampleSelectToggle = SymbolicButton(MEDIUM, "↹", "Toggle Input Method") {
@@ -40,6 +55,11 @@ object CreateVariableDialog: JDialog(Main, "Create Fixed Sample", true) {
     private val nameInput = HintTextField("(e.g. Example)", MEDIUM)
 
     private val confirm = StyledButton(MEDIUM, "Confirm", "Create Sample") {
+        while(value != null) {
+            if(value!!.name.isBlank()) break
+            return@StyledButton
+        }
+
         if(nameInput.text.isBlank()) {
             visualError("Sample Name cannot be blank.")
             return@StyledButton
@@ -84,6 +104,13 @@ object CreateVariableDialog: JDialog(Main, "Create Fixed Sample", true) {
         nameInput.preferredSize = nameInput.preferredSize * (2.2 to 1.0)
         sampleFileInput.preferredSize = nameInput.preferredSize
         sampleUrlInput.preferredSize = nameInput.preferredSize
+
+        nameInput.addActionListener {
+            if(value != null) {
+                value!!.text = nameInput.text
+                confirm.doClick()
+            }
+        }
 
         val layout = GroupLayout(contentPane)
         contentPane.layout = layout

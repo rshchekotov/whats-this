@@ -13,6 +13,9 @@ import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
 import edu.tum.romance.whatsthis.kui.util.times
 import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.util.urlRegex
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.net.URL
@@ -26,9 +29,25 @@ object CreateFixedDialog: JDialog(Main, "Create Fixed Sample", true) {
         fileSelectionMode = JFileChooser.FILES_ONLY
     }
     private val sampleLabel = StyledLabel(MEDIUM, "Sample:")
-    private val sampleUrlInput = HintTextField("(e.g. https://www.example.com)", MEDIUM)
+    private val sampleUrlInput = HintTextField("(e.g. https://www.example.com)", MEDIUM).apply {
+        addActionListener {
+            if(urlRegex.matches(this.text) && value == null) {
+                val data = TextData(URL(this.text), "")
+                nameInput.text = data.titleSuggestion
+                value = "" to data
+                nameInput.requestFocusInWindow()
+            }
+        }
+    }
     private val sampleFileInput = StyledButton(MEDIUM, "Select File", "Select File") {
-        chooser.showOpenDialog(this@CreateFixedDialog)
+        val result = chooser.showOpenDialog(this@CreateFixedDialog)
+        if(result == JFileChooser.APPROVE_OPTION) {
+            val file = chooser.selectedFile
+            val data = TextData(file, "")
+            nameInput.text = data.titleSuggestion
+            value = nameInput.text to data
+            nameInput.requestFocusInWindow()
+        }
     }
     private var sampleInput: JComponent = sampleUrlInput
     private val sampleSelectToggle = SymbolicButton(MEDIUM, "↹", "Toggle Input Method") {
@@ -39,7 +58,14 @@ object CreateFixedDialog: JDialog(Main, "Create Fixed Sample", true) {
 
     /* Sample Name  */
     private val nameLabel = StyledLabel(MEDIUM, "Name:")
-    private val nameInput = HintTextField("(e.g. Example)", MEDIUM)
+    private val nameInput = HintTextField("(e.g. Example)", MEDIUM).apply {
+        if(value != null) {
+            val data = value!!.second
+            data.name = this.text
+            value = "" to data
+            spaceInput.requestFocusInWindow()
+        }
+    }
 
     /* Space Input */
     private val spaceLabel = StyledLabel(MEDIUM, "Space Name:")
@@ -52,7 +78,24 @@ object CreateFixedDialog: JDialog(Main, "Create Fixed Sample", true) {
                 }
             else null }
     }
-    private var spaceInput: JComponent = spaceDropDown() ?: spaceTextInput
+    private var spaceInput: JComponent = (spaceDropDown() ?: spaceTextInput).apply {
+        if(this is JTextField) {
+            this.addActionListener {
+                if(this.text.isNotBlank() && value == null) {
+                    value = this.text to TextData(URL(sampleUrlInput.text), nameInput.text)
+                    confirm.doClick()
+                }
+            }
+        } else if(this is JSpinner) {
+            this.addKeyListener(object: KeyAdapter() {
+                override fun keyPressed(e: KeyEvent) {
+                    if(e.keyCode == KeyEvent.VK_ENTER) {
+                        confirm.doClick()
+                    }
+                }
+            })
+        }
+    }
     private val spaceSelectToggle = SymbolicButton(MEDIUM, "↹", "Toggle Input Method") {
         if(spaceInput == spaceTextInput && spaceDropDown() == null) {
             visualError("No Spaces Available.")
@@ -65,8 +108,14 @@ object CreateFixedDialog: JDialog(Main, "Create Fixed Sample", true) {
     }
 
     private val confirm = StyledButton(MEDIUM, "Confirm", "Create Sample") {
-        val space = spaceValue()
+        while(value != null) {
+            val (space, data) = value!!
+            if(space.isBlank()) break
+            if(data.name.isBlank()) break
+            return@StyledButton
+        }
 
+        val space = spaceValue()
         if(space.isBlank()) {
             visualError("Space Name cannot be blank.")
             return@StyledButton

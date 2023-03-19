@@ -28,7 +28,10 @@ class SourceImportTask(
                 API.addSample(data, space)
                 items++
 
-                Thread { ProgressUpdateEvent("Importing $sampleName", items.toDouble() / maxProgress) }.start()
+                Thread { ProgressUpdateEvent(
+                    "Importing $sampleName",
+                    items.toDouble() / maxProgress
+                ).dispatch() }.start()
             }
         }
     }

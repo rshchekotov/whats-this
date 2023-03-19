@@ -1,5 +1,7 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.components.samples
 
+import edu.tum.romance.whatsthis.kui.event.EventHandler
+import edu.tum.romance.whatsthis.kui.event.events.progress.ModelLoadEvent
 import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.fixed.FixedPane
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.VariablePane
@@ -22,5 +24,10 @@ object SamplePane: JTabbedPane(TOP) {
         super.setPreferredSize(preferredSize)
         FixedPane.preferredSize = preferredSize
         VariablePane.preferredSize = preferredSize
+    }
+
+    @EventHandler(ModelLoadEvent::class)
+    fun reset() {
+        selectedIndex = 0
     }
 }

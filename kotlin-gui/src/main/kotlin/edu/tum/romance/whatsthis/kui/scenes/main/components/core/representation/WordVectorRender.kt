@@ -3,6 +3,7 @@ package edu.tum.romance.whatsthis.kui.scenes.main.components.core.representation
 import edu.tum.romance.whatsthis.kui.event.EventHandler
 import edu.tum.romance.whatsthis.kui.event.events.data.SampleDeselectEvent
 import edu.tum.romance.whatsthis.kui.event.events.data.SampleSelectEvent
+import edu.tum.romance.whatsthis.kui.event.events.progress.ModelLoadEvent
 import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
 import edu.tum.romance.whatsthis.kui.scenes.main.components.core.MainPane
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
@@ -43,7 +44,7 @@ object WordVectorRender: JTable(), MainPaneRender {
         sorter.toggleSortOrder(countColumn.modelIndex)
     }
 
-    @EventHandler(SampleDeselectEvent::class)
+    @EventHandler(SampleDeselectEvent::class, ModelLoadEvent::class)
     fun onSampleDeselect() {
         (model as DefaultTableModel).setDataVector(arrayOf<Array<String>>(), arrayOf("Token", "Count"))
         adjustColumnSize()
