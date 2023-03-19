@@ -264,6 +264,10 @@ object API {
         vectors.clear()
         vocabulary.clear()
     }
+
+    fun words(): List<String> {
+        return vocabulary.words()
+    }
 }
 
 /**

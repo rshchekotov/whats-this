@@ -1,10 +1,11 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.menubar
 
-import com.formdev.flatlaf.FlatDarkLaf
-import com.formdev.flatlaf.FlatLightLaf
 import com.formdev.flatlaf.FlatDarculaLaf
+import com.formdev.flatlaf.FlatDarkLaf
 import com.formdev.flatlaf.FlatLaf
+import com.formdev.flatlaf.FlatLightLaf
 import edu.tum.romance.whatsthis.kui.Main
+import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.VariablePane
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
 import org.apache.logging.log4j.LogManager
@@ -41,6 +42,8 @@ object AppearanceMenu: JMenu("Appearance") {
             UIManager.setLookAndFeel(lafClass())
             SwingUtilities.updateComponentTreeUI(Main)
             SwingUtilities.updateComponentTreeUI(TopBar)
+            VariablePane.buttonCache.values.map { it.first }
+                .forEach(SwingUtilities::updateComponentTreeUI)
         } catch (e: Exception) {
             logger.error("Failed to load '$name' Modern Look and Feel.", e)
         }

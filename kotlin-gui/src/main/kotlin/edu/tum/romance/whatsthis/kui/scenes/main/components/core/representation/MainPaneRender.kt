@@ -1,13 +1,24 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.components.core.representation
 
+import edu.tum.romance.whatsthis.kui.components.Loadable
 import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
 import edu.tum.romance.whatsthis.kui.scenes.main.components.core.MainPane
-import javax.swing.JPanel
+import java.awt.Component
 
-abstract class MainPaneRender: JPanel() {
+interface MainPaneRender: Loadable {
     @Suppress("unused")
     fun switch() {
+        MainModel.render.onUnload()
         MainModel.render = this
-        MainPane.viewport.view = this
+        MainModel.render.onLoad()
+        getComponent().revalidate()
+        MainPane.viewport.view = getComponent()
+        MainPane.revalidate()
+        MainPane.repaint()
     }
+
+    fun getComponent(): Component
+
+    override fun onLoad() {}
+    override fun onUnload() {}
 }

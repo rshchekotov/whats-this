@@ -9,7 +9,7 @@ import javax.swing.table.AbstractTableModel
 
 object VectorModel: AbstractTableModel() {
     private var space: String? = null
-    private var samples = API.classified().sorted().toMutableList()
+    internal var samples = API.classified().sorted().toMutableList()
 
     override fun getColumnCount() = 1
     override fun getRowCount() = samples.size

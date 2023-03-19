@@ -1,8 +1,15 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.table
 
+import edu.tum.romance.whatsthis.kui.event.events.data.SampleDeselectEvent
+import edu.tum.romance.whatsthis.kui.event.events.data.SampleSelectEvent
+import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
+import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.fixed.vector.VectorList
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
+import edu.tum.romance.whatsthis.nlp.API
 import java.awt.Component
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.DefaultCellEditor
 import javax.swing.JTable
 import javax.swing.JTextField
@@ -13,6 +20,33 @@ object VariableSampleTable: JTable(VariableSampleModel) {
     init {
         this.tableHeader.setUI(null)
         this.font = comfortaa(SMALL)
+        this.selectionModel.addListSelectionListener {
+            if(!it.valueIsAdjusting) {
+                if (this.selectedRow != -1) {
+                    val name = VariableSampleModel.samples[this.selectedRow]
+                    MainModel.data = API.getSample(name)
+                    SampleSelectEvent(name).dispatch()
+                    VectorList.clearSelection()
+                }
+            }
+        }
+
+        this.addMouseListener(object: MouseAdapter() {
+            var selection = -1
+
+            override fun mouseClicked(e: MouseEvent) {
+                if (e.clickCount == 2) return
+
+                val current = this@VariableSampleTable.rowAtPoint(e.point)
+                if (current == selection) {
+                    MainModel.data = null
+                    selection = -1
+                    SampleDeselectEvent().dispatch()
+                } else {
+                    selection = current
+                }
+            }
+        })
     }
 
     override fun prepareEditor(editor: TableCellEditor?, row: Int, column: Int): Component {
