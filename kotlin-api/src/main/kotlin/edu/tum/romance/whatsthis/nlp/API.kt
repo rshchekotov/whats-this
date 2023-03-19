@@ -7,7 +7,6 @@ import java.util.*
 
 @Suppress("unused", "EqualsOrHashCode")
 object API {
-    private var norm = Distance.Euclidean
     private var logger = LogManager.getLogger(API::class.java)
     internal val spaces = VectorSpaceManager
     internal val vectors = WordVectorManager
@@ -214,7 +213,7 @@ object API {
         if(spaces.isEmpty()) {
             return
         }
-        val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(norm, force) }
+        val summaries = spaces.spaces().map { spaces[it]!!.name to spaces[it]!!.summary(Distance.Implementation, force) }
         val total = summaries.map { it.second }.reduce { a, b -> a + b }
         for((name, summary) in summaries) {
             val result = total.clone()
@@ -224,7 +223,7 @@ object API {
                 }
                 result[i] = summary[i] / result[i]
             }
-            spaces[name] = result.unit(norm)
+            spaces[name] = result.unit(Distance.Implementation)
         }
     }
 
@@ -238,10 +237,10 @@ object API {
     fun distances(value: String): List<Double> {
         val data = vectors[value] ?: return emptyList()
         recalculateSignificance(true)
-        val vector = data.vector!!.unit(norm)
+        val vector = data.vector!!.unit(Distance.Implementation)
         val norms = spaces.spaces().map {
             val significance = spaces.significance(it)!!
-            this.norm(vector, significance)
+            Distance.Implementation(vector, significance)
         }
         return norms
     }

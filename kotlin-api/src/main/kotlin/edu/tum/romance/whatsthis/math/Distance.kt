@@ -7,26 +7,33 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface Distance {
-    operator fun invoke(a: Vector, b: Vector): Double
-    operator fun invoke(a: Vector): Double
+    operator fun invoke(a: Vector, b: Vector): Double {
+        return Implementation(a, b)
+    }
+
+    operator fun invoke(a: Vector): Double {
+        return Implementation(a)
+    }
+
+    @Suppress("unused")
+    fun swapImplementation() {
+        Implementation = when (Implementation) {
+            EuclideanDistance -> Manhattan
+            else -> EuclideanDistance
+        }
+    }
 
     companion object {
-        val Euclidean = EuclideanDistance
-        val Manhattan = ManhattanDistance
+        internal var Implementation: Distance = EuclideanDistance
+        internal val Euclidean = EuclideanDistance
+        internal val Manhattan = ManhattanDistance
     }
 }
 
 /**
  * Euclidean distance
- *
- * (*protected*): DO NOT USE DIRECTLY
- * Use [Distance.Euclidean] instead.
- *
- * The only reason this is not 'formally'
- * protected, is because Kotlin doesn't
- * support that.
  */
-object EuclideanDistance: Distance {
+internal object EuclideanDistance: Distance {
     override fun invoke(a: Vector, b: Vector): Double {
         var sum = 0.0
         for(i in a.data.indices) {
@@ -46,15 +53,8 @@ object EuclideanDistance: Distance {
 
 /**
  * Manhattan distance
- *
- * (*protected*): DO NOT USE DIRECTLY
- * Use [Distance.Manhattan] instead
- *
- * The only reason this is not 'formally'
- * protected, is because Kotlin doesn't
- * support that.
  */
-object ManhattanDistance: Distance {
+internal object ManhattanDistance: Distance {
     override fun invoke(a: Vector, b: Vector): Double {
         var sum = 0.0
         for(i in a.data.indices) {
