@@ -1,7 +1,8 @@
 @file:Suppress("SpellCheckingInspection")
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    application
+    kotlin("jvm") version "1.8.20-RC"
 }
 
 group = "edu.tum.romance.whatsthis.kui"
@@ -47,6 +48,26 @@ tasks {
     test {
         useJUnitPlatform()
     }
+
+    register<Jar>("fatJar") {
+        dependsOn("compileJava", "compileKotlin", "processResources")
+        archiveClassifier.set("standalone")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest {
+            attributes["Main-Class"] = application.mainClass.get()
+        }
+        from(configurations.runtimeClasspath.get().map{
+            if(it.isDirectory) it else zipTree(it)
+        } + sourceSets.main.get().output)
+    }
+
+    build {
+        dependsOn("fatJar")
+    }
+}
+
+application {
+    mainClass.set("edu.tum.romance.whatsthis.kui.Main")
 }
 
 kotlin {

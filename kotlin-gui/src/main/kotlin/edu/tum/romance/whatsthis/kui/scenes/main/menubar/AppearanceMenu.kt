@@ -5,11 +5,15 @@ import com.formdev.flatlaf.FlatDarkLaf
 import com.formdev.flatlaf.FlatLaf
 import com.formdev.flatlaf.FlatLightLaf
 import edu.tum.romance.whatsthis.kui.Main
+import edu.tum.romance.whatsthis.kui.scenes.main.MainView
+import edu.tum.romance.whatsthis.kui.scenes.main.components.core.MainPane
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.VariablePane
+import edu.tum.romance.whatsthis.kui.scenes.menu.MenuView
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
 import org.apache.logging.log4j.LogManager
 import java.awt.event.KeyEvent.*
+import javax.swing.JComponent
 import javax.swing.JMenu
 import javax.swing.JMenuItem
 import javax.swing.SwingUtilities
@@ -40,8 +44,17 @@ object AppearanceMenu: JMenu("Appearance") {
     fun setLookAndFeel(lafClass: () -> FlatLaf, name: String) {
         try {
             UIManager.setLookAndFeel(lafClass())
+            /* Frame */
             SwingUtilities.updateComponentTreeUI(Main)
+            /* Views */
+            SwingUtilities.updateComponentTreeUI(MenuView)
+            SwingUtilities.updateComponentTreeUI(MainView)
+            /* Bar */
             SwingUtilities.updateComponentTreeUI(TopBar)
+            /* Data Views */
+            MainPane.renders.map { it.second as JComponent }
+                .forEach(SwingUtilities::updateComponentTreeUI)
+            /* Button Cache */
             VariablePane.buttonCache.values.map { it.first }
                 .forEach(SwingUtilities::updateComponentTreeUI)
         } catch (e: Exception) {

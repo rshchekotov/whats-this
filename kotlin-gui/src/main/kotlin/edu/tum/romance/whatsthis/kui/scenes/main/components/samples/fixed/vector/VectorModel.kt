@@ -25,8 +25,8 @@ object VectorModel: AbstractTableModel() {
         VectorList.repaint()
     }
 
-    @EventHandler
-    fun onSpaceDeselect(event: SpaceDeselectEvent) {
+    @EventHandler(SpaceDeselectEvent::class)
+    fun onSpaceDeselect() {
         space = null
         samples = API.classified().sorted().toMutableList()
         fireTableDataChanged()

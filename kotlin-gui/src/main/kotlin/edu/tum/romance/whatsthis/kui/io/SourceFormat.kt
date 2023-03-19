@@ -6,11 +6,13 @@ import edu.tum.romance.whatsthis.data.TextData
 import edu.tum.romance.whatsthis.kui.popup.importer.SourceImportTask
 import edu.tum.romance.whatsthis.nlp.API
 import edu.tum.romance.whatsthis.nlp.NLPModel
-import java.io.File
+import java.io.*
 
 interface SourceFormat {
     val header: String
-    val file: File
+    val input: () -> InputStream?
+    val output: () -> OutputStream?
+
     fun write()
     fun read(): NLPModel
     fun load() {
@@ -33,10 +35,27 @@ interface SourceFormat {
         const val DSL_EXT = ".wts"
 
         fun fromFile(file: File, ext: String = "YAML"): SourceFormat {
-            return if(ext == "YAML") YAML(file) else DSL(file)
+            if(!file.exists()) {
+                file.createNewFile()
+            }
+            val construct = when(ext) {
+                "DSL" -> ::DSL
+                else -> ::YAML
+            }
+            val input = file::inputStream
+            val output = file::outputStream
+            return construct(input, output)
         }
 
-        class YAML(override val file: File): SourceFormat {
+        fun fromIOStream(input: InputStream?, output: OutputStream?, ext: String = "YAML"): SourceFormat {
+            return if(ext == "YAML") YAML({ input }, { output })
+            else DSL({ input }, { output })
+        }
+
+        class YAML(
+            override val input: () -> InputStream?,
+            override val output: () -> OutputStream?
+        ): SourceFormat {
             internal class DataFormat {
                 var spaces: MutableList<String> = mutableListOf()
                 var core: MutableMap<String, MutableList<CoreData>> = mutableMapOf()
@@ -51,6 +70,8 @@ interface SourceFormat {
 
             override val header = "# What's This Sources (YAML) v1.0.0"
             override fun write() {
+                val out = output() ?: error("Operation not supported on a Read-Only Source.")
+
                 val data = DataFormat()
                 data.spaces.addAll(API.spaces())
                 for(space in API.spaces()) {
@@ -78,17 +99,15 @@ interface SourceFormat {
                     }
                 }
 
-                val out = if(!file.absolutePath.endsWith(YAML_EXT))
-                    File(file.absolutePath + YAML_EXT)
-                else file
-
                 val mapper = ObjectMapper(YAMLFactory())
                 val text = mapper.writeValueAsString(data)
-                out.writeText("$header\n\n$text")
+                out.write(("$header\n\n$text").toByteArray())
             }
             override fun read(): NLPModel {
+                val input = input() ?: error("Operation not supported on a Write-Only Source.")
+
                 val mapper = ObjectMapper(YAMLFactory())
-                val data = mapper.readValue(file, DataFormat::class.java)
+                val data = mapper.readValue(input, DataFormat::class.java)
 
                 val model: NLPModel = mutableListOf()
                 for((space, samples) in data.core) {
@@ -103,9 +122,14 @@ interface SourceFormat {
             }
         }
 
-        class DSL(override val file: File): SourceFormat {
+        class DSL(
+            override val input: () -> InputStream?,
+            override val output: () -> OutputStream?
+        ): SourceFormat {
             override val header = "# What's This Sources (DSL) v1.0.0"
             override fun write() {
+                val output = output() ?: error("Operation not supported on a Read-Only Source.")
+
                 val contents = buildString {
                     appendLine(header).appendLine()
                     for(space in API.spaces()) {
@@ -132,13 +156,15 @@ interface SourceFormat {
                         }
                     }
                 }
-                (if(!file.absolutePath.endsWith(DSL_EXT)) {
-                    File(file.absolutePath + DSL_EXT)
-                } else file).writeText(contents)
+                output.write(contents.toByteArray())
             }
 
             override fun read(): NLPModel {
-                return file.readLines().asSequence().filter {
+                val input = input() ?: error("Operation not supported on a Write-Only Source.")
+
+                val reader = BufferedReader(InputStreamReader(input))
+                val lines = reader.readLines()
+                return lines.asSequence().filter {
                     it.isNotBlank() || it.startsWith('#')
                 }.mapNotNull {
                     val coreMatch = coreRegEx.matchEntire(it)
