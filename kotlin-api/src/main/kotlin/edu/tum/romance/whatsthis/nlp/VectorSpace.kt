@@ -14,7 +14,7 @@ internal class VectorSpace(var name: String) {
 
     // Computed Properties
     private var dirty = false
-    private var lastNorm: Distance = Distance.Euclidean
+    private var lastNorm: Distance = Distance.Implementation
     private var summary: Vector = Vector(0)
 
     operator fun plusAssign(ref: Int) {
