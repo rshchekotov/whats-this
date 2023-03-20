@@ -1,5 +1,6 @@
 package edu.tum.romance.whatsthis.math
 
+import edu.tum.romance.whatsthis.math.vec.Vector
 import java.math.BigDecimal
 import java.math.MathContext
 import kotlin.math.abs
@@ -7,11 +8,11 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface Distance {
-    operator fun invoke(a: Vector, b: Vector): Double {
+    operator fun invoke(a: Vector<*>, b: Vector<*>): Double {
         return Implementation(a, b)
     }
 
-    operator fun invoke(a: Vector): Double {
+    operator fun invoke(a: Vector<*>): Double {
         return Implementation(a)
     }
 
@@ -31,18 +32,19 @@ interface Distance {
      * Euclidean distance
      */
     object EuclideanDistance: Distance {
-        override fun invoke(a: Vector, b: Vector): Double {
+        override fun invoke(a: Vector<*>, b: Vector<*>): Double {
             var sum = 0.0
-            for(i in a.data.indices) {
-                sum += (a.data[i] - b.data[i]).pow(2.0)
+            val diff = a - b
+            for(i in diff.indices()) {
+                sum += diff[i].pow(2.0)
             }
             return sqrt(sum)
         }
 
-        override fun invoke(a: Vector): Double {
+        override fun invoke(a: Vector<*>): Double {
             var sum: BigDecimal = BigDecimal.ZERO
-            for(i in a.data.indices) {
-                sum += BigDecimal(a.data[i]).pow(2)
+            for(i in a.indices()) {
+                sum += BigDecimal(a[i]).pow(2)
             }
             return sum.sqrt(MathContext.DECIMAL128).toDouble()
         }
@@ -52,18 +54,19 @@ interface Distance {
      * Manhattan distance
      */
     object ManhattanDistance: Distance {
-        override fun invoke(a: Vector, b: Vector): Double {
+        override fun invoke(a: Vector<*>, b: Vector<*>): Double {
             var sum = 0.0
-            for(i in a.data.indices) {
-                sum += abs(a.data[i] - b.data[i])
+            val diff = a - b
+            for(i in diff.indices()) {
+                sum += abs(diff[i])
             }
             return sum
         }
 
-        override fun invoke(a: Vector): Double {
+        override fun invoke(a: Vector<*>): Double {
             var sum = 0.0
-            for(i in a.data.indices) {
-                sum += abs(a.data[i])
+            for(i in a.indices()) {
+                sum += abs(a[i])
             }
             return sum
         }

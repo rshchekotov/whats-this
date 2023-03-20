@@ -1,20 +1,21 @@
 package edu.tum.romance.whatsthis.nlp
 
-import edu.tum.romance.whatsthis.math.Vector
+import edu.tum.romance.whatsthis.math.vec.SparseVector
+import edu.tum.romance.whatsthis.math.vec.Vector
 
 /**
  * A manager for [VectorSpace]s.
  */
 @Suppress("EqualsOrHashCode")
 internal object VectorSpaceManager {
-    private val spaces = mutableListOf<Pair<VectorSpace, Vector>>()
+    private val spaces = mutableListOf<Pair<VectorSpace, Vector<*>>>()
     private val reverse = mutableMapOf<String, Int>()
     private val unclassified = mutableListOf<Int>()
     private var dirty = false
 
     operator fun plusAssign(space: VectorSpace) {
         reverse[space.name] = spaces.size
-        spaces += (space to Vector(0))
+        spaces += (space to SparseVector(0))
         dirty = true
         for((it, _) in spaces) {
             it.flagDirty()
@@ -53,13 +54,13 @@ internal object VectorSpaceManager {
 
     operator fun set(name: String, space: VectorSpace) {
         val index = reverse[name] ?: return
-        spaces[index] = (space to Vector(0))
+        spaces[index] = (space to SparseVector(0))
         for((it, _) in spaces) {
             it.flagDirty()
         }
     }
 
-    operator fun set(name: String, significance: Vector) {
+    operator fun set(name: String, significance: Vector<*>) {
         val index = reverse[name] ?: return
         spaces[index] = spaces[index].copy(second = significance)
         dirty = true
@@ -114,7 +115,7 @@ internal object VectorSpaceManager {
         return reverse.map { it.key }.sorted()
     }
 
-    fun significance(name: String): Vector? {
+    fun significance(name: String): Vector<*>? {
         val index = reverse[name] ?: return null
         return spaces[index].second
     }
