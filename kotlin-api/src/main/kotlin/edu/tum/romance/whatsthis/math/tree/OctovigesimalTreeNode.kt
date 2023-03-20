@@ -14,14 +14,16 @@ internal class OctovigesimalTreeNode<T>(val size: Int, mapper: (T) -> String): O
         return children[27]
     }
     override fun getData() = children.flatMap { it.getData() }.toMutableList()
+    override fun size() = children.sumOf { it.size() }
     override fun plusAssign(data: Array<T>) {
         getChild(wordToIndex(data)) += data
     }
     override fun contains(data: Array<T>) = getChild(wordToIndex(data)).contains(data)
-    override fun indexOf(data: Array<T>): Array<Int> {
+    override fun indexOf(data: Array<out T>): Array<Int> {
         val index = getChild(wordToIndex(data)).indexOf(data)
         return if(index.isEmpty()) index else arrayOf(children.indexOf(getChild(wordToIndex(data)))) + index
     }
+    override fun clear() = children.forEach { it.clear() }
 
-    private fun wordToIndex(data: Array<T>): T = data[data.size - size - 1]
+    private fun wordToIndex(data: Array<out T>): T = data[data.size - size - 1]
 }

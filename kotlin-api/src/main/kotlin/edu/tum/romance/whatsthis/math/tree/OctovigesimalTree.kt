@@ -17,6 +17,8 @@ class OctovigesimalTree<T>(
 
     fun getData() = root.getData()
 
+    fun size() = root.size()
+
     operator fun plusAssign(data: Array<T>) {
         ensureDepth(data)
         root += data
@@ -27,12 +29,13 @@ class OctovigesimalTree<T>(
         return root.contains(data)
     }
 
-    fun indexOf(data: Array<T>): Array<Int> {
+    fun indexOf(data: Array<out T>): Array<Int> {
         ensureDepth(data)
         return root.indexOf(data)
     }
 
-    private fun ensureDepth(data: Array<T>) {
+    private fun ensureDepth(data: Array<out T>) {
         if(data.size != depth) error("Data size does not match tree depth")
     }
+    fun clear() = root.clear()
 }
