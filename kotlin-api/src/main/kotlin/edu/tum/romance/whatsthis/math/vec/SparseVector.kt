@@ -39,7 +39,6 @@ class SparseVector: Vector<SparseVector> {
         for((key, value) in this.data) {
             result[key] = result[key] + value
         }
-        if(result is SparseVector) result.normalize()
         return result
     }
 
@@ -48,7 +47,6 @@ class SparseVector: Vector<SparseVector> {
         for((key, value) in this.data) {
             result[key] = value - result[key]
         }
-        if(result is SparseVector) result.normalize()
         return result
     }
 
@@ -88,10 +86,6 @@ class SparseVector: Vector<SparseVector> {
     override fun size(): Int = size
 
     override fun clone(): SparseVector = SparseVector(data.toMutableMap(), size)
-
-    fun normalize() {
-        data = data.filterValues { abs(it) > 1.0e-13 }.toMutableMap()
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
