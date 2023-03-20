@@ -1,7 +1,8 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.math.Distance
-import edu.tum.romance.whatsthis.math.Vector
+import edu.tum.romance.whatsthis.math.vec.DenseVector
+import edu.tum.romance.whatsthis.math.vec.Vector
 
 /**
  * A VectorSpace is a collection of vectors that are related to each other.
@@ -15,7 +16,7 @@ internal class VectorSpace(var name: String) {
     // Computed Properties
     private var dirty = false
     private var lastNorm: Distance = Distance.Implementation
-    private var summary: Vector = Vector(0)
+    private var summary: Vector<*> = DenseVector(0)
 
     operator fun plusAssign(ref: Int) {
         if(ref in VectorSpaceManager.unclassified()) {
@@ -42,13 +43,13 @@ internal class VectorSpace(var name: String) {
     fun size() = vectors.size
     fun vectors() = vectors.toList()
 
-    fun summary(norm: Distance, force: Boolean = false): Vector {
+    fun summary(norm: Distance, force: Boolean = false): Vector<*> {
         if(!force && !dirty && norm == this.lastNorm) {
             return summary
         }
         dirty = false
         lastNorm = norm
-        summary = Vector(0)
+        summary = DenseVector(0)
         if (vectors.isNotEmpty()) {
             for (ref in vectors) {
                 val textVector = API.vectors[ref]
@@ -56,11 +57,11 @@ internal class VectorSpace(var name: String) {
                     if (summary.size() == 0) {
                         summary = textVector.vector!!.clone()
                     } else {
-                        summary.plusAssign(textVector.vector!!)
+                        summary = summary + textVector.vector!!
                     }
                 }
             }
-            summary = summary.unit(norm)
+            summary = summary.unit()
         }
         return summary
     }

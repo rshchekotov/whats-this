@@ -223,7 +223,7 @@ object API {
                 }
                 result[i] = summary[i] / result[i]
             }
-            spaces[name] = result.unit(Distance.Implementation)
+            spaces[name] = result.unit()
         }
     }
 
@@ -237,7 +237,7 @@ object API {
     fun distances(value: String): List<Double> {
         val data = vectors[value] ?: return emptyList()
         recalculateSignificance(true)
-        val vector = data.vector!!.unit(Distance.Implementation)
+        val vector = data.vector!!.unit()
         val norms = spaces.spaces().map {
             val significance = spaces.significance(it)!!
             Distance.Implementation(vector, significance)

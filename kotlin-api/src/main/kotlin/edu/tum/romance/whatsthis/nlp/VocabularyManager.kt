@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.nlp
 
-import edu.tum.romance.whatsthis.math.Vector
+import edu.tum.romance.whatsthis.math.vec.SparseVector
 
 /**
  * This class is used to manage the vocabulary of the system.
@@ -32,7 +32,7 @@ object VocabularyManager {
         }
     }
 
-    fun emptyVector() = Vector(size())
+    fun emptyVector() = SparseVector(size())
 
     fun size(): Int {
         return vocabulary.size

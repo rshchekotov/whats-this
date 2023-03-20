@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.data
 
-import edu.tum.romance.whatsthis.math.Vector
+import edu.tum.romance.whatsthis.math.vec.Vector
 import edu.tum.romance.whatsthis.util.*
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
@@ -15,7 +15,7 @@ abstract class TextData<T> {
     abstract val sourceID: String
 
     var coefficient: Double = 1.0
-    var vector: Vector? = null
+    var vector: Vector<*>? = null
     val tokens: List<WordCount>
         get() = vector()
 

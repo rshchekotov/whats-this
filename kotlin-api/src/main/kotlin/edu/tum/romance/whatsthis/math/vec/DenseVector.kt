@@ -1,29 +1,39 @@
-package edu.tum.romance.whatsthis.math
+package edu.tum.romance.whatsthis.math.vec
 
-class Vector(x: List<Double>): Cloneable {
+import edu.tum.romance.whatsthis.math.Distance
+
+class DenseVector(x: List<Double>): Vector<DenseVector>, Cloneable {
     var data: MutableList<Double> = x.toMutableList()
 
     constructor(ints: Array<Int>) : this(ints.map { it.toDouble() })
     constructor(size: Int) : this(List(size) { 0.0 })
-
-    operator fun plusAssign(other: Vector) {
-        data = data.zip(other.data) { a, b -> a + b }.toMutableList()
-    }
-    operator fun plus(other: Vector): Vector {
+    override operator fun plus(other: Vector<*>): Vector<*> {
         val vector = this.clone()
-        vector += other
+        for(i in 0 until vector.data.size) {
+            vector.data[i] += other[i]
+        }
         return vector
     }
-    operator fun get(index: Int): Double {
-        return data[index]
-    }
 
-    operator fun set(index: Int, value: Double) {
+    override fun minus(other: Vector<*>): Vector<*> {
+        val vector = this.clone()
+        for(i in 0 until vector.data.size) {
+            vector.data[i] -= other[i]
+        }
+        return vector
+    }
+    override operator fun get(index: Int): Double = data[index]
+
+    override operator fun set(index: Int, value: Double) {
         data[index] = value
     }
 
-    operator fun set(index: Int, value: Int) {
+    override operator fun set(index: Int, value: Int) {
         data[index] = value.toDouble()
+    }
+
+    override fun indices(): Collection<Int> {
+        return data.indices.toList()
     }
 
     fun set(vararg indexedValues: Pair<Int, Double>) {
@@ -32,29 +42,25 @@ class Vector(x: List<Double>): Cloneable {
         }
     }
 
-    fun growTo(size: Int) {
+    override fun growTo(size: Int) {
         while (data.size < size) {
             data.add(0.0)
         }
     }
 
-    fun unit(norm: Distance): Vector {
+    override fun unit(): DenseVector {
         val vector = this.clone()
-        val length = norm(vector)
+        val length = Distance.Implementation(vector)
         vector.data = vector.data.map { (it / length) }.toMutableList()
         return vector
     }
 
-    fun size(): Int {
-        return data.size
-    }
+    override fun size(): Int = data.size
 
-    public override fun clone(): Vector {
-        return Vector(data)
-    }
+    override fun clone(): DenseVector = DenseVector(data)
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Vector) return false
+        if (other !is DenseVector) return false
         if(data.size != other.data.size) return false
         var b = true
         for (i in 0 until data.size) {
