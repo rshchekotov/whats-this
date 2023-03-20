@@ -5,7 +5,9 @@ internal abstract class OctovigesimalTreeElement<T>(val depth: Int, val mapper: 
     abstract fun getChildren(): MutableList<OctovigesimalTreeElement<T>>
     abstract fun getChild(element: T): OctovigesimalTreeElement<T>
     abstract fun getData(): MutableList<Array<T>>
+    abstract fun size(): Int
     abstract operator fun plusAssign(data: Array<T>)
     abstract operator fun contains(data: Array<T>): Boolean
-    abstract fun indexOf(data: Array<T>): Array<Int>
+    abstract fun indexOf(data: Array<out T>): Array<Int>
+    abstract fun clear()
 }
