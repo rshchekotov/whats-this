@@ -1,6 +1,7 @@
 package edu.tum.romance.whatsthis.math.vec
 
 import edu.tum.romance.whatsthis.math.Distance
+import kotlin.math.abs
 
 class DenseVector(x: List<Double>): Vector<DenseVector>, Cloneable {
     var data: MutableList<Double> = x.toMutableList()
@@ -14,7 +15,6 @@ class DenseVector(x: List<Double>): Vector<DenseVector>, Cloneable {
         }
         return vector
     }
-
     override fun minus(other: Vector<*>): Vector<*> {
         val vector = this.clone()
         for(i in 0 until vector.data.size) {
@@ -60,13 +60,13 @@ class DenseVector(x: List<Double>): Vector<DenseVector>, Cloneable {
     override fun clone(): DenseVector = DenseVector(data)
 
     override fun equals(other: Any?): Boolean {
-        if (other !is DenseVector) return false
-        if(data.size != other.data.size) return false
-        var b = true
+        if (this === other) return true
+        if (other !is Vector<*>) return false
+        if(data.size != other.size()) return false
         for (i in 0 until data.size) {
-            b = b && (data[i] == other.data[i])
+            if(abs(data[i] - other[i]) < 1.0e-13) return false
         }
-        return b
+        return true
     }
 
     override fun hashCode(): Int {
