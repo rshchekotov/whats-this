@@ -13,7 +13,7 @@ internal class OctovigesimalTreeLeaf<T>(val size: Int, mapper: (T) -> String): O
     override fun plusAssign(data: Array<T>) {
         if(data.isEmpty()) error("Data is too short.")
         val key = data.joinToString(" ", transform = mapper)
-        children.remove(children.find { it.first == key })
+        children.find { it.first == key }?.let { children.remove(it) }
         children += Pair(key, data)
     }
     override fun contains(data: Array<T>) = children.any { it.second.contentEquals(data) }
