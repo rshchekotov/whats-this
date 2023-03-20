@@ -3,10 +3,13 @@ package edu.tum.romance.whatsthis.math.vec
 import edu.tum.romance.whatsthis.math.Distance
 import kotlin.math.abs
 
+@Suppress("unused")
 class DenseVector(x: List<Double>): Vector<DenseVector>, Cloneable {
     var data: MutableList<Double> = x.toMutableList()
 
+    @Deprecated("Use SparseVector instead")
     constructor(ints: Array<Int>) : this(ints.map { it.toDouble() })
+    @Deprecated("Use SparseVector instead")
     constructor(size: Int) : this(List(size) { 0.0 })
     override operator fun plus(other: Vector<*>): Vector<*> {
         val vector = this.clone()
@@ -64,7 +67,7 @@ class DenseVector(x: List<Double>): Vector<DenseVector>, Cloneable {
         if (other !is Vector<*>) return false
         if(data.size != other.size()) return false
         for (i in 0 until data.size) {
-            if(abs(data[i] - other[i]) < 1.0e-13) return false
+            if(abs(data[i] - other[i]) > 1.0e-13) return false
         }
         return true
     }

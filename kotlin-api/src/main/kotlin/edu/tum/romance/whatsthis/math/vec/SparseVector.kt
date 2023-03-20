@@ -20,10 +20,14 @@ class SparseVector: Vector<SparseVector> {
         this.size = size
     }
 
-    @Suppress("unused")
-    constructor(data: MutableMap<Int, Double>) {
-        this.data = data
-        this.size = data.maxOfOrNull { it.key } ?: 0
+    constructor(data: Map<Int, Double>) {
+        if(data.isEmpty()) {
+            this.data = mutableMapOf()
+            this.size = 0
+        } else {
+            this.data = data.toMutableMap()
+            this.size = data.maxOf { it.key } + 1
+        }
     }
 
     constructor(size: Int) {
@@ -95,7 +99,7 @@ class SparseVector: Vector<SparseVector> {
 
         if (size != other.size()) return false
         for (i in 0 until size) {
-            if (abs(this[i] - other[i]) < 1.0e-13) return false
+            if (abs(this[i] - other[i]) > 1.0e-13) return false
         }
         return true
     }

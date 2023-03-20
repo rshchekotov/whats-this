@@ -1,15 +1,14 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.data.TextData
-import edu.tum.romance.whatsthis.math.vec.DenseVector
-import org.junit.jupiter.api.Disabled
+import edu.tum.romance.whatsthis.math.Distance
+import edu.tum.romance.whatsthis.math.vec.SparseVector
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.TestMethodOrder
 import kotlin.test.*
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-@Disabled
 internal class APITest {
     @BeforeTest
     fun clean() {
@@ -28,9 +27,11 @@ internal class APITest {
         assertNotNull(API.vectors["Simple Sample"]!!.vector, "Vector 'Simple Sample' does not exist!")
         assertEquals(5, API.vectors["Simple Sample"]!!.vector!!.size(), "Vector 'Simple Sample' size does not match!")
         (0 until 5).forEach { assertEquals(1.0, API.vectors["Simple Sample"]!!.vector!![it], "Vector 'Simple Sample' does not match!") }
-        //val vec = DenseVector(arrayOf(1, 1, 1, 1, 1)).unit()
-        //assertContentEquals(vec.data, API.spaces["Example"]!!.summary(Distance.Implementation).data, "Summary of 'Example' does not match!")
-        //assertContentEquals(vec.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
+
+        val vec = SparseVector(arrayOf(1, 1, 1, 1, 1)
+            .mapIndexed { index, value -> index to value.toDouble() }.toMap()).unit()
+        assertEquals(vec, API.spaces["Example"]!!.summary(Distance.Implementation), "Summary of 'Example' does not match!")
+        assertEquals(vec, API.spaces.significance("Example"), "Significance of 'Example' does not match!")
     }
 
     @Test
@@ -62,10 +63,13 @@ internal class APITest {
             val expected = if (it == 3) 0.0 else 1.0
             assertEquals(expected, API.vectors["Short Sample"]!!.vector!![it], "Vector 'Short Sample' does not match!")
         }
-        //val vec = DenseVector(arrayOf(2, 2, 2, 1, 2, 1)).unit(Distance.Implementation)
-        //val unit = DenseVector(arrayOf(1, 1, 1, 1, 1, 1)).unit(Distance.Implementation)
-        //assertContentEquals(vec.data, API.spaces["Example"]!!.summary(Distance.Implementation).data, "Summary of 'Example' does not match!")
-        //assertContentEquals(unit.data, API.spaces.significance("Example")!!.data, "Significance of 'Example' does not match!")
+
+        val vec = SparseVector(arrayOf(2, 2, 2, 1, 2, 1)
+            .mapIndexed { index, value -> index to value.toDouble() }.toMap()).unit()
+        val unit = SparseVector(arrayOf(1, 1, 1, 1, 1, 1)
+            .mapIndexed { index, value -> index to value.toDouble() }.toMap()).unit()
+        assertEquals(vec, API.spaces["Example"]!!.summary(Distance.Implementation), "Summary of 'Example' does not match!")
+        assertEquals(unit, API.spaces.significance("Example"), "Significance of 'Example' does not match!")
     }
 
     @Test
@@ -94,10 +98,11 @@ internal class APITest {
         (0 until 2).forEach { assertEquals(1.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
         (2 until 5).forEach { assertEquals(0.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
         (5 until 13).forEach { assertEquals(1.0, API.vectors["Cubic Spline"]!!.vector!![it], "Vector 'Cubic Spline' does not match!") }
-        //assertContentEquals(API.vectors["Simple Sample"]!!.vector!!.clone().unit(Distance.Implementation).data, API.spaces["Example"]!!.summary(
-        //    Distance.Implementation).data, "Summary of 'Example' does not match!")
-        //assertContentEquals(API.vectors["Cubic Spline"]!!.vector!!.clone().unit(Distance.Implementation).data, API.spaces["Math"]!!.summary(
-        //    Distance.Implementation).data, "Summary of 'Math' does not match!")
+
+        assertEquals(API.vectors["Simple Sample"]!!.vector!!.clone().unit(), API.spaces["Example"]!!.summary(
+            Distance.Implementation), "Summary of 'Example' does not match!")
+        assertEquals(API.vectors["Cubic Spline"]!!.vector!!.clone().unit(), API.spaces["Math"]!!.summary(
+            Distance.Implementation), "Summary of 'Math' does not match!")
     }
 
     @Test
@@ -139,13 +144,14 @@ internal class APITest {
         assertEquals(3, API.spaces[knownClouds[0]]!!.size(), "Vector Space '${knownClouds[0]}' size does not match!")
         assertEquals(2, API.spaces[knownClouds[1]]!!.size(), "Vector Space '${knownClouds[1]}' size does not match!")
 
-        var sampleSummary = DenseVector(arrayOf(3, 3, 3, 1, 3, 1, 1))
+        var sampleSummary = SparseVector(arrayOf(3, 3, 3, 1, 3, 1, 1)
+            .mapIndexed { i, value -> i to value.toDouble() }.toMap())
         sampleSummary.growTo(API.vocabulary.size())
         sampleSummary = sampleSummary.unit()
-        //assertContentEquals(sampleSummary.data, API.spaces["Example"]!!.summary(Distance.Implementation).data, "Summary of 'Example' does not match!")
 
-        var mathSummary = DenseVector(API.vocabulary.size())
-        mathSummary.set(
+        assertEquals(sampleSummary, API.spaces["Example"]!!.summary(Distance.Implementation), "Summary of 'Example' does not match!")
+
+        var mathSummary = SparseVector(mutableMapOf(
             v["this"] to 1.0, v["is"] to 2.0, v["an"] to 1.0,
             v["excerpt"] to 1.0, v["from"] to 1.0, v["the"] to 3.0,
             v["cubic"] to 1.0, v["spline-wikipedia"] to 1.0,
@@ -157,39 +163,35 @@ internal class APITest {
             v["and"] to 2.0, v["interpolant"] to 1.0,
             v["given"] to 1.0, v["by"] to 1.0,
             v["at"] to 1.0, v["point"] to 1.0
-        )
-        mathSummary = mathSummary.unit()
-        // assertContentEquals(mathSummary.data, API.spaces["Math"]!!.summary(Distance.Implementation).data, "Summary of 'Math' does not match!")
+        ), API.vocabulary.size())
 
-        val sampleSignificance = DenseVector(API.vocabulary.size())
+        mathSummary = mathSummary.unit()
+
+        assertEquals(mathSummary, API.spaces["Math"]!!.summary(Distance.Implementation), "Summary of 'Math' does not match!")
+
+        var sampleSignificance = SparseVector(API.vocabulary.size())
         var significance = { it: String ->
             sampleSummary[v[it]] / (mathSummary[v[it]] + sampleSummary[v[it]])
         }
         for (i in 0 until sampleSignificance.size()) {
             sampleSignificance[i] = significance(v[i])
         }
-        //sampleSignificance = sampleSignificance.unit()
-        //val actualSampleSignificance = API.spaces.significance("Example")!!.data
-        //assertContentEquals(
-        //    sampleSignificance.data,
-        //    actualSampleSignificance,
-        //    "Significance of 'Simple Sample' does not match!"
-        //)
 
-        val mathSignificance = DenseVector(Array(API.vocabulary.size()) { 1 })
+        sampleSignificance = sampleSignificance.unit()
+        val actualSampleSignificance = API.spaces.significance("Example")!!
+        assertEquals(sampleSignificance, actualSampleSignificance, "Significance of 'Simple Sample' does not match!")
+
+        var mathSignificance = SparseVector((0 until API.vocabulary.size()).associateWith { _ -> 1.0 })
         significance = { it: String ->
             mathSummary[v[it]] / (mathSummary[v[it]] + sampleSummary[v[it]])
         }
         for (i in 0 until mathSignificance.size()) {
             mathSignificance[i] = significance(v[i])
         }
-        //mathSignificance = mathSignificance.unit(Distance.Implementation)
-        //val actualMathSignificance = API.spaces.significance("Math")!!.data
-        //assertContentEquals(
-        //    mathSignificance.data,
-        //    actualMathSignificance,
-        //    "Significance of 'Math' does not match!"
-        //)
+
+        mathSignificance = mathSignificance.unit()
+        val actualMathSignificance = API.spaces.significance("Math")!!
+        assertEquals(mathSignificance, actualMathSignificance, "Significance of 'Math' does not match!")
     }
 
     @Test
@@ -198,15 +200,16 @@ internal class APITest {
         val sample = TextData("this is a simple sample", "Simple Sample")
         API.addSample(sample, "Example")
         assertEquals(1, API.spaces["Example"]!!.size(), "Sample was not added to the vector space!")
-        //val vec = DenseVector(arrayOf(1, 1, 1, 1, 1)).unit()
-        //assertContentEquals(vec.data, API.spaces["Example"]!!.summary(Distance.Implementation).data, "Summary of 'Example' does not match!")
+        val vec = SparseVector(arrayOf(1, 1, 1, 1, 1)
+            .mapIndexed { i, value -> i to value.toDouble() }.toMap()).unit()
+        assertEquals(vec, API.spaces["Example"]!!.summary(Distance.Implementation), "Summary of 'Example' does not match!")
         assertFalse("Math" in API.spaces, "Math should not be in the vector spaces!")
         API.addSample(sample, "Math")
         assertTrue("Math" in API.spaces, "Math should now be in the vector spaces!")
         assertEquals(1, API.spaces["Math"]!!.size(), "Sample was not moved to the vector space 'Math'!")
         assertEquals(0, API.spaces["Example"]!!.size(), "Sample was not removed from the vector space 'Example'!")
-        //assertContentEquals(vec.data, API.spaces["Math"]!!.summary(Distance.Implementation).data, "Summary of 'Math' does not match!")
-        //assertContentEquals(DenseVector(0).data, API.spaces["Example"]!!.summary(Distance.Implementation).data, "Summary of 'Example' does not match!")
+        assertEquals(vec, API.spaces["Math"]!!.summary(Distance.Implementation), "Summary of 'Math' does not match!")
+        assertEquals(SparseVector(0), API.spaces["Example"]!!.summary(Distance.Implementation), "Summary of 'Example' does not match!")
     }
 
     @Test

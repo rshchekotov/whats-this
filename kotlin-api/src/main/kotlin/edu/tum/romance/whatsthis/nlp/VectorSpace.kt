@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.nlp
 
 import edu.tum.romance.whatsthis.math.Distance
-import edu.tum.romance.whatsthis.math.vec.DenseVector
+import edu.tum.romance.whatsthis.math.vec.SparseVector
 import edu.tum.romance.whatsthis.math.vec.Vector
 
 /**
@@ -16,7 +16,7 @@ internal class VectorSpace(var name: String) {
     // Computed Properties
     private var dirty = false
     private var lastNorm: Distance = Distance.Implementation
-    private var summary: Vector<*> = DenseVector(0)
+    private var summary: Vector<*> = SparseVector(0)
 
     operator fun plusAssign(ref: Int) {
         if(ref in VectorSpaceManager.unclassified()) {
@@ -49,15 +49,16 @@ internal class VectorSpace(var name: String) {
         }
         dirty = false
         lastNorm = norm
-        summary = DenseVector(0)
+        summary = SparseVector(0)
         if (vectors.isNotEmpty()) {
             for (ref in vectors) {
                 val textVector = API.vectors[ref]
                 if (textVector != null) {
-                    if (summary.size() == 0) {
-                        summary = textVector.vector!!.clone()
+                    summary = if (summary.size() == 0) {
+                        textVector.vector!!.clone()
                     } else {
-                        summary = summary + textVector.vector!!
+                        summary.growTo(textVector.vector!!.size())
+                        summary + textVector.vector!!
                     }
                 }
             }
