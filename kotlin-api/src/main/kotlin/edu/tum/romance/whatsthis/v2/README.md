@@ -138,6 +138,56 @@ for our application - the vector manager will be responsible
 to store the vectors and provide methods to access or manipulate
 them.
 
+On another note, in order to address the issue of multi-level
+addressing, I intend to apply the concept of 'paging' and
+virtual memory to the vector manager.
+In particular, I want to implement a 'vector processing unit',
+which will associate indices with paths in the n-gram tree.
+This way, we can stil use a vector and do not need to implement
+a variable size tensor.
+
+This table will naturally have its limits, so what would
+happen once it reaches the limit would be to off-load the
+least used 20% of the pages to disk to allow for more
+entries to be added.
+Pages here, are a slightly different concept than in
+the context of operating systems. Here, pages signify
+a 'chunk' of the n-gram tree, which can be off-loaded
+to disk, thus the concept of 'paging' has a directory-like
+meaning.
+
+The most expensive operation in the vector manager will
+be a 'cache-miss', as it would include a disk read.
+
+Perhaps, having a 'page'-index file would improve performance
+in the sense that it would be reading a single file and knowing
+which file to look into, instead of having to scan the entire
+cache directory.
+
+To visualize the problem and it's solution:
+
+Currently, a tree may contain this data for a trigram model:
+'quick brown fox'.
+In the n-gram table, this would appear like:
+```kt
+ngrams['q']['b']['f'] += hash('quick brown fox') to arrayOf(hash('quick'), hash('brown'), hash('fox'))
+```
+This could be described as a file system with the following
+structure:
+```bash
+echo "[hash('quick'), hash('brown'), hash('fox')]" > ngrams/q/b/f/$(hash 'quick brown fox')
+```
+Now, the issue with this is, to access the hash, in both cases you'd
+need to know the path to the file, thus I'd introduce a concept
+of a virtual address space, which would do something like:
+```
+hash('quick brown fox') -> q/b/f
+```
+So, whenever you find a vector with `hash('quick brown fox')` among the
+indices, you could simply look up the path in the virtual address
+space and read the file at that path, or if the path is already
+in memory, read it from cache with an offset.
+
 ### VectorSpace Manager
 The VectorSpace manager is intended to be similar to the current
 `v1` implementation - some functionality, will once again
