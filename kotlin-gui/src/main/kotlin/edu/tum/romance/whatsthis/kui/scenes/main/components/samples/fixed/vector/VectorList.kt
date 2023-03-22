@@ -6,7 +6,7 @@ import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.table.VariableSampleTable
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
-import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.API
 import javax.swing.JScrollPane
 import javax.swing.JTable
 

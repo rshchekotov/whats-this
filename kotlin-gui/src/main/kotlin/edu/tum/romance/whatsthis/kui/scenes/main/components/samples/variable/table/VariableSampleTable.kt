@@ -6,7 +6,7 @@ import edu.tum.romance.whatsthis.kui.scenes.main.MainModel
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.fixed.vector.VectorList
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
-import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.API
 import java.awt.Component
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent

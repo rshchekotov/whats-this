@@ -4,7 +4,7 @@ import edu.tum.romance.whatsthis.kui.components.SymbolicButton
 import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.variable.VariablePane
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualInfo
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
-import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.API
 import java.awt.Component
 import javax.swing.JTable
 import javax.swing.table.DefaultTableCellRenderer

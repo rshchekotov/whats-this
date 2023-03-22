@@ -2,10 +2,10 @@ package edu.tum.romance.whatsthis.kui.io
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import edu.tum.romance.whatsthis.data.TextData
+import edu.tum.romance.whatsthis.v1.data.TextData
 import edu.tum.romance.whatsthis.kui.popup.importer.SourceImportTask
-import edu.tum.romance.whatsthis.nlp.API
-import edu.tum.romance.whatsthis.nlp.NLPModel
+import edu.tum.romance.whatsthis.v1.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.NLPModel
 import java.io.*
 
 interface SourceFormat {

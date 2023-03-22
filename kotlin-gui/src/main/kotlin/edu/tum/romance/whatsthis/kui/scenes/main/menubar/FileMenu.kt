@@ -12,7 +12,7 @@ import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualInfo
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualQuestion
 import edu.tum.romance.whatsthis.kui.util.FontCache.SMALL
 import edu.tum.romance.whatsthis.kui.util.FontCache.comfortaa
-import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.API
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.JMenu
