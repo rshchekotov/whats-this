@@ -3,8 +3,8 @@ package edu.tum.romance.whatsthis.kui.popup.importer
 import edu.tum.romance.whatsthis.kui.Main
 import edu.tum.romance.whatsthis.kui.event.events.progress.ModelLoadEvent
 import edu.tum.romance.whatsthis.kui.event.events.progress.ProgressUpdateEvent
-import edu.tum.romance.whatsthis.nlp.API
-import edu.tum.romance.whatsthis.nlp.NLPModel
+import edu.tum.romance.whatsthis.v1.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.NLPModel
 import java.awt.Cursor
 import java.awt.Toolkit
 import javax.swing.SwingWorker

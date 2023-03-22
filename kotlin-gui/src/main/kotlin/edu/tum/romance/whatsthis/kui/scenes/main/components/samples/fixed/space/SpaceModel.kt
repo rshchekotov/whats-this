@@ -4,7 +4,7 @@ import edu.tum.romance.whatsthis.kui.event.EventHandler
 import edu.tum.romance.whatsthis.kui.event.events.data.FixedSampleCreateEvent
 import edu.tum.romance.whatsthis.kui.event.events.progress.ModelLoadEvent
 import edu.tum.romance.whatsthis.kui.event.events.space.SpaceCreateEvent
-import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.API
 import javax.swing.table.AbstractTableModel
 
 object SpaceModel: AbstractTableModel() {

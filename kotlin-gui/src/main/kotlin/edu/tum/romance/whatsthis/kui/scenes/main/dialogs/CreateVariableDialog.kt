@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.dialogs
 
-import edu.tum.romance.whatsthis.data.TextData
+import edu.tum.romance.whatsthis.v1.data.TextData
 import edu.tum.romance.whatsthis.kui.Main
 import edu.tum.romance.whatsthis.kui.components.HintTextField
 import edu.tum.romance.whatsthis.kui.components.StyledButton
@@ -11,7 +11,7 @@ import edu.tum.romance.whatsthis.kui.scenes.main.components.samples.SamplePane
 import edu.tum.romance.whatsthis.kui.util.DialogUtils.visualError
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.kui.util.times
-import edu.tum.romance.whatsthis.util.urlRegex
+import edu.tum.romance.whatsthis.v1.util.urlRegex
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.net.URL

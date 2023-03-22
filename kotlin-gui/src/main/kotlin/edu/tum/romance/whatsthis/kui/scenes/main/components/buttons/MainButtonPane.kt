@@ -1,6 +1,6 @@
 package edu.tum.romance.whatsthis.kui.scenes.main.components.buttons
 
-import edu.tum.romance.whatsthis.data.TextData
+import edu.tum.romance.whatsthis.v1.data.TextData
 import edu.tum.romance.whatsthis.kui.components.StyledButton
 import edu.tum.romance.whatsthis.kui.event.events.data.FixedSampleCreateEvent
 import edu.tum.romance.whatsthis.kui.event.events.data.VariableSampleCreateEvent
@@ -10,7 +10,7 @@ import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateSpaceDialog
 import edu.tum.romance.whatsthis.kui.scenes.main.dialogs.CreateVariableDialog
 import edu.tum.romance.whatsthis.kui.util.FontCache.MEDIUM
 import edu.tum.romance.whatsthis.kui.util.gridBagVSpace
-import edu.tum.romance.whatsthis.nlp.API
+import edu.tum.romance.whatsthis.v1.nlp.API
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.JPanel
