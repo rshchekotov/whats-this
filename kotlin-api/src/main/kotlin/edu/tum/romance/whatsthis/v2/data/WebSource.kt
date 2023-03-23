@@ -20,7 +20,7 @@ class WebSource(url: String): DataSource<URL>(URL(url)) {
         val uuid = UUID.randomUUID().toString()
 
         // Write to cache at source/web/[random]
-        writeCache("source/web/${uuid}.txt", "${data.second}\n${data.first}")
+        writeCache("web/${uuid}.txt", "${data.second}\n${data.first}")
 
         return data
     }

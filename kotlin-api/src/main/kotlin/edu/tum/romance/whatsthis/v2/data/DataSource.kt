@@ -33,44 +33,31 @@ abstract class DataSource<T>(var source: T) {
 
     /**
      * Write the [data] to the [path] in the cache.
-     * For Windows, the path is '%AppData%/.whatsthis/[path]'
-     * For Linux, the path is '~/.whatsthis/[path]'
-     * For Mac, the path is '~/Library/Application Support/.whatsthis/[path]'
+     * For Windows, the path is '%AppData%/.whatsthis/cache/sources/[path]'
+     * For Linux, the path is '~/.whatsthis/cache/sources/[path]'
+     * For Mac, the path is '~/Library/Application Support/.whatsthis/cache/sources/[path]'
      *
      * @param path The path to write the data to
      * @param data The data to write
      */
     fun writeCache(path: String, data: String) {
-        if(System.getProperty("os.name").startsWith("Windows")) {
-            val base = System.getenv("AppData") + File.pathSeparator + ".whatsthis"
-            File(base + File.pathSeparator + path)
-        } else if(System.getProperty("os.name").startsWith("Mac")) {
-            TODO("If this crashed, that's great! It means the condition is right. Please message the Dev!")
-        } else {
-            val base = System.getProperty("user.home") + "/.whatsthis"
-            File(base + File.pathSeparator + path)
-        }.writeText(data)
+        val file = cacheBasePath().resolve(path)
+        file.parentFile.mkdirs()
+        file.writeText(data)
         cached = path
     }
 
     /**
      * Read the data from the [cached] in the cache.
-     * For Windows, the path is '%AppData%/.whatsthis/[cached]'
-     * For Linux, the path is '~/.whatsthis/[cached]'
-     * For Mac, the path is '~/Library/Application Support/.whatsthis/[cached]'
+     * For Windows, the path is '%AppData%/.whatsthis/cache/sources/[cached]'
+     * For Linux, the path is '~/.whatsthis/cache/sources/[cached]'
+     * For Mac, the path is '~/Library/Application Support/.whatsthis/cache/sources/[cached]'
      *
      * @return The data read
      */
     fun readCache(): String {
-        return (if (System.getProperty("os.name").startsWith("Windows")) {
-            val base = System.getenv("AppData") + File.pathSeparator + ".whatsthis"
-            File(base + File.pathSeparator + cached)
-        } else if (System.getProperty("os.name").startsWith("Mac")) {
-            TODO("If this crashed, that's great! It means the condition is right. Please message the Dev!")
-        } else {
-            val base = System.getProperty("user.home") + "/.whatsthis"
-            File(base + File.pathSeparator + cached)
-        }).readText()
+        if(cached == null) return ""
+        return cacheBasePath().resolve(cached!!).readText()
     }
 
     /**
@@ -80,5 +67,30 @@ abstract class DataSource<T>(var source: T) {
      */
     fun isCached(): Boolean {
         return cached != null
+    }
+
+    companion object {
+        private fun cacheBasePath(): File {
+            val directory = if (System.getProperty("os.name").startsWith("Windows")) {
+                val base = buildString {
+                    append(System.getenv("AppData")).append(File.separatorChar)
+                    append(".whatsthis").append(File.separatorChar)
+                    append("cache").append(File.separatorChar)
+                    append("sources")
+                }
+                File(base)
+            } else if (System.getProperty("os.name").startsWith("Mac")) {
+                TODO("If this crashed, that's great! It means the condition is right. Please message the Dev!")
+            } else {
+                val base = System.getProperty("user.home") + "/.whatsthis/cache/sources"
+                File(base)
+            }
+            if(!directory.exists()) directory.mkdirs()
+            return directory
+        }
+
+        fun clearCache() {
+            cacheBasePath().listFiles()!!.forEach { it.deleteRecursively() }
+        }
     }
 }

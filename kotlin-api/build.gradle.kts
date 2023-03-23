@@ -33,7 +33,11 @@ dependencies {
 
 tasks {
     test {
-        useJUnitPlatform()
+        useJUnitPlatform {
+            if(System.getenv("CI") != null) {
+                excludeTags("CI_EXCLUDE")
+            }
+        }
     }
 }
 
