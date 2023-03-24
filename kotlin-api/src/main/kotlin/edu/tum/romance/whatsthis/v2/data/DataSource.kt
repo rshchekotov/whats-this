@@ -27,8 +27,9 @@ abstract class DataSource<T>(var source: T) {
         stripper.startPage = 1
         stripper.endPage = pdf.numberOfPages
         val text = stripper.getText(pdf)
+        val title = pdf.documentInformation.title
         pdf.close()
-        return text to pdf.documentInformation.title
+        return text to title
     }
 
     /**

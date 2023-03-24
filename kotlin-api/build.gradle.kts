@@ -39,6 +39,16 @@ tasks {
             }
         }
     }
+
+    register<Test>("onlyV2Tests") {
+        useJUnitPlatform {
+            includeTags("v2")
+            if(System.getenv("CI") != null) {
+                excludeTags("CI_EXCLUDE")
+            }
+        }
+        group = "verification"
+    }
 }
 
 kotlin {

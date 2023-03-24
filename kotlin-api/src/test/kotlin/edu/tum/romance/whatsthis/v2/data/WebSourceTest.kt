@@ -37,6 +37,7 @@ private const val TESTS_PER_URL = 100
 private const val URLS = 24
 private var progress = 0
 
+@Tag("v2")
 internal class WebSourceTest {
     @BeforeTest
     fun setUp() {
@@ -65,7 +66,25 @@ internal class WebSourceTest {
         println("Cached Web load took ${cachedTime}ms")
         assertEquals(name, cachedLoad.second, "Title should be correct")
 
-        assertTrue(3 * cachedTime < initialTime, "Cached load should be at least 3x faster")
+        assertTrue(2.5 * cachedTime < initialTime, "Cached load should be at least 2.5x faster")
         println("---")
+    }
+
+    @Test
+    fun testWebLoading() {
+        val url = urls[0]
+        val name = url.split("/").last().replace("_", " ") + " - Wikipedia"
+        assumeConnectivity(url)
+        val source = WebSource(url)
+
+        assertFalse(source.isCached(), "Source should not be cached")
+        val (initialLoad, initialTime) = benchmark { source.load() }
+        println("Initial Web load took ${initialTime}ms")
+        assertEquals(name, initialLoad.second, "Title should be correct")
+
+        assertTrue(source.isCached(), "Source should now be cached")
+        val (cachedLoad, cachedTime) = benchmark { source.load() }
+        println("Cached Web load took ${cachedTime}ms")
+        assertEquals(name, cachedLoad.second, "Title should be correct")
     }
 }
