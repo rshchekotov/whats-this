@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.v2.data
 
-import edu.tum.romance.whatsthis.v2.util.assumeConnectivity
-import edu.tum.romance.whatsthis.v2.util.benchmark
+import edu.tum.romance.whatsthis.util.assumeConnectivity
+import edu.tum.romance.whatsthis.util.benchmark
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.RepetitionInfo
 import org.junit.jupiter.api.Tag
