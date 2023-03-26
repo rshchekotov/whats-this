@@ -1,7 +1,7 @@
 package edu.tum.romance.whatsthis.v2.util
 
 @Suppress("UNCHECKED_CAST")
-class Some<T : Any>(vararg data: T) {
+class Some<T : Any>(vararg data: T): Iterable<T> {
     private val data: Any
     private val q: Int = data.size
     val quantity: Int
@@ -33,6 +33,36 @@ class Some<T : Any>(vararg data: T) {
         fun <T : Any> fromArray(data: Array<T>) = Some(*data)
         fun words(phrase: String): Some<String> {
             return fromArray(phrase.split(Regex("\\s+")).toTypedArray())
+        }
+    }
+
+    override fun iterator(): Iterator<T> {
+        return when (q) {
+            0 -> emptyList<T>().iterator()
+            1 -> listOf(data as T).iterator()
+            else -> (data as Array<T>).iterator()
+        }
+    }
+
+    override fun hashCode(): Int {
+        return when (q) {
+            0 -> 0
+            1 -> data.hashCode()
+            else -> (data as Array<T>).contentHashCode()
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return when (other) {
+            is Some<*> -> {
+                if (q != other.q) return false
+                when (q) {
+                    0 -> true
+                    1 -> data == other.data
+                    else -> (data as Array<T>).contentEquals(other.data as Array<T>)
+                }
+            }
+            else -> false
         }
     }
 }

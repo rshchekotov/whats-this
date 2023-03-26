@@ -1,4 +1,4 @@
-package edu.tum.romance.whatsthis.v2.util
+package edu.tum.romance.whatsthis.util
 
 import org.junit.jupiter.api.Assumptions.assumeFalse
 import java.net.URL
